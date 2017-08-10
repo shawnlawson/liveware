@@ -72,6 +72,19 @@ void CinderProjectBasicApp::setup()
 void CinderProjectBasicApp::mouseDown( MouseEvent event )
 {
     
+    __block NSString *resultString = nil;
+    __block BOOL finished = NO;
+    
+    [wv.webView evaluateJavaScript:@"editor.setValue('good stuff');" completionHandler:^(id result, NSError *error) {
+        if (error == nil) {
+            if (result != nil) {
+                resultString = [NSString stringWithFormat:@"%@", result];
+            }
+        } else {
+            NSLog(@"evaluateJavaScript error : %@", error.localizedDescription);
+        }
+        finished = YES;
+    }];
 }
 
 void CinderProjectBasicApp::keyDown( KeyEvent event )

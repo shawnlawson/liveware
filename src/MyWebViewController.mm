@@ -35,6 +35,7 @@
     
     [self.webView.layer setContentsScale:[NSApp mainWindow].contentView.layer.contentsScale];
     
+    
 }
 
 - (void)userContentController:(WKUserContentController *)userContentController
