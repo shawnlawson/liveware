@@ -1,6 +1,8 @@
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
+#include "cinder/Log.h"
+#include "cinder/gl/GlslProg.h"
 
 #import "MyWebViewController.h"
 
@@ -19,20 +21,52 @@ class CinderProjectBasicApp : public App {
 	void update() override;
 	void draw() override;
     
+private:
+    void renderToFBO();
+        
     MyWebViewController *wv;
     NSView * theView;
+    
+    gl::FboRef fbos[2];
+    gl::GlslProgRef fboGlsl;
+    
+    int	FBO_WIDTH = 1280, FBO_HEIGHT = 720;
+    int pingPong = 0;
 
 };
 
 void CinderProjectBasicApp::setup()
 {
-    setWindowSize(1080, 720);
+    gl::enableVerticalSync();
+    setWindowSize(1280, 720);
     wv = [MyWebViewController alloc];
     [wv setupWithPath:[NSString stringWithUTF8String:
-                       getAssetPath("EV9D9/index.html").c_str()]];
-    theView = [[NSApp mainWindow].contentView subviews][0];
-    [theView addSubview:wv.webView];
+                       getAssetPath("ACE/index.html").c_str()]];
+    
+    [NSApp.mainWindow.contentView addSubview:wv.webView];
 
+//    theView = [[NSApp mainWindow].contentView subviews][0];
+//    [theView addSubview:wv.webView];
+    
+    gl::Fbo::Format format;
+    fbos[0] = gl::Fbo::create( FBO_WIDTH, FBO_HEIGHT, format);
+    fbos[1] = gl::Fbo::create( FBO_WIDTH, FBO_HEIGHT, format);
+
+    gl::GlslProg::Format renderFormat;
+    try {
+        renderFormat.vertex( loadAsset( "render.vert" ) )
+                    .fragment( loadAsset( "render.frag" ) );
+        
+        fboGlsl = gl::GlslProg::create( renderFormat );
+    } 	catch( ci::gl::GlslProgCompileExc &exc )
+    {
+        CI_LOG_E( "Shader load error: " << exc.what() );
+    }
+    catch( ci::Exception &exc )
+    {
+        CI_LOG_E( "Shader load error: " << exc.what() );
+    }
+    
 }
 
 void CinderProjectBasicApp::mouseDown( MouseEvent event )
@@ -42,32 +76,42 @@ void CinderProjectBasicApp::mouseDown( MouseEvent event )
 
 void CinderProjectBasicApp::keyDown( KeyEvent event )
 {
-    if( event.getChar() == 'f' ) {
-        FullScreenOptions f;
-        f.kioskMode(false);
-        // Toggle full screen when the user presses the 'f' key.
-        setFullScreen( ! isFullScreen(), f);
 
-        [wv.webView setFrame:NSMakeRect(0, 0, getWindowWidth()/2, getWindowHeight()/2)];
-        [theView  addSubview:wv.webView];
-    }else if (event.getChar() == 'e') {
-        
-        [wv.webView evaluateJavaScript:@"editor.getSession().setValue('Im Text');" completionHandler:nil];
-    }
 }
 
 void CinderProjectBasicApp::update()
 {
-  //  cout << getWindowWidth() << " " << getWindowHeight() << endl;
+//    pingPong = (pingPong+1)%2;
+    renderToFBO();
+}
+
+void CinderProjectBasicApp::renderToFBO() {
+    
+    gl::ScopedFramebuffer fbScp( fbos[pingPong] );
+    // clear out the FBO with blue
+    gl::clear( Color( 0.0f, 0.0f, 0.0f ) );
+    gl::color( Color::white() );
+  //  gl::ScopedTextureBind(fbos[(pingPong+1)%2]->getColorTexture());
+    // setup the viewport to match the dimensions of the FBO
+    gl::ScopedViewport scpVp( ivec2( 0 ), fbos[pingPong]->getSize() );
+    
+    gl::ScopedGlslProg shaderScp( fboGlsl );
+    fboGlsl->uniform("resolution", vec2(1280, 720));
+//    gl::drawSolidRect(Rectf(100, 100, 1280, 720));
+    gl::drawBillboard(vec3(0,0,0), vec2(500), 0, vec3(1, 0, 0), vec3(0,1,0));
+
     
 }
 
 void CinderProjectBasicApp::draw()
 {
-	gl::clear( Color( 0, 0, 0 ) );
+//	gl::clear( Color( 0, 0, 0 ) );
     
-    gl::color( Color( 1.0f, 0.5f, 0.25f ) );
-    gl::drawSolidCircle( getWindowCenter(), 50 );
+    gl::color( Color::white() );
+    // use the scene we rendered into the FBO as a texture
+    fbos[pingPong]->bindTexture();
+    gl::draw(fbos[pingPong]->getColorTexture(),
+             Rectf(0, 0, getWindowWidth(), getWindowHeight()));
 
 }
 

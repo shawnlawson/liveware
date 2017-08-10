@@ -20,13 +20,14 @@
     [theConfiguration.userContentController addScriptMessageHandler:self
                                                                name:@"myApp"];
     
-    self.webView = [[WKWebView alloc] initWithFrame:NSMakeRect(0, 0, 500, 600)
-                              configuration:theConfiguration];
+    self.webView = [[WKWebView alloc]
+                    initWithFrame:NSMakeRect(0, 0, 640, 720)
+                    configuration:theConfiguration];
+    self.webView.autoresizingMask = NSViewHeightSizable;
     
-    if( NSAppKitVersionNumber > 1500 ){
+    if( NSAppKitVersionNumber > 1500 ){ //safety check
         [self.webView setValue:@(NO) forKey: @"drawsBackground"];
     }
-    
     
     NSURL *url = [NSURL fileURLWithPath:path];
     
