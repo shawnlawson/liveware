@@ -1,13 +1,24 @@
 #version 400
 
-layout(location = 0) in vec4 Vertexposition;
-layout (location = 2) in vec2 VertexTexCoord;
+in vec4 ciPosition;
+in vec2	ciTexCoord0;
+in vec3	ciNormal;
+in vec3 ciColor;
 
-out vec4 Position;
-out vec2 TexCoord;
+uniform mat4 	ciModelView;
+uniform mat4	ciModelViewProjection;
+uniform mat3	ciNormalMatrix;
+
+out highp vec2	TexCoord;
+out lowp vec4	Color;
+out highp vec3	Normal;
+
 
 void main()
 {
-	TexCoord = VertexTexCoord;
-    gl_Position = Position = Vertexposition;
+    gl_Position	= ciModelViewProjection * ciPosition;
+	Color 		= vec4(ciColor, 1.0);
+	TexCoord	= ciTexCoord0.xy;
+	Normal		= ciNormalMatrix * ciNormal;
+    // Position = ciModelView * ciPosition;
 }

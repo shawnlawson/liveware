@@ -109,9 +109,7 @@ void CinderProjectBasicApp::renderToFBO() {
     gl::ScopedViewport scpVp( ivec2( 0 ), fbos[pingPong]->getSize() );
     
     gl::ScopedGlslProg shaderScp( fboGlsl );
-    fboGlsl->uniform("resolution", vec2(1280, 720));
-//    gl::drawSolidRect(Rectf(100, 100, 1280, 720));
-    gl::drawBillboard(vec3(0,0,0), vec2(500), 0, vec3(1, 0, 0), vec3(0,1,0));
+    gl::drawSolidRect(Rectf(0,0,1280,720));
 
     
 }

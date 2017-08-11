@@ -1,13 +1,15 @@
-#version 330 core
+#version 400
 
-in vec2 vTexCoord;
+// in vec3 Position;
+in vec4		Color;
+in vec3		Normal;
+in vec2		TexCoord;
 
-uniform sampler2D tex;
-uniform vec2 resolution;
+uniform sampler2D RenderTex;
+uniform ivec2 ciWindowSize;
 
-out vec4 color;
+out vec4 FragColor;
 
-void main(void)
-{
-	color = vec4( gl_FragCoord.x/resolution.x, 0.0, 0.0, 1.0 );
+void main() {
+    FragColor = vec4(gl_FragCoord.x/ciWindowSize.x, 0.0, 0.0, 1.0);
 }
