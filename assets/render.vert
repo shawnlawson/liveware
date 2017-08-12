@@ -9,6 +9,8 @@ uniform mat4 	ciModelView;
 uniform mat4	ciModelViewProjection;
 uniform mat3	ciNormalMatrix;
 
+
+
 out highp vec2	TexCoord;
 out lowp vec4	Color;
 out highp vec3	Normal;

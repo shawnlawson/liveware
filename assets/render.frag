@@ -8,8 +8,9 @@ in vec2		TexCoord;
 uniform sampler2D RenderTex;
 uniform ivec2 ciWindowSize;
 
+uniform float time;
 out vec4 FragColor;
 
 void main() {
-    FragColor = vec4(gl_FragCoord.x/ciWindowSize.x, 0.0, 0.0, 1.0);
+    FragColor = vec4(gl_FragCoord.x/ciWindowSize.x, sin(time), 0.0, 1.0);
 }

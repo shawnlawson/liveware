@@ -3,8 +3,10 @@
 #include "cinder/gl/gl.h"
 #include "cinder/Log.h"
 #include "cinder/gl/GlslProg.h"
+#include "cinder/audio/audio.h"
 
 #import "MyWebViewController.h"
+#import "AudioDrawUtils.h"
 
 
 using namespace ci;
@@ -21,7 +23,14 @@ class CinderProjectBasicApp : public App {
 	void update() override;
 	void draw() override;
     
-private:
+//audio
+    audio::InputDeviceNodeRef		mInputDeviceNode;
+    audio::MonitorSpectralNodeRef	mMonitorSpectralNode;
+    vector<float>					mMagSpectrum;
+    
+    SpectrumPlot					mSpectrumPlot;
+    gl::TextureFontRef				mTextureFont;
+//graphics
     void renderToFBO();
         
     MyWebViewController *wv;
@@ -67,6 +76,24 @@ void CinderProjectBasicApp::setup()
         CI_LOG_E( "Shader load error: " << exc.what() );
     }
     
+    
+    //setup Audio
+    auto ctx = audio::Context::master();
+    
+    // The InputDeviceNode is platform-specific, so you create it using a special method on the Context:
+    mInputDeviceNode = ctx->createInputDeviceNode();
+    
+    // By providing an FFT size double that of the window size, we 'zero-pad' the analysis data, which gives
+    // an increase in resolution of the resulting spectrum data.
+    auto monitorFormat = audio::MonitorSpectralNode::Format().fftSize( 2048 ).windowSize( 1024 );
+    mMonitorSpectralNode = ctx->makeNode( new audio::MonitorSpectralNode( monitorFormat ) );
+    
+    mInputDeviceNode >> mMonitorSpectralNode;
+    
+    // InputDeviceNode (and all InputNode subclasses) need to be enabled()'s to process audio. So does the Context:
+    mInputDeviceNode->enable();
+    ctx->enable();
+
 }
 
 void CinderProjectBasicApp::mouseDown( MouseEvent event )
@@ -96,6 +123,9 @@ void CinderProjectBasicApp::update()
 {
 //    pingPong = (pingPong+1)%2;
     renderToFBO();
+    fboGlsl->uniform("time", (float)getElapsedSeconds());
+    
+    mMagSpectrum = mMonitorSpectralNode->getMagSpectrum();
 }
 
 void CinderProjectBasicApp::renderToFBO() {
@@ -104,7 +134,7 @@ void CinderProjectBasicApp::renderToFBO() {
     // clear out the FBO with blue
     gl::clear( Color( 0.0f, 0.0f, 0.0f ) );
     gl::color( Color::white() );
-  //  gl::ScopedTextureBind(fbos[(pingPong+1)%2]->getColorTexture());
+    gl::ScopedTextureBind(fbos[(pingPong+1)%2]->getColorTexture());
     // setup the viewport to match the dimensions of the FBO
     gl::ScopedViewport scpVp( ivec2( 0 ), fbos[pingPong]->getSize() );
     
@@ -123,6 +153,9 @@ void CinderProjectBasicApp::draw()
     fbos[pingPong]->bindTexture();
     gl::draw(fbos[pingPong]->getColorTexture(),
              Rectf(0, 0, getWindowWidth(), getWindowHeight()));
+    
+    mSpectrumPlot.setBounds( Rectf( 20, getWindowHeight(), 100, 100 ) );
+    mSpectrumPlot.draw( mMagSpectrum );
 
 }
 
