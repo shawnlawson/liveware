@@ -24,15 +24,15 @@ using namespace std;
 const uint16_t localPort = 10001;
 
 class CinderProjectBasicApp : public App {
-  public:
+public:
     CinderProjectBasicApp(); //OSC needs this
-	void setup() override;
-	void mouseDown( MouseEvent event ) override;
+    void setup() override;
+    void mouseDown( MouseEvent event ) override;
     void keyDown( KeyEvent event ) override;
-	void update() override;
-	void draw() override;
+    void update() override;
+    void draw() override;
     
-//MIDI
+    //MIDI
     void midiListener( midi::Message msg );
     void midiThreadListener( midi::Message msg );
     midi::Input mInput;
@@ -41,21 +41,21 @@ class CinderProjectBasicApp : public App {
     std::string status;
     
     
-//OSC - can be multithreaded if needed
+    //OSC - can be multithreaded if needed
     ivec2	mCurrentCirclePos; //from example, could be anything
     osc::ReceiverUdp mReceiver;
     std::map<uint64_t, asio::ip::udp::endpoint> mConnections;
     
-//audio
+    //audio
     audio::InputDeviceNodeRef		mInputDeviceNode;
     audio::MonitorSpectralNodeRef	mMonitorSpectralNode;
     vector<float>					mMagSpectrum;
     
     SpectrumPlot					mSpectrumPlot;
     gl::TextureFontRef				mTextureFont;
-//graphics
+    //graphics
     void renderToFBO();
-        
+    
     MyWebViewController *wv;
     NSView * theView;
     
@@ -64,7 +64,7 @@ class CinderProjectBasicApp : public App {
     
     int	FBO_WIDTH = 1280, FBO_HEIGHT = 720;
     int pingPong = 0;
-
+    
 };
 
 //OSC needs this
@@ -82,18 +82,18 @@ void CinderProjectBasicApp::setup()
                        getAssetPath("ACE/index.html").c_str()]];
     
     [NSApp.mainWindow.contentView addSubview:wv.webView];
-
-//    theView = [[NSApp mainWindow].contentView subviews][0];
-//    [theView addSubview:wv.webView];
+    
+    //    theView = [[NSApp mainWindow].contentView subviews][0];
+    //    [theView addSubview:wv.webView];
     
     gl::Fbo::Format format;
     fbos[0] = gl::Fbo::create( FBO_WIDTH, FBO_HEIGHT, format);
     fbos[1] = gl::Fbo::create( FBO_WIDTH, FBO_HEIGHT, format);
-
+    
     gl::GlslProg::Format renderFormat;
     try {
         renderFormat.vertex( loadAsset( "render.vert" ) )
-                    .fragment( loadAsset( "render.frag" ) );
+        .fragment( loadAsset( "render.frag" ) );
         
         fboGlsl = gl::GlslProg::create( renderFormat );
     } 	catch( ci::gl::GlslProgCompileExc &exc )
@@ -104,8 +104,8 @@ void CinderProjectBasicApp::setup()
     {
         CI_LOG_E( "Shader load error: " << exc.what() );
     }
-
-/////////////////MIDI
+    
+    /////////////////MIDI
     mInput.listPorts();
     console() << "NUMBER OF PORTS: " << mInput.getNumPorts() << endl;
     
@@ -129,9 +129,9 @@ void CinderProjectBasicApp::setup()
         notes.push_back( 0 );
         cc.push_back( 0 );
     }
-
     
-/////////////////Audio
+    
+    /////////////////Audio
     //there's some bullshit in core audio with devices that have the same name. my m-audio device for input apparently lists twice. gotta figure out this bug
     auto ctx = audio::Context::master();
     
@@ -147,7 +147,7 @@ void CinderProjectBasicApp::setup()
     mInputDeviceNode->enable();
     ctx->enable();
     
-/////////////////OSC
+    /////////////////OSC
     mReceiver.setListener( "/mousemove/1",
                           [&]( const osc::Message &msg ){
                               mCurrentCirclePos.x = msg[0].int32();
@@ -164,15 +164,15 @@ void CinderProjectBasicApp::setup()
     // function takes an error handler for the underlying socket. Any errors that would
     // call this function are because of problems with the socket or with the remote message.
     mReceiver.listen(
-         []( asio::error_code error, asio::ip::udp::endpoint endpoint ) -> bool {
-             if( error ) {
-                 CI_LOG_E( "Error Listening: " << error.message() << " val: " << error.value() << " endpoint: " << endpoint );
-                 return false;
-             }
-             else
-                 return true;
-         });
-
+                     []( asio::error_code error, asio::ip::udp::endpoint endpoint ) -> bool {
+                         if( error ) {
+                             CI_LOG_E( "Error Listening: " << error.message() << " val: " << error.value() << " endpoint: " << endpoint );
+                             return false;
+                         }
+                         else
+                             return true;
+                     });
+    
 }
 
 void CinderProjectBasicApp::mouseDown( MouseEvent event )
@@ -195,12 +195,12 @@ void CinderProjectBasicApp::mouseDown( MouseEvent event )
 
 void CinderProjectBasicApp::keyDown( KeyEvent event )
 {
-
+    
 }
 
 void CinderProjectBasicApp::update()
 {
-//    pingPong = (pingPong+1)%2;
+    //    pingPong = (pingPong+1)%2;
     renderToFBO();
     fboGlsl->uniform("time", (float)getElapsedSeconds());
     
@@ -220,13 +220,13 @@ void CinderProjectBasicApp::renderToFBO() {
     
     gl::ScopedGlslProg shaderScp( fboGlsl );
     gl::drawSolidRect(Rectf(0,0,1280,720));
-
+    
     
 }
 
 void CinderProjectBasicApp::draw()
 {
-//	gl::clear( Color( 0, 0, 0 ) );
+    //	gl::clear( Color( 0, 0, 0 ) );
     
     gl::color( Color::white() );
     // use the scene we rendered into the FBO as a texture
@@ -236,7 +236,7 @@ void CinderProjectBasicApp::draw()
     
     mSpectrumPlot.setBounds( Rectf( 10, getWindowHeight()-60, 100, getWindowHeight() - 10 ) );
     mSpectrumPlot.draw( mMagSpectrum );
-
+    
 }
 
 void CinderProjectBasicApp::midiThreadListener( midi::Message msg )
