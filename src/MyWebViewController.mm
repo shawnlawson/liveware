@@ -8,6 +8,9 @@
 
 #import "MyWebViewController.h"
 
+//these stay here to avoid duplicate symbol collisions
+#include "Tokenize.h"
+#include "NSStringFromBool.h"
 #import "NSString+EscapeForJavaScript.h"
 
 @implementation MyWebViewController
@@ -47,7 +50,6 @@ std::string startCode;
 
 - (void) executeScript:(NSString *) value
 {
-
     [webView evaluateJavaScript:value
               completionHandler:^(id result, NSError *error) {
                   if (error == nil) {
@@ -153,12 +155,12 @@ std::string startCode;
 - (void) toggleAutoCompletion:(BOOL)value
 {
     [self executeScript:
-     [NSString stringWithFormat:@"editor.setOption('enableBasicAutocompletion', %@);", [self NSStringFromBool:value]]];
+     [NSString stringWithFormat:@"editor.setOption('enableBasicAutocompletion', %@);", NSStringFromBool(value)]];
 }
 
 - (void) toggleSnippets:(BOOL)value
 {
-    [self executeScript:[NSString stringWithFormat:@"editor.setOption('enableSnippets', %@);", [self NSStringFromBool:value]]];
+    [self executeScript:[NSString stringWithFormat:@"editor.setOption('enableSnippets', %@);", NSStringFromBool(value)]];
 }
 
 - (void)userContentController:(WKUserContentController *)userContentController
@@ -166,66 +168,49 @@ std::string startCode;
 {
     NSDictionary *sentData = (NSDictionary *)message.body;
  //   NSString *messageString = sentData[@"message"];
-    NSLog(@"Message received: %@", sentData);
+    
+    if ([[sentData objectForKey:@"what"] isEqualToString:@"code"])
+    {
+//        NSLog(@"%@", sentData[@"data"]);
+        shaderSignal.emit( std::string([sentData[@"data"] UTF8String]) );
+    }
+    
+//    NSLog(@"Message received: %@", sentData);
 }
 
-
-- (NSString *) NSStringFromBool:(BOOL) value {
-    return value ? @"true" : @"false";
-}
 
 - (void)didReceiveMemoryWarning {
 //    [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
 
-
 - (void)dealloc
 {
     [super dealloc];
 }
 
+/////////////////////////////////////////////
+//  Cinder signal callback
+/////////////////////////////////////////////
+
+- (ci::signals::Signal<void(std::string)>*) ShaderSignal
+{
+    return &shaderSignal;
+}
+
+
+/////////////////////////////////////////////
+//  WKNavigationDelegate Callbacks
+/////////////////////////////////////////////
 
 - (void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation {
     [self setTextValue:startCode];
-//    [self setTextValue:"shit"];
 }
 
 - (void)webView:(WKWebView *)webView didFailNavigation:(WKNavigation *)navigation withError:(NSError *)error {
 
 }
 
-- (NSString *) stringByEscapingForJavaScript {
-    NSString *jsonString = [[NSString alloc]
-                            initWithData:[NSJSONSerialization
-                                          dataWithJSONObject:@[self]
-                                                     options:0
-                                                       error:nil]
-                                encoding:NSUTF8StringEncoding];
-    [jsonString autorelease];
-    return [jsonString substringWithRange:NSMakeRange(2, jsonString.length - 4)];
-}
-
-
 @end
 
 
-void Tokenize(const std::string& str,
-              std::vector<std::string>& tokens,
-              const std::string& delimiters)
-{
-    // Skip delimiters at beginning.
-    std::string::size_type lastPos = str.find_first_not_of(delimiters, 0);
-    // Find first "non-delimiter".
-    std::string::size_type pos     = str.find_first_of(delimiters, lastPos);
-    
-    while (std::string::npos != pos || std::string::npos != lastPos)
-    {
-        // Found a token, add it to the vector.
-        tokens.push_back(str.substr(lastPos, pos - lastPos));
-        // Skip delimiters.  Note the "not_of"
-        lastPos = str.find_first_not_of(delimiters, pos);
-        // Find next "non-delimiter"
-        pos = str.find_first_of(delimiters, lastPos);
-    }
-}

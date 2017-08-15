@@ -11,9 +11,12 @@
 @implementation NSString (EscapeForJavaScript)
 
 - (NSString *) stringByEscapingForJavaScript {
-    NSString *jsonString = [[NSString alloc] initWithData:[NSJSONSerialization dataWithJSONObject:@[self]
-                                                                                          options:0
-                                                                                            error:nil] encoding:NSUTF8StringEncoding];
+    NSString *jsonString = [[NSString alloc]
+                            initWithData:[NSJSONSerialization
+                                          dataWithJSONObject:@[self]
+                                          options:0
+                                          error:nil]
+                            encoding:NSUTF8StringEncoding];
     [jsonString autorelease];
     return [jsonString substringWithRange:NSMakeRange(2, jsonString.length - 4)];
 }

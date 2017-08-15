@@ -30,12 +30,9 @@
 // - (void) setMode ??
 // - (void) setTheme ??
 
-- (NSString *) NSStringFromBool:(BOOL) value;
+
+- (ci::signals::Signal<void(std::string)>*) ShaderSignal;
 
 @end
 
-
-
-void Tokenize(const std::string& str,
-              std::vector<std::string>& tokens,
-              const std::string& delimiters = " ");
+static ci::signals::Signal<void(std::string)>      shaderSignal;

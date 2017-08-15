@@ -52,8 +52,8 @@
 		4A48FE7062534F0192F8A5FB /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = CinderApp.icns; path = ../resources/CinderApp.icns; sourceTree = "<group>"; };
 		5323E6B10EAFCA74003A9687 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = /System/Library/Frameworks/CoreVideo.framework; sourceTree = "<absolute>"; };
 		8D1107320486CEB800E47090 /* CinderProjectBasic.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CinderProjectBasic.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		99367D141F428BA500936572 /* NSString+EscapeForJavaScript.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+EscapeForJavaScript.h"; sourceTree = "<group>"; };
-		99367D151F428BAF00936572 /* NSString+EscapeForJavaScript.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+EscapeForJavaScript.m"; sourceTree = "<group>"; };
+		99367D141F428BA500936572 /* NSString+EscapeForJavaScript.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSString+EscapeForJavaScript.h"; path = "../include/NSString+EscapeForJavaScript.h"; sourceTree = "<group>"; };
+		99367D151F428BAF00936572 /* NSString+EscapeForJavaScript.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSString+EscapeForJavaScript.m"; path = "../src/NSString+EscapeForJavaScript.m"; sourceTree = "<group>"; };
 		9951A9B31F40D46D0007F2A3 /* MidiConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MidiConstants.h; sourceTree = "<group>"; };
 		9951A9B41F40D46D0007F2A3 /* MidiExceptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MidiExceptions.h; sourceTree = "<group>"; };
 		9951A9B51F40D46D0007F2A3 /* MidiHeaders.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MidiHeaders.h; sourceTree = "<group>"; };
@@ -72,9 +72,11 @@
 		9951AB8B1F40D4950007F2A3 /* CoreMIDI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMIDI.framework; path = System/Library/Frameworks/CoreMIDI.framework; sourceTree = SDKROOT; };
 		995E47DB1F3A5164009DD340 /* MyWebViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = MyWebViewController.mm; path = ../src/MyWebViewController.mm; sourceTree = "<group>"; };
 		995E47DE1F3A559A009DD340 /* MyWebViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MyWebViewController.h; path = ../include/MyWebViewController.h; sourceTree = "<group>"; };
+		99AFCD151F43187500F6A92E /* NSStringFromBool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NSStringFromBool.h; path = ../include/NSStringFromBool.h; sourceTree = "<group>"; };
+		99AFCD161F43193C00F6A92E /* Tokenize.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Tokenize.h; path = ../include/Tokenize.h; sourceTree = "<group>"; };
 		99E982041F366B930013A336 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
-		99EBEB621F3E997200453241 /* AudioDrawUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioDrawUtils.h; sourceTree = "<group>"; };
-		99EBEB631F3E997200453241 /* AudioDrawUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AudioDrawUtils.cpp; sourceTree = "<group>"; };
+		99EBEB621F3E997200453241 /* AudioDrawUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AudioDrawUtils.h; path = ../include/AudioDrawUtils.h; sourceTree = "<group>"; };
+		99EBEB631F3E997200453241 /* AudioDrawUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AudioDrawUtils.cpp; path = ../src/AudioDrawUtils.cpp; sourceTree = "<group>"; };
 		99F22F381F423DC20091620D /* render.frag */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = render.frag; path = ../assets/render.frag; sourceTree = "<group>"; };
 		99F22F391F423DC20091620D /* render.vert */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = render.vert; path = ../assets/render.vert; sourceTree = "<group>"; };
 		BF3BC0CF9B3544B0B72671CE /* CinderProjectBasic_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = CinderProjectBasic_Prefix.pch; sourceTree = "<group>"; };
@@ -177,6 +179,8 @@
 		29B97315FDCFA39411CA2CEA /* Headers */ = {
 			isa = PBXGroup;
 			children = (
+				99AFCD161F43193C00F6A92E /* Tokenize.h */,
+				99AFCD151F43187500F6A92E /* NSStringFromBool.h */,
 				99367D141F428BA500936572 /* NSString+EscapeForJavaScript.h */,
 				99EBEB621F3E997200453241 /* AudioDrawUtils.h */,
 				4442529699194DE2A42C0BAF /* Resources.h */,

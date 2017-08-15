@@ -64,6 +64,7 @@ public:
     int pingPong = 0;
     
     //editor
+    void shaderListener( std::string code);
     MyWebViewController *wv;
     NSView * theView;
     bool loadedShader = false;
@@ -104,7 +105,7 @@ void CinderProjectBasicApp::setup()
         CI_LOG_E( "Shader load error: " << exc.what() );
     }
     
-    //webview
+///////////////// Webview
     wv = [MyWebViewController alloc];
     [wv setupWithPath:[NSString stringWithUTF8String:
                        getAssetPath("ACE/index.html").c_str()]];
@@ -112,7 +113,9 @@ void CinderProjectBasicApp::setup()
     theView = [[NSApp mainWindow].contentView subviews][0];
     [theView addSubview:wv.webView];
     //    [NSApp.mainWindow.contentView addSubview:wv.webView];
-
+    
+    wv.ShaderSignal->connect([this](std::string code) { shaderListener( code ); });
+    
     
 /////////////////MIDI
     mInput.listPorts();
@@ -193,24 +196,7 @@ void CinderProjectBasicApp::keyDown( KeyEvent event )
 
 void CinderProjectBasicApp::update()
 {
-
-        
-        gl::GlslProg::Format renderFormat;
-        try {
-            renderFormat.vertex( vertProg )
-            .fragment( "" );
-            
-            trialGlsl = gl::GlslProg::create( renderFormat );
-        } 	catch( ci::gl::GlslProgCompileExc &exc )
-        {
-            [wv setErrors:exc.what()];
-            CI_LOG_E( "Shader load error: " << exc.what() );
-        }
-        catch( ci::Exception &exc )
-        {
-            CI_LOG_E( "Shader load error: " << exc.what() );
-        }
-        
+ 
     pingPong = (pingPong+1)%2;
     renderToFBO();
     fboGlsl->uniform("time", (float)getElapsedSeconds());
@@ -247,6 +233,29 @@ void CinderProjectBasicApp::draw()
     
     mSpectrumPlot.setBounds( Rectf( 10, getWindowHeight()-60, 100, getWindowHeight() - 10 ) );
     mSpectrumPlot.draw( mMagSpectrum );
+    
+}
+
+void CinderProjectBasicApp::shaderListener( std::string code) {
+
+//    std::cout << code << std::endl;
+//    std::cout << "returned" << std::endl;
+    
+    //        gl::GlslProg::Format renderFormat;
+    //        try {
+    //            renderFormat.vertex( vertProg )
+    //            .fragment( "" );
+    //
+    //            trialGlsl = gl::GlslProg::create( renderFormat );
+    //        } 	catch( ci::gl::GlslProgCompileExc &exc )
+    //        {
+    //            [wv setErrors:exc.what()];
+    //            CI_LOG_E( "Shader load error: " << exc.what() );
+    //        }
+    //        catch( ci::Exception &exc )
+    //        {
+    //            CI_LOG_E( "Shader load error: " << exc.what() );
+    //        }
     
 }
 
