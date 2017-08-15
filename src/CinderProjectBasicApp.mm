@@ -53,17 +53,21 @@ public:
     
     SpectrumPlot					mSpectrumPlot;
     gl::TextureFontRef				mTextureFont;
+    
     //graphics
     void renderToFBO();
-    
-    MyWebViewController *wv;
-    NSView * theView;
-    
     gl::FboRef fbos[2];
-    gl::GlslProgRef fboGlsl;
+    gl::GlslProgRef fboGlsl, trialGlsl;
+    std::string vertProg, fragProg;
     
     int	FBO_WIDTH = 1280, FBO_HEIGHT = 720;
     int pingPong = 0;
+    
+    //editor
+    MyWebViewController *wv;
+    NSView * theView;
+    bool loadedShader = false;
+    
     
 };
 
@@ -75,25 +79,20 @@ CinderProjectBasicApp::CinderProjectBasicApp()
 
 void CinderProjectBasicApp::setup()
 {
+//general
     gl::enableVerticalSync();
     setWindowSize(1280, 720);
-    wv = [MyWebViewController alloc];
-    [wv setupWithPath:[NSString stringWithUTF8String:
-                       getAssetPath("ACE/index.html").c_str()]];
-    
-    [NSApp.mainWindow.contentView addSubview:wv.webView];
-    
-    //    theView = [[NSApp mainWindow].contentView subviews][0];
-    //    [theView addSubview:wv.webView];
-    
+
+//opengl
     gl::Fbo::Format format;
     fbos[0] = gl::Fbo::create( FBO_WIDTH, FBO_HEIGHT, format);
     fbos[1] = gl::Fbo::create( FBO_WIDTH, FBO_HEIGHT, format);
-    
+    vertProg = loadString( loadAsset("render.vert"));
+    fragProg = loadString( loadAsset("render.frag"));
     gl::GlslProg::Format renderFormat;
     try {
-        renderFormat.vertex( loadAsset( "render.vert" ) )
-        .fragment( loadAsset( "render.frag" ) );
+        renderFormat.vertex( vertProg )
+        .fragment( fragProg );
         
         fboGlsl = gl::GlslProg::create( renderFormat );
     } 	catch( ci::gl::GlslProgCompileExc &exc )
@@ -105,7 +104,17 @@ void CinderProjectBasicApp::setup()
         CI_LOG_E( "Shader load error: " << exc.what() );
     }
     
-    /////////////////MIDI
+    //webview
+    wv = [MyWebViewController alloc];
+    [wv setupWithPath:[NSString stringWithUTF8String:
+                       getAssetPath("ACE/index.html").c_str()]];
+    [wv setStartCode:fragProg];
+    theView = [[NSApp mainWindow].contentView subviews][0];
+    [theView addSubview:wv.webView];
+    //    [NSApp.mainWindow.contentView addSubview:wv.webView];
+
+    
+/////////////////MIDI
     mInput.listPorts();
     console() << "NUMBER OF PORTS: " << mInput.getNumPorts() << endl;
     
@@ -160,37 +169,21 @@ void CinderProjectBasicApp::setup()
         CI_LOG_E( "Error binding: " << ex.what() << " val: " << ex.value() );
         quit();
     }
-    // UDP opens the socket and "listens" accepting any message from any endpoint. The listen
-    // function takes an error handler for the underlying socket. Any errors that would
-    // call this function are because of problems with the socket or with the remote message.
     mReceiver.listen(
-                     []( asio::error_code error, asio::ip::udp::endpoint endpoint ) -> bool {
-                         if( error ) {
-                             CI_LOG_E( "Error Listening: " << error.message() << " val: " << error.value() << " endpoint: " << endpoint );
-                             return false;
-                         }
-                         else
-                             return true;
-                     });
-    
+             []( asio::error_code error, asio::ip::udp::endpoint endpoint ) -> bool {
+                 if( error ) {
+                     CI_LOG_E( "Error Listening: " << error.message() << " val: " << error.value() << " endpoint: " << endpoint );
+                     return false;
+                 }
+                 else
+                     return true;
+             });
+
 }
 
 void CinderProjectBasicApp::mouseDown( MouseEvent event )
 {
     
-    __block NSString *resultString = nil;
-    __block BOOL finished = NO;
-    
-    [wv.webView evaluateJavaScript:@"editor.setValue('good stuff');" completionHandler:^(id result, NSError *error) {
-        if (error == nil) {
-            if (result != nil) {
-                resultString = [NSString stringWithFormat:@"%@", result];
-            }
-        } else {
-            NSLog(@"evaluateJavaScript error : %@", error.localizedDescription);
-        }
-        finished = YES;
-    }];
 }
 
 void CinderProjectBasicApp::keyDown( KeyEvent event )
@@ -200,7 +193,25 @@ void CinderProjectBasicApp::keyDown( KeyEvent event )
 
 void CinderProjectBasicApp::update()
 {
-    //    pingPong = (pingPong+1)%2;
+
+        
+        gl::GlslProg::Format renderFormat;
+        try {
+            renderFormat.vertex( vertProg )
+            .fragment( "" );
+            
+            trialGlsl = gl::GlslProg::create( renderFormat );
+        } 	catch( ci::gl::GlslProgCompileExc &exc )
+        {
+            [wv setErrors:exc.what()];
+            CI_LOG_E( "Shader load error: " << exc.what() );
+        }
+        catch( ci::Exception &exc )
+        {
+            CI_LOG_E( "Shader load error: " << exc.what() );
+        }
+        
+    pingPong = (pingPong+1)%2;
     renderToFBO();
     fboGlsl->uniform("time", (float)getElapsedSeconds());
     

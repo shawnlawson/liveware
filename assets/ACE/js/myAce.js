@@ -85,16 +85,21 @@ editor.setTheme('ace/theme/monokai')
 editor.session.setMode('ace/mode/glsl')
 editor.session.setUseWrapMode(true)
 editor.session.setUseWorker(true)
-editor.session.selection.clearSelection()
-
 editor.setDisplayIndentGuides(false)
-
 editor.setShowPrintMargin(false)
-editor.getSession().on('change', function (e) {
-  clearTimeout(mCompileTimer)
-  mCompileTimer = setTimeout(setShaderFromEditor, 200)
-})
+
+// editor.getSession().on('change', function (e) {
+//   clearTimeout(mCompileTimer)
+//   mCompileTimer = setTimeout(setShaderFromEditor, 200)
+// })
 editor.$blockScrolling = Infinity
 editor.setOptions({
   fontSize: '14pt'
 })
+
+// $.when($.ajax({ url: '../render.frag', dataType: 'text' }))
+//     .done(function (f) {
+//      editor.setValue(f)
+editor.session.selection.clearSelection()
+editor.focus()
+    // })

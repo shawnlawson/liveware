@@ -1,8 +1,7 @@
-ace.define("ace/theme/monokai",["require","exports","module","ace/lib/dom"], function(require, exports, module) {
-
-exports.isDark = true;
-exports.cssClass = "ace-monokai";
-exports.cssText = ".ace-monokai .ace_gutter {\
+ace.define('ace/theme/monokai', ['require', 'exports', 'module', 'ace/lib/dom'], function (require, exports, module) {
+  exports.isDark = true
+  exports.cssClass = 'ace-monokai'
+  exports.cssText = ".ace-monokai .ace_gutter {\
 background: transparent;\
 color: #8F908A\
 }\
@@ -149,12 +148,9 @@ animation-duration: .5s;\
   100% { background-color:rgba(0, 0, 0, 0.0); }\
 }\
 .ace_scroller{\
-  cursor: url('../images/cursor.png') 1 8, text;\
-}";
+  cursor: url('images/cursor.png') 1 8, text;\
+}"
 
-
-
-
-var dom = require("../lib/dom");
-dom.importCssString(exports.cssText, exports.cssClass);
-});
+  var dom = require('../lib/dom')
+  dom.importCssString(exports.cssText, exports.cssClass)
+})

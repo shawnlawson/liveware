@@ -20,6 +20,7 @@
 		51CA7AD9B7364030B35A1885 /* CinderApp.icns in Resources */ = {isa = PBXBuildFile; fileRef = 4A48FE7062534F0192F8A5FB /* CinderApp.icns */; };
 		5323E6B20EAFCA74003A9687 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B10EAFCA74003A9687 /* CoreVideo.framework */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
+		99367D161F428BAF00936572 /* NSString+EscapeForJavaScript.m in Sources */ = {isa = PBXBuildFile; fileRef = 99367D151F428BAF00936572 /* NSString+EscapeForJavaScript.m */; };
 		9951A9FC1F40D46E0007F2A3 /* RtMidi.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9951A9BB1F40D46D0007F2A3 /* RtMidi.cpp */; };
 		9951AA171F40D46E0007F2A3 /* MidiHub.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9951A9ED1F40D46E0007F2A3 /* MidiHub.cpp */; };
 		9951AA181F40D46E0007F2A3 /* MidiIn.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9951A9EE1F40D46E0007F2A3 /* MidiIn.cpp */; };
@@ -51,6 +52,8 @@
 		4A48FE7062534F0192F8A5FB /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = CinderApp.icns; path = ../resources/CinderApp.icns; sourceTree = "<group>"; };
 		5323E6B10EAFCA74003A9687 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = /System/Library/Frameworks/CoreVideo.framework; sourceTree = "<absolute>"; };
 		8D1107320486CEB800E47090 /* CinderProjectBasic.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CinderProjectBasic.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		99367D141F428BA500936572 /* NSString+EscapeForJavaScript.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+EscapeForJavaScript.h"; sourceTree = "<group>"; };
+		99367D151F428BAF00936572 /* NSString+EscapeForJavaScript.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+EscapeForJavaScript.m"; sourceTree = "<group>"; };
 		9951A9B31F40D46D0007F2A3 /* MidiConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MidiConstants.h; sourceTree = "<group>"; };
 		9951A9B41F40D46D0007F2A3 /* MidiExceptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MidiExceptions.h; sourceTree = "<group>"; };
 		9951A9B51F40D46D0007F2A3 /* MidiHeaders.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MidiHeaders.h; sourceTree = "<group>"; };
@@ -72,6 +75,8 @@
 		99E982041F366B930013A336 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 		99EBEB621F3E997200453241 /* AudioDrawUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioDrawUtils.h; sourceTree = "<group>"; };
 		99EBEB631F3E997200453241 /* AudioDrawUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AudioDrawUtils.cpp; sourceTree = "<group>"; };
+		99F22F381F423DC20091620D /* render.frag */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = render.frag; path = ../assets/render.frag; sourceTree = "<group>"; };
+		99F22F391F423DC20091620D /* render.vert */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = render.vert; path = ../assets/render.vert; sourceTree = "<group>"; };
 		BF3BC0CF9B3544B0B72671CE /* CinderProjectBasic_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = CinderProjectBasic_Prefix.pch; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -111,6 +116,8 @@
 		080E96DDFE201D6D7F000001 /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				99367D151F428BAF00936572 /* NSString+EscapeForJavaScript.m */,
+				99EBEB631F3E997200453241 /* AudioDrawUtils.cpp */,
 				995E47DB1F3A5164009DD340 /* MyWebViewController.mm */,
 				02FAB0FF541A4FECB8818EDB /* CinderProjectBasicApp.mm */,
 			);
@@ -170,8 +177,8 @@
 		29B97315FDCFA39411CA2CEA /* Headers */ = {
 			isa = PBXGroup;
 			children = (
+				99367D141F428BA500936572 /* NSString+EscapeForJavaScript.h */,
 				99EBEB621F3E997200453241 /* AudioDrawUtils.h */,
-				99EBEB631F3E997200453241 /* AudioDrawUtils.cpp */,
 				4442529699194DE2A42C0BAF /* Resources.h */,
 				BF3BC0CF9B3544B0B72671CE /* CinderProjectBasic_Prefix.pch */,
 				995E47DE1F3A559A009DD340 /* MyWebViewController.h */,
@@ -182,6 +189,8 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				99F22F381F423DC20091620D /* render.frag */,
+				99F22F391F423DC20091620D /* render.vert */,
 				4A48FE7062534F0192F8A5FB /* CinderApp.icns */,
 				12C4C38655B54528977C7147 /* Info.plist */,
 			);
@@ -340,6 +349,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9951A9FC1F40D46E0007F2A3 /* RtMidi.cpp in Sources */,
+				99367D161F428BAF00936572 /* NSString+EscapeForJavaScript.m in Sources */,
 				9951AB611F40D4770007F2A3 /* Osc.cpp in Sources */,
 				9951AA191F40D46E0007F2A3 /* MidiMessage.cpp in Sources */,
 				99EBEB641F3E997200453241 /* AudioDrawUtils.cpp in Sources */,
