@@ -12,7 +12,7 @@
 #include "MidiHeaders.h"
 
 //User
-#import "MyWebViewController.h"
+#import "MyWebView.h"
 #include "AudioDrawUtils.h"
 
 
@@ -65,7 +65,7 @@ public:
     
     //editor
     void shaderListener( std::string code);
-    MyWebViewController *wv;
+    MyWebView *wv;
     NSView * theView;
     bool loadedShader = false;
     
@@ -83,7 +83,6 @@ void CinderProjectBasicApp::setup()
     [[NSBundle mainBundle] loadNibNamed:@"MainMenuTest"
                                   owner:[NSApplication sharedApplication]
                         topLevelObjects:&tl];
-    
     
     /////////////////////////////////////////////
     //  OpenGL
@@ -114,14 +113,14 @@ void CinderProjectBasicApp::setup()
     /////////////////////////////////////////////
     //  Web View
     /////////////////////////////////////////////
-    wv = [MyWebViewController alloc];
+    wv = [MyWebView alloc];
     [wv setupWithPath:[NSString stringWithUTF8String:
                        getAssetPath("ACE/index.html").c_str()]];
     [wv setStartCode:fragProg];
     
     //attaching to cinder view, attaching to window view doesn't work
     theView = [[NSApp mainWindow].contentView subviews][0];
-    [theView addSubview:wv.webView];
+    [theView addSubview:wv];
     
     //callback from webview when shader code changes
     wv.ShaderSignal->connect([this](std::string code) { shaderListener( code ); });

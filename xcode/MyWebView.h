@@ -8,12 +8,9 @@
 
 
 #import <WebKit/WebKit.h>
-
 #include <string>
 
-@interface MyWebViewController : NSObject <WKScriptMessageHandler, WKUIDelegate, WKNavigationDelegate>
-
-@property(strong,nonatomic) WKWebView *webView;
+@interface MyWebView : WKWebView <WKScriptMessageHandler, WKUIDelegate, WKNavigationDelegate>
 
 - (void) setupWithPath:(NSString*)path;
 - (void) setStartCode:(std::string)code;

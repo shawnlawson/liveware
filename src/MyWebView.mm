@@ -6,41 +6,40 @@
 //
 //
 
-#import "MyWebViewController.h"
+#import "MyWebView.h"
 
 //these stay here to avoid duplicate symbol collisions
 #include "Tokenize.h"
 #include "NSStringFromBool.h"
 #import "NSString+EscapeForJavaScript.h"
 
-@implementation MyWebViewController
-
-@synthesize webView;
+@implementation MyWebView
 
 std::string startCode;
 
 - (void) setupWithPath:(NSString *)path
 {
     WKWebViewConfiguration *theConfiguration = [[WKWebViewConfiguration alloc] init];
-    [theConfiguration.userContentController addScriptMessageHandler:self
-                                                               name:@"myApp"];
-    
-    webView = [[WKWebView alloc]
-                    initWithFrame:NSMakeRect(0, 0, 640, 720)
+    [theConfiguration.userContentController
+     addScriptMessageHandler:self
+                        name:@"myApp"];
+
+    [self   initWithFrame:NSMakeRect(0, 0, 640, 720)
                     configuration:theConfiguration];
-    webView.autoresizingMask = NSViewHeightSizable;
+    
+    self.autoresizingMask = NSViewHeightSizable;
     
     if( NSAppKitVersionNumber > 1500 ){ //safety check
-        [webView setValue:@(NO) forKey: @"drawsBackground"];
+        [self setValue:@(NO) forKey: @"drawsBackground"];
     }
     
-    webView.navigationDelegate = self;
+    self.navigationDelegate = self;
+    self.UIDelegate = self;
     
     NSURL *url = [NSURL fileURLWithPath:path];
-    [webView loadRequest:[NSURLRequest requestWithURL:url]];
+    [self loadRequest:[NSURLRequest requestWithURL:url]];
 
-    [webView.layer setContentsScale:[NSApp mainWindow].contentView.layer.contentsScale];
-    
+    [self.layer setContentsScale:[NSApp mainWindow].contentView.layer.contentsScale];
 }
 
 - (void) setStartCode:(std::string)code
@@ -50,7 +49,7 @@ std::string startCode;
 
 - (void) executeScript:(NSString *) value
 {
-    [webView evaluateJavaScript:value
+    [self evaluateJavaScript:value
               completionHandler:^(id result, NSError *error) {
                   if (error == nil) {
                       if (result != nil) {
@@ -77,7 +76,7 @@ std::string startCode;
     __block NSString *resultString = nil;
     __block BOOL finished = NO;
     
-    [webView evaluateJavaScript:[NSString stringWithFormat:@"editor.getValue();"]
+    [self evaluateJavaScript:[NSString stringWithFormat:@"editor.getValue();"]
            completionHandler:^(id result, NSError *error) {
         if (error == nil) {
             if (result != nil) {
@@ -221,5 +220,64 @@ std::string startCode;
 }
 
 @end
+
+
+//- (IBAction)changeItAll:(id)sender{
+//    
+//}
+//
+//- (IBAction)tryFullScreen:(id)sender{
+//    //    ci::app::setFullScreen( ! ci::app::isFullScreen() );
+//    
+//}
+//
+//- (BOOL)validateUserInterfaceItem:(id <NSValidatedUserInterfaceItem>)anItem
+//{
+//    SEL theAction = [anItem action];
+//
+//    if (theAction == @selector(changeItAll:)) {
+//        //        if ( /* there is a current selection and it is copyable */ )
+//        //        {
+//        //            return YES;
+//        //        }
+//        //        return NO;
+//        return YES;
+//    }
+//    else {
+//        //        if (theAction == @selector(paste:)) {
+//        //            if ( /* there is a something on the pasteboard we can use and
+//        //                  the user interface is in a configuration in which it makes sense to paste */ ) {
+//        //                      return YES;
+//        //                  }
+//        //            return NO;
+//        //        }
+//        //        else {
+//        //            /* check for other relevant actions ... */
+//        //        }
+//    }
+//    // Subclass of NSDocument, so invoke super's implementation
+//    // return [super validateUserInterfaceItem:anItem];
+//    return YES;
+//}
+//
+//- (BOOL)textView:(NSTextView *)textView doCommandBySelector:(SEL)commandSelector {
+//    if (commandSelector == @selector(cancelOperation:)) {
+//        if([self inFullScreenMode]) {
+//            [self.window toggleFullScreen:nil];
+//        }
+//    }
+//    else {
+//        return NO;
+//    }
+//    return YES;
+//}
+//
+//- (BOOL) inFullScreenMode {
+//    NSApplicationPresentationOptions opts = [[NSApplication sharedApplication ] presentationOptions];
+//    if ( opts & NSApplicationPresentationFullScreen) {
+//        return YES;
+//    }
+//    return NO;
+//}
 
 
