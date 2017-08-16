@@ -84,8 +84,13 @@ void CinderProjectBasicApp::setup()
     gl::enableVerticalSync();
     setWindowSize(1280, 720);
 
-//opengl
-    gl::Fbo::Format format;
+    /////////////////////////////////////////////
+    //  OpenGL
+    /////////////////////////////////////////////
+    auto format = gl::Fbo::Format()
+    .samples( 4 ) // uncomment this to enable 4x antialiasing
+    .attachment( GL_COLOR_ATTACHMENT0, gl::Texture2d::create( FBO_WIDTH, FBO_HEIGHT ) );
+//    .attachment( GL_COLOR_ATTACHMENT1, gl::Texture2d::create( FBO_WIDTH, FBO_HEIGHT ) );
     fbos[0] = gl::Fbo::create( FBO_WIDTH, FBO_HEIGHT, format);
     fbos[1] = gl::Fbo::create( FBO_WIDTH, FBO_HEIGHT, format);
     vertProg = loadString( loadAsset("render.vert"));
@@ -105,15 +110,19 @@ void CinderProjectBasicApp::setup()
         CI_LOG_E( "Shader load error: " << exc.what() );
     }
     
-///////////////// Webview
+    /////////////////////////////////////////////
+    //  Web View
+    /////////////////////////////////////////////
     wv = [MyWebViewController alloc];
     [wv setupWithPath:[NSString stringWithUTF8String:
                        getAssetPath("ACE/index.html").c_str()]];
     [wv setStartCode:fragProg];
+    
+    //attaching to cinder view, attaching to window view doesn't work
     theView = [[NSApp mainWindow].contentView subviews][0];
     [theView addSubview:wv.webView];
-    //    [NSApp.mainWindow.contentView addSubview:wv.webView];
     
+    //callback from webview when shader code changes
     wv.ShaderSignal->connect([this](std::string code) { shaderListener( code ); });
     
     
@@ -143,23 +152,20 @@ void CinderProjectBasicApp::setup()
     }
     
     
-    /////////////////Audio
-    //there's some bullshit in core audio with devices that have the same name. my m-audio device for input apparently lists twice. gotta figure out this bug
+    /////////////////////////////////////////////
+    //  Audio, check duplicate device
+    /////////////////////////////////////////////
     auto ctx = audio::Context::master();
-    
-    // The InputDeviceNode is platform-specific, so you create it using a special method on the Context:
     mInputDeviceNode = ctx->createInputDeviceNode();
-    
     auto monitorFormat = audio::MonitorSpectralNode::Format().fftSize( 2048 ).windowSize( 1024 );
     mMonitorSpectralNode = ctx->makeNode( new audio::MonitorSpectralNode( monitorFormat ) );
-    
     mInputDeviceNode >> mMonitorSpectralNode;
-    
-    // InputDeviceNode (and all InputNode subclasses) need to be enabled()'s to process audio. So does the Context:
     mInputDeviceNode->enable();
     ctx->enable();
     
-    /////////////////OSC
+    /////////////////////////////////////////////
+    //  Open Sound Control
+    /////////////////////////////////////////////
     mReceiver.setListener( "/mousemove/1",
                           [&]( const osc::Message &msg ){
                               mCurrentCirclePos.x = msg[0].int32();
@@ -196,40 +202,39 @@ void CinderProjectBasicApp::keyDown( KeyEvent event )
 
 void CinderProjectBasicApp::update()
 {
- 
     pingPong = (pingPong+1)%2;
-    renderToFBO();
     fboGlsl->uniform("time", (float)getElapsedSeconds());
+    renderToFBO();
     
     mMagSpectrum = mMonitorSpectralNode->getMagSpectrum();
-    
 }
 
-void CinderProjectBasicApp::renderToFBO() {
+void CinderProjectBasicApp::renderToFBO()
+{
+    CameraOrtho cam(0, 1280, 0, 720, -10, 10);
+//    CameraPersp cam( fbos[pingPong]->getWidth(), fbos[pingPong]->getHeight(), 60 );
+//    cam.setPerspective( 60, fbos[pingPong]->getAspectRatio(), 1, 1000 );
+//    cam.lookAt( vec3( 2.8f, 1.8f, -2.8f ), vec3( 0 ) );
     
-    gl::ScopedFramebuffer fbScp( fbos[pingPong] );
-    // clear out the FBO with blue
-    gl::clear( Color( 0.0f, 0.0f, 0.0f ) );
-    gl::color( Color::white() );
-    gl::ScopedTextureBind(fbos[(pingPong+1)%2]->getColorTexture());
-    // setup the viewport to match the dimensions of the FBO
+    gl::ScopedFramebuffer  scpFbo( fbos[pingPong] );
+    gl::clear();
+    gl::ScopedTextureBind scpFboBind(fbos[(pingPong+1)%2]->getColorTexture());
+
     gl::ScopedViewport scpVp( ivec2( 0 ), fbos[pingPong]->getSize() );
     
-    gl::ScopedGlslProg shaderScp( fboGlsl );
-    gl::drawSolidRect(Rectf(0,0,1280,720));
+    gl::ScopedMatrices matScope;
+    gl::setMatrices( cam );
     
-    
+    gl::ScopedGlslProg scpShader( fboGlsl );
+    gl::drawSolidRect(Rectf(vec2(0), fbos[pingPong]->getSize()));
 }
 
 void CinderProjectBasicApp::draw()
 {
-    //	gl::clear( Color( 0, 0, 0 ) );
-    
-    gl::color( Color::white() );
-    // use the scene we rendered into the FBO as a texture
-    fbos[pingPong]->bindTexture();
-    gl::draw(fbos[pingPong]->getColorTexture(),
-             Rectf(0, 0, getWindowWidth(), getWindowHeight()));
+    	gl::clear( Color( 0, 0, 0 ) );
+
+    auto tex0 = fbos[pingPong]->getTexture2d( GL_COLOR_ATTACHMENT0 );
+    gl::draw( tex0, tex0->getBounds(), Rectf(0, 0, getWindowWidth(), getWindowHeight()) );
     
     mSpectrumPlot.setBounds( Rectf( 10, getWindowHeight()-60, 100, getWindowHeight() - 10 ) );
     mSpectrumPlot.draw( mMagSpectrum );
@@ -241,21 +246,25 @@ void CinderProjectBasicApp::shaderListener( std::string code) {
 //    std::cout << code << std::endl;
 //    std::cout << "returned" << std::endl;
     
-    //        gl::GlslProg::Format renderFormat;
-    //        try {
-    //            renderFormat.vertex( vertProg )
-    //            .fragment( "" );
-    //
-    //            trialGlsl = gl::GlslProg::create( renderFormat );
-    //        } 	catch( ci::gl::GlslProgCompileExc &exc )
-    //        {
-    //            [wv setErrors:exc.what()];
-    //            CI_LOG_E( "Shader load error: " << exc.what() );
-    //        }
-    //        catch( ci::Exception &exc )
-    //        {
-    //            CI_LOG_E( "Shader load error: " << exc.what() );
-    //        }
+    gl::GlslProg::Format renderFormat;
+    try {
+        renderFormat.vertex( vertProg )
+        .fragment( code );
+
+        trialGlsl = gl::GlslProg::create( renderFormat );
+    } 	catch( ci::gl::GlslProgCompileExc &exc )
+    {
+        [wv setErrors:exc.what()];
+        CI_LOG_E( "Shader load error: " << exc.what() );
+        return;
+    }
+    catch( ci::Exception &exc )
+    {
+        CI_LOG_E( "Shader load error: " << exc.what() );
+        return;
+    }
+    
+    fboGlsl = trialGlsl;
     
 }
 

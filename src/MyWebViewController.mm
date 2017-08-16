@@ -163,6 +163,9 @@ std::string startCode;
     [self executeScript:[NSString stringWithFormat:@"editor.setOption('enableSnippets', %@);", NSStringFromBool(value)]];
 }
 
+/////////////////////////////////////////////
+//  Web View messages arrive here
+/////////////////////////////////////////////
 - (void)userContentController:(WKUserContentController *)userContentController
       didReceiveScriptMessage:(WKScriptMessage *)message
 {
@@ -192,7 +195,6 @@ std::string startCode;
 /////////////////////////////////////////////
 //  Cinder signal callback
 /////////////////////////////////////////////
-
 - (ci::signals::Signal<void(std::string)>*) ShaderSignal
 {
     return &shaderSignal;
@@ -202,13 +204,12 @@ std::string startCode;
 /////////////////////////////////////////////
 //  WKNavigationDelegate Callbacks
 /////////////////////////////////////////////
-
 - (void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation {
     [self setTextValue:startCode];
 }
 
 - (void)webView:(WKWebView *)webView didFailNavigation:(WKNavigation *)navigation withError:(NSError *)error {
-
+    NSLog(@"Disaster in webpage load");
 }
 
 @end
