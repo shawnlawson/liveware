@@ -40,6 +40,16 @@ function clearErrors () {
   editor.session.clearAnnotations()
 }
 
+function enlargeText () {
+  var pt = parseInt(editor.getFontSize().slice(0, -2))
+  editor.setFontSize(pt + 1 + 'pt')
+}
+
+function shrinkText () {
+  var pt = parseInt(editor.getFontSize().slice(0, -2))
+  if (pt - 1 > 0) { editor.setFontSize(pt - 1 + 'pt') }
+}
+
 /// /////////////////////////////////
 //  ACE launch
 /// /////////////////////////////////

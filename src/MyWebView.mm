@@ -153,12 +153,6 @@ std::string startCode;
      [NSString stringWithFormat:@"clearErrors();"]];
 }
 
-- (void) setTextSize:(int)size
-{
-  [self executeScript:
-   [NSString stringWithFormat:@"editor.setFontSize('%ddpx');",size]];
-}
-
 - (void) toggleAutoCompletion:(BOOL)value
 {
     [self executeScript:
@@ -207,7 +201,6 @@ std::string startCode;
     return &shaderSignal;
 }
 
-
 /////////////////////////////////////////////
 //  WKNavigationDelegate Callbacks
 /////////////////////////////////////////////
@@ -219,17 +212,30 @@ std::string startCode;
     NSLog(@"Disaster in webpage load");
 }
 
+/////////////////////////////////////////////
+//  NSMenu Callbacks
+/////////////////////////////////////////////
+- (IBAction)enlargeText:(id)sender
+{
+    [self executeScript:
+     [NSString stringWithFormat:@"enlargeText();"]];
+}
+
+- (IBAction)shrinkText:(id)sender
+{
+    [self executeScript:
+     [NSString stringWithFormat:@"shrinkText();"]];
+}
+
+//- (IBAction)tryFullScreen:(id)sender{
+//    //    ci::app::setFullScreen( ! ci::app::isFullScreen() );
+//
+//}
+
 @end
 
 
-//- (IBAction)changeItAll:(id)sender{
-//    
-//}
-//
-//- (IBAction)tryFullScreen:(id)sender{
-//    //    ci::app::setFullScreen( ! ci::app::isFullScreen() );
-//    
-//}
+
 //
 //- (BOOL)validateUserInterfaceItem:(id <NSValidatedUserInterfaceItem>)anItem
 //{

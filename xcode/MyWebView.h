@@ -22,12 +22,12 @@
 - (void) setErrors:(std::string)errors;
 - (void) clearErrors;
 
-- (void) setTextSize:(int)size;
 - (void) toggleAutoCompletion:(BOOL)value;
 - (void) toggleSnippets:(BOOL)value;
 // - (void) setMode ??
 // - (void) setTheme ??
-
+- (IBAction)enlargeText:(id)sender;
+- (IBAction)shrinkText:(id)sender;
 
 - (ci::signals::Signal<void(std::string)>*) ShaderSignal;
 

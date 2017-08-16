@@ -196,12 +196,12 @@
                         <items>
                             <menuItem title="Bigger" keyEquivalent="+" id="bqq-EU-qRr">
                                 <connections>
-                                    <action selector="changeItAll:" target="-1" id="TR0-Up-EOh"/>
+                                    <action selector="enlargeText:" target="-1" id="lhd-Ea-RqK"/>
                                 </connections>
                             </menuItem>
                             <menuItem title="Smaller" tag="4" keyEquivalent="-" id="i1d-Er-qST">
                                 <connections>
-                                    <action selector="makeTextSmaller:" target="-1" id="DWN-gH-MC5"/>
+                                    <action selector="shrinkText:" target="-1" id="fm9-lG-QYc"/>
                                 </connections>
                             </menuItem>
                         </items>
