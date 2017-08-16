@@ -74,10 +74,17 @@ public:
 
 void CinderProjectBasicApp::setup()
 {
-//general
+    /////////////////////////////////////////////
+    //  App defaults
+    /////////////////////////////////////////////
     gl::enableVerticalSync();
     setWindowSize(1280, 720);
-
+    NSArray *tl;
+    [[NSBundle mainBundle] loadNibNamed:@"MainMenuTest"
+                                  owner:[NSApplication sharedApplication]
+                        topLevelObjects:&tl];
+    
+    
     /////////////////////////////////////////////
     //  OpenGL
     /////////////////////////////////////////////

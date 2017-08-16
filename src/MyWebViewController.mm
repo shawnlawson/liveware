@@ -122,10 +122,15 @@ std::string startCode;
             
             [dict setValue:@(std::stoi(tokens[3]) -1)
                     forKey:@"row"];
-            [dict setValue:[NSString stringWithFormat:@"%s : %s",
-                            tokens[4].c_str(), tokens[5].c_str() ]
+            if (tokens.size() > 5) {
+                [dict setValue:[NSString stringWithFormat:@"%s : %s",
+                                tokens[4].c_str(), tokens[5].c_str() ]
+                        forKey:@"text"];
+            } else {
+                [dict setValue:[NSString stringWithFormat:@"%s",
+                            tokens[4].c_str() ]
                     forKey:@"text"];
-            
+            }
             [annotations addObject:dict];
         }
     }

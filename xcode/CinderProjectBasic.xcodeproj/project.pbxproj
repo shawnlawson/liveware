@@ -29,6 +29,7 @@
 		9951AB611F40D4770007F2A3 /* Osc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9951AAF51F40D4770007F2A3 /* Osc.cpp */; };
 		9951AB8C1F40D4950007F2A3 /* CoreMIDI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9951AB8B1F40D4950007F2A3 /* CoreMIDI.framework */; };
 		995E47DC1F3A5164009DD340 /* MyWebViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 995E47DB1F3A5164009DD340 /* MyWebViewController.mm */; };
+		9963DB961F44941E00569341 /* MainMenuTest.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9963DB951F44941E00569341 /* MainMenuTest.xib */; };
 		99E982051F366B930013A336 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 99E982041F366B930013A336 /* WebKit.framework */; };
 		99EBEB641F3E997200453241 /* AudioDrawUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 99EBEB631F3E997200453241 /* AudioDrawUtils.cpp */; };
 /* End PBXBuildFile section */
@@ -72,6 +73,7 @@
 		9951AB8B1F40D4950007F2A3 /* CoreMIDI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMIDI.framework; path = System/Library/Frameworks/CoreMIDI.framework; sourceTree = SDKROOT; };
 		995E47DB1F3A5164009DD340 /* MyWebViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = MyWebViewController.mm; path = ../src/MyWebViewController.mm; sourceTree = "<group>"; };
 		995E47DE1F3A559A009DD340 /* MyWebViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MyWebViewController.h; path = ../include/MyWebViewController.h; sourceTree = "<group>"; };
+		9963DB951F44941E00569341 /* MainMenuTest.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MainMenuTest.xib; sourceTree = "<group>"; };
 		99AFCD151F43187500F6A92E /* NSStringFromBool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NSStringFromBool.h; path = ../include/NSStringFromBool.h; sourceTree = "<group>"; };
 		99AFCD161F43193C00F6A92E /* Tokenize.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Tokenize.h; path = ../include/Tokenize.h; sourceTree = "<group>"; };
 		99E982041F366B930013A336 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
@@ -197,6 +199,7 @@
 				99F22F391F423DC20091620D /* render.vert */,
 				4A48FE7062534F0192F8A5FB /* CinderApp.icns */,
 				12C4C38655B54528977C7147 /* Info.plist */,
+				9963DB951F44941E00569341 /* MainMenuTest.xib */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -342,6 +345,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				51CA7AD9B7364030B35A1885 /* CinderApp.icns in Resources */,
+				9963DB961F44941E00569341 /* MainMenuTest.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
