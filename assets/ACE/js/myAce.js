@@ -1,48 +1,44 @@
+var Range = ace.require('ace/range').Range
 var mCompileTimer = null
 var mErrors = new Array()
 
 function sendShaderFromEditor () {
-  // window.webkit.messageHandlers.myApp.postMessage("that's some shit")
+  // window.webkit.messageHandlers.myApp.postMessage("that's something")
   var message = {}
   message.what = 'code'
   message.data = editor.getValue()
   window.webkit.messageHandlers.myApp.postMessage(message)
 }
 
-// function setLineErrors (result, lineOffset) {
-//   while (mErrors.length > 0) {
-//     var mark = mErrors.pop()
-//     editor.session.removeMarker(mark)
-//   }
+function setLineErrors (result, lineOffset, markers) {
+  clearErrors()
+  var tAnnotations = []
 
-//   editor.session.clearAnnotations()
+  for (var i = 0; result.length > i; ++i) {
+    var annotation = result[i]
+    // var lineOffset = getHeaderSize();
+    console.log(annotation)
+    if (markers === true) {
+      tAnnotations.push(annotation)
+    }
 
-//   if (result.mSuccess === false) {
-//     // var lineOffset = getHeaderSize();
-//     var lines = result.mInfo.match(/^.*((\r\n|\n|\r)|$)/gm)
-//     var tAnnotations = []
-//     for (var i = 0; i < lines.length; i++) {
-//       var parts = lines[i].split(':')
+    var id = editor.session.addMarker(new Range(annotation.row, 0, annotation.row, 1), 'errorHighlight', 'fullLine', false)
+    mErrors.push(id)
+  }
 
-//       if (parts.length === 5 || parts.length === 6) {
-//         var annotation = {}
-//         annotation.row = parseInt(parts[2]) - lineOffset
-//         annotation.text = parts[3] + ' : ' + parts[4]
-//         annotation.type = 'error'
+  if (markers === true) {
+    editor.session.setAnnotations(tAnnotations)
+  }
+}
 
-//         if (debugging) { tAnnotations.push(annotation) }
+function clearErrors () {
+  while (mErrors.length > 0) {
+    var mark = mErrors.pop()
+    editor.session.removeMarker(mark)
+  }
 
-//         var id = editor.session.addMarker(new Range(annotation.row, 0, annotation.row, 1), 'errorHighlight', 'fullLine', false)
-//         mErrors.push(id)
-//       }
-//     }
-
-//     if (debugging) {
-//       console.log(result.mInfo)
-//       editor.session.setAnnotations(tAnnotations)
-//     }
-//   }
-// }
+  editor.session.clearAnnotations()
+}
 
 /// /////////////////////////////////
 //  ACE launch

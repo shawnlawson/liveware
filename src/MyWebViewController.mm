@@ -120,7 +120,7 @@ std::string startCode;
                     @"Some error about something", @"text",
                                          nil];
             
-            [dict setValue:@(std::stoi(tokens[3]))
+            [dict setValue:@(std::stoi(tokens[3]) -1)
                     forKey:@"row"];
             [dict setValue:[NSString stringWithFormat:@"%s : %s",
                             tokens[4].c_str(), tokens[5].c_str() ]
@@ -139,12 +139,15 @@ std::string startCode;
         return;
     }
     NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-    NSString *js = [NSString stringWithFormat:@"editor.getSession().setAnnotations(%@);", jsonString];
+    NSString *js = [NSString stringWithFormat:@"setLineErrors(%@, 0, true);", jsonString];
     
     [self executeScript:js];
 }
 
-
+- (void) clearErrors {
+    [self executeScript:
+     [NSString stringWithFormat:@"clearErrors();"]];
+}
 
 - (void) setTextSize:(int)size
 {

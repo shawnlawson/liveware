@@ -72,12 +72,6 @@ public:
     
 };
 
-//OSC needs this
-CinderProjectBasicApp::CinderProjectBasicApp()
-: mReceiver( localPort )
-{
-}
-
 void CinderProjectBasicApp::setup()
 {
 //general
@@ -260,10 +254,12 @@ void CinderProjectBasicApp::shaderListener( std::string code) {
     }
     catch( ci::Exception &exc )
     {
+        [wv setErrors:exc.what()];
         CI_LOG_E( "Shader load error: " << exc.what() );
         return;
     }
     
+    [wv clearErrors];
     fboGlsl = trialGlsl;
     
 }
@@ -302,4 +298,11 @@ void CinderProjectBasicApp::midiListener( midi::Message msg )
     
 }
 
+/////////////////////////////////////////////
+//  OSC needs this constructor override
+/////////////////////////////////////////////
+CinderProjectBasicApp::CinderProjectBasicApp()
+: mReceiver( localPort )
+{
+}
 CINDER_APP( CinderProjectBasicApp, RendererGl )

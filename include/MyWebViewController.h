@@ -23,6 +23,7 @@
 - (NSString*) getTextValue;
 
 - (void) setErrors:(std::string)errors;
+- (void) clearErrors;
 
 - (void) setTextSize:(int)size;
 - (void) toggleAutoCompletion:(BOOL)value;
