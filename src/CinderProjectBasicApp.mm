@@ -3,6 +3,7 @@
 #include "cinder/gl/gl.h"
 #include "cinder/gl/GlslProg.h"
 #include "cinder/gl/Texture.h"
+#include "cinder/Text.h"
 #include "cinder/Utilities.h"
 #include "cinder/Log.h"
 #include "cinder/Timeline.h"
@@ -35,7 +36,6 @@ public:
     
     //MIDI
     void midiListener( midi::Message msg );
-    void midiThreadListener( midi::Message msg );
     midi::Input mInput;
     vector <int> notes;
     vector <int> cc;
@@ -54,6 +54,7 @@ public:
     
     SpectrumPlot					mSpectrumPlot;
     gl::TextureFontRef				mTextureFont;
+    Font                            mFont;
     
     //graphics
     void renderToFBO();
@@ -117,7 +118,8 @@ void CinderProjectBasicApp::setup()
     audioMidiTex = gl::Texture::create(audioSuface);
     audioMidiTex->setMinFilter(GL_LINEAR);
     audioMidiTex->setMagFilter(GL_LINEAR);
-
+    mFont = Font( "Fira Code", 12 );
+    mTextureFont = gl::TextureFont::create( mFont );
 
     
     /////////////////////////////////////////////
@@ -147,12 +149,7 @@ void CinderProjectBasicApp::setup()
         
         mInput.openPort(0);
         
-        // Connect midi signal to our callback function
-        // This connects to our main thread
         mInput.midiSignal.connect( [this](midi::Message msg){ midiListener( msg ); });
-        
-        // Optionally, this connects directly to the midi thread
-        mInput.midiThreadSignal.connect( [this](midi::Message msg){ midiThreadListener( msg ); });
     }
     
     for( int i = 0; i < 127; i++ )
@@ -172,6 +169,7 @@ void CinderProjectBasicApp::setup()
     mInputDeviceNode >> mMonitorSpectralNode;
     mInputDeviceNode->enable();
     ctx->enable();
+    mSpectrumPlot.enableBorder(false);
     
     /////////////////////////////////////////////
     //  Open Sound Control
@@ -207,7 +205,6 @@ void CinderProjectBasicApp::update()
     mMagSpectrum = mMonitorSpectralNode->getMagSpectrum();
     pingPong = (pingPong+1)%2;
     
-    
     for (int i=0; i< 1024; ++i) {
         GLubyte m = 0;
         if (i < 128) { //
@@ -227,18 +224,14 @@ void CinderProjectBasicApp::update()
         else mBands.w += b;
     }
     audioMidiTex->update(audioSuface);
-    mBands /= vec4(25600.0); //average across bands and scale down 
+    mBands /= vec4(25600.0); //average across bands and scale down
 
-    
     renderToFBO();
 }
 
 void CinderProjectBasicApp::renderToFBO()
 {
     CameraOrtho cam(0, 1280, 0, 720, -10, 10);
-//    CameraPersp cam( fbos[pingPong]->getWidth(), fbos[pingPong]->getHeight(), 60 );
-//    cam.setPerspective( 60, fbos[pingPong]->getAspectRatio(), 1, 1000 );
-//    cam.lookAt( vec3( 2.8f, 1.8f, -2.8f ), vec3( 0 ) );
     gl::ScopedViewport scpVp( ivec2( 0 ), fbos[pingPong]->getSize() );
     
     gl::ScopedTextureBind scpFboBind(fbos[(pingPong+1)%2]->getColorTexture(), 0);
@@ -261,7 +254,6 @@ void CinderProjectBasicApp::renderToFBO()
 
 void CinderProjectBasicApp::draw()
 {
-//    gl::setMatricesWindow( getWindowSize() );
     gl::clear( Color( 0, 0, 0 ) );
 
     auto tex0 = fbos[pingPong]->getTexture2d( GL_COLOR_ATTACHMENT0 );
@@ -269,8 +261,10 @@ void CinderProjectBasicApp::draw()
     
     gl::draw(audioMidiTex, Rectf( 0, 0, 1024, 100 ));
     
-    mSpectrumPlot.setBounds( Rectf( 10, getWindowHeight()-60, 100, getWindowHeight() - 10 ) );
+    mSpectrumPlot.setBounds( Rectf( 60, getWindowHeight()-60, 160, getWindowHeight() - 10 ) );
     mSpectrumPlot.draw( mMagSpectrum );
+    gl::color( Color::white() );
+    mTextureFont->drawString( toString( floor(getAverageFps()) ), vec2( 10, getWindowHeight() - mTextureFont->getDescent()-10 ) );
 //this causes things to not render correctly in the spectal fft
 //        drawAudioBuffer(mMonitorSpectralNode->getBuffer(),
 //                        Rectf( 110, getWindowHeight()-60, 210, getWindowHeight() - 10 ));
@@ -315,11 +309,6 @@ void CinderProjectBasicApp::mouseDown( MouseEvent event )
 void CinderProjectBasicApp::keyDown( KeyEvent event )
 {
     
-}
-
-void CinderProjectBasicApp::midiThreadListener( midi::Message msg )
-{
-    // This will be called from a background midi thread
 }
 
 void CinderProjectBasicApp::midiListener( midi::Message msg )
