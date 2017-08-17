@@ -286,13 +286,13 @@ void CinderProjectBasicApp::shaderListener( std::string code) {
     } 	catch( ci::gl::GlslProgCompileExc &exc )
     {
         [wv setErrors:exc.what()];
-        CI_LOG_E( "Shader load error: " << exc.what() );
+//        CI_LOG_E( "Shader load error: " << exc.what() );
         return;
     }
     catch( ci::Exception &exc )
     {
         [wv setErrors:exc.what()];
-        CI_LOG_E( "Shader load error: " << exc.what() );
+//        CI_LOG_E( "Shader load error: " << exc.what() );
         return;
     }
     

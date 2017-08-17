@@ -100,30 +100,36 @@ std::string startCode;
 
 - (void) setErrors:(std::string)errors
 {
-    //FRAGMENT: ERROR: 0:16: 'FragColor' : syntax error: syntax error
     NSMutableArray * annotations = [NSMutableArray array];
     std::istringstream f(errors);
     std::string line;
-    
+//    std::cout << errors << std::endl;
     while(std::getline(f, line))
     {
         std::vector<std::string> tokens;
         Tokenize(line, tokens, ":");
         
+        //only look if there is something
         if (tokens.size() > 3)
         {
             NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithObjectsAndKeys:
                     [NSNumber numberWithInt:0], @"column",
-                    [NSNumber numberWithInt:0], @"row",
+                    @"0", @"row",
                     @"error", @"type",
                     @"Some error about something", @"text",
                                          nil];
-            try{
-            //[dict setValue:@(std::stoi(tokens[3]) -1)
-           //         forKey:@"row"];
-            }catch (ci::Exception &exc) {
-              //  NSLog(@"%s", tokens[3].c_str());
+            //first error always tells where
+            if (0 == tokens[0].compare("FRAGMENT")) {
+                [dict setValue:@(std::stoi(tokens[3]) -1)
+                        forKey:@"row"];
+            //if multiple then token[0] is dropped
+            } else {
+                [dict setValue:@(std::stoi(tokens[2]) -1)
+                        forKey:@"row"];
+                
             }
+            
+            //account for all lengths of information
             if (tokens.size() > 5) {
                 [dict setValue:[NSString stringWithFormat:@"%s : %s",
                                 tokens[4].c_str(), tokens[5].c_str() ]
