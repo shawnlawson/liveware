@@ -1,4 +1,4 @@
-#version 400
+#version 150
 
 in vec4 ciPosition;
 in vec2	ciTexCoord0;

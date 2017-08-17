@@ -2,6 +2,7 @@
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 #include "cinder/gl/GlslProg.h"
+#include "cinder/gl/Texture.h"
 #include "cinder/Utilities.h"
 #include "cinder/Log.h"
 #include "cinder/Timeline.h"
@@ -40,7 +41,6 @@ public:
     vector <int> cc;
     std::string status;
     
-    
     //OSC - can be multithreaded if needed
     ivec2	mCurrentCirclePos; //from example, could be anything
     osc::ReceiverUdp mReceiver;
@@ -62,7 +62,9 @@ public:
     
     int	FBO_WIDTH = 1280, FBO_HEIGHT = 720;
     int pingPong = 0;
-    
+    gl::TextureRef audioMidiTex;
+    Surface8u audioSuface;
+
     //editor
     void shaderListener( std::string code);
     MyWebView *wv;
@@ -88,7 +90,7 @@ void CinderProjectBasicApp::setup()
     //  OpenGL
     /////////////////////////////////////////////
     auto format = gl::Fbo::Format()
-    .samples( 4 ) // uncomment this to enable 4x antialiasing
+//    .samples( 4 ) // uncomment this to enable 4x antialiasing
     .attachment( GL_COLOR_ATTACHMENT0, gl::Texture2d::create( FBO_WIDTH, FBO_HEIGHT ) );
 //    .attachment( GL_COLOR_ATTACHMENT1, gl::Texture2d::create( FBO_WIDTH, FBO_HEIGHT ) );
     fbos[0] = gl::Fbo::create( FBO_WIDTH, FBO_HEIGHT, format);
@@ -109,6 +111,13 @@ void CinderProjectBasicApp::setup()
     {
         CI_LOG_E( "Shader load error: " << exc.what() );
     }
+    
+    audioSuface = Surface8u(1024, 1, false);
+    audioMidiTex = gl::Texture::create(audioSuface);
+    audioMidiTex->setMinFilter(GL_LINEAR);
+    audioMidiTex->setMagFilter(GL_LINEAR);
+
+
     
     /////////////////////////////////////////////
     //  Web View
@@ -190,23 +199,29 @@ void CinderProjectBasicApp::setup()
 
 }
 
-void CinderProjectBasicApp::mouseDown( MouseEvent event )
-{
-    
-}
 
-void CinderProjectBasicApp::keyDown( KeyEvent event )
-{
-    
-}
 
 void CinderProjectBasicApp::update()
 {
-    pingPong = (pingPong+1)%2;
-    fboGlsl->uniform("time", (float)getElapsedSeconds());
-    renderToFBO();
-    
     mMagSpectrum = mMonitorSpectralNode->getMagSpectrum();
+    pingPong = (pingPong+1)%2;
+    
+    
+    for (int i=0; i< 1024; ++i) {
+        GLubyte m = 0;
+        if (i < 128) { //
+            m = notes[i] * 2;
+        } else if (i < 256) {
+            m = cc[i-128] * 2;
+        }
+        audioSuface.setPixel(ivec2(i, 0),
+                             Color8u((GLubyte)( audio::linearToDecibel( mMagSpectrum[i] ) *2.55),
+                                     0, //unused at the moment
+                                     m));
+    }
+    audioMidiTex->update(audioSuface);
+    
+    renderToFBO();
 }
 
 void CinderProjectBasicApp::renderToFBO()
@@ -215,29 +230,42 @@ void CinderProjectBasicApp::renderToFBO()
 //    CameraPersp cam( fbos[pingPong]->getWidth(), fbos[pingPong]->getHeight(), 60 );
 //    cam.setPerspective( 60, fbos[pingPong]->getAspectRatio(), 1, 1000 );
 //    cam.lookAt( vec3( 2.8f, 1.8f, -2.8f ), vec3( 0 ) );
+    gl::ScopedViewport scpVp( ivec2( 0 ), fbos[pingPong]->getSize() );
+    
+    gl::ScopedTextureBind scpFboBind(fbos[(pingPong+1)%2]->getColorTexture(), 0);
+    gl::ScopedTextureBind scpAudBind(audioMidiTex, 1);
     
     gl::ScopedFramebuffer  scpFbo( fbos[pingPong] );
-    gl::clear();
-    gl::ScopedTextureBind scpFboBind(fbos[(pingPong+1)%2]->getColorTexture());
-
-    gl::ScopedViewport scpVp( ivec2( 0 ), fbos[pingPong]->getSize() );
+    gl::ScopedGlslProg scpShader( fboGlsl );
     
     gl::ScopedMatrices matScope;
     gl::setMatrices( cam );
     
-    gl::ScopedGlslProg scpShader( fboGlsl );
+    fboGlsl->uniform("uRenderMap", 0);
+    fboGlsl->uniform("uAudioMap", 1);
+    fboGlsl->uniform("time", (float)getElapsedSeconds());
+    fboGlsl->uniform("bands", )
+    
+    
     gl::drawSolidRect(Rectf(vec2(0), fbos[pingPong]->getSize()));
 }
 
 void CinderProjectBasicApp::draw()
 {
-    	gl::clear( Color( 0, 0, 0 ) );
+//    gl::setMatricesWindow( getWindowSize() );
+    gl::clear( Color( 0, 0, 0 ) );
 
     auto tex0 = fbos[pingPong]->getTexture2d( GL_COLOR_ATTACHMENT0 );
     gl::draw( tex0, tex0->getBounds(), Rectf(0, 0, getWindowWidth(), getWindowHeight()) );
     
+    gl::draw(audioMidiTex, Rectf( 0, 0, 1024, 100 ));
+    
     mSpectrumPlot.setBounds( Rectf( 10, getWindowHeight()-60, 100, getWindowHeight() - 10 ) );
     mSpectrumPlot.draw( mMagSpectrum );
+//this causes things to not render correctly in the spectal fft
+//        drawAudioBuffer(mMonitorSpectralNode->getBuffer(),
+//                        Rectf( 110, getWindowHeight()-60, 210, getWindowHeight() - 10 ));
+
     
 }
 
@@ -267,6 +295,16 @@ void CinderProjectBasicApp::shaderListener( std::string code) {
     
     [wv clearErrors];
     fboGlsl = trialGlsl;
+    
+}
+
+void CinderProjectBasicApp::mouseDown( MouseEvent event )
+{
+    
+}
+
+void CinderProjectBasicApp::keyDown( KeyEvent event )
+{
     
 }
 

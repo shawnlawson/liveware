@@ -24,7 +24,7 @@ std::string startCode;
      addScriptMessageHandler:self
                         name:@"myApp"];
 
-    [self   initWithFrame:NSMakeRect(0, 0, 640, 720)
+    [self   initWithFrame:NSMakeRect(0, 0, 1280, 720)
                     configuration:theConfiguration];
     
     self.autoresizingMask = NSViewHeightSizable;
@@ -110,7 +110,7 @@ std::string startCode;
         std::vector<std::string> tokens;
         Tokenize(line, tokens, ":");
         
-        if (tokens.size() > 4)
+        if (tokens.size() > 3)
         {
             NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithObjectsAndKeys:
                     [NSNumber numberWithInt:0], @"column",
@@ -118,17 +118,25 @@ std::string startCode;
                     @"error", @"type",
                     @"Some error about something", @"text",
                                          nil];
-            
-            [dict setValue:@(std::stoi(tokens[3]) -1)
-                    forKey:@"row"];
+            try{
+            //[dict setValue:@(std::stoi(tokens[3]) -1)
+           //         forKey:@"row"];
+            }catch (ci::Exception &exc) {
+              //  NSLog(@"%s", tokens[3].c_str());
+            }
             if (tokens.size() > 5) {
                 [dict setValue:[NSString stringWithFormat:@"%s : %s",
                                 tokens[4].c_str(), tokens[5].c_str() ]
                         forKey:@"text"];
-            } else {
+            } else if (tokens.size() > 4) {
                 [dict setValue:[NSString stringWithFormat:@"%s",
                             tokens[4].c_str() ]
                     forKey:@"text"];
+            }
+            else {
+                [dict setValue:[NSString stringWithFormat:@"%s",
+                                tokens[3].c_str() ]
+                        forKey:@"text"];
             }
             [annotations addObject:dict];
         }
@@ -177,6 +185,7 @@ std::string startCode;
     {
 //        NSLog(@"%@", sentData[@"data"]);
         shaderSignal.emit( std::string([sentData[@"data"] UTF8String]) );
+//        ci::app::App::get()->dispatchAsync( [this, msg](){ shaderSignal.emit( msg ); });
     }
     
 //    NSLog(@"Message received: %@", sentData);
