@@ -50,6 +50,7 @@ public:
     audio::InputDeviceNodeRef		mInputDeviceNode;
     audio::MonitorSpectralNodeRef	mMonitorSpectralNode;
     vector<float>					mMagSpectrum;
+    vec4                            mBands;
     
     SpectrumPlot					mSpectrumPlot;
     gl::TextureFontRef				mTextureFont;
@@ -214,12 +215,20 @@ void CinderProjectBasicApp::update()
         } else if (i < 256) {
             m = cc[i-128] * 2;
         }
+        
+        float b = audio::linearToDecibel( mMagSpectrum[i] );
         audioSuface.setPixel(ivec2(i, 0),
-                             Color8u((GLubyte)( audio::linearToDecibel( mMagSpectrum[i] ) *2.55),
+                             Color8u(b *2.55, //scale up to texture depth
                                      0, //unused at the moment
                                      m));
+        if (i < 256) mBands.x += b;
+        else if (i < 512) mBands.y += b;
+        else if (i < 768) mBands.z += b;
+        else mBands.w += b;
     }
     audioMidiTex->update(audioSuface);
+    mBands /= vec4(25600.0); //average across bands and scale down 
+
     
     renderToFBO();
 }
@@ -244,7 +253,7 @@ void CinderProjectBasicApp::renderToFBO()
     fboGlsl->uniform("uRenderMap", 0);
     fboGlsl->uniform("uAudioMap", 1);
     fboGlsl->uniform("time", (float)getElapsedSeconds());
-    fboGlsl->uniform("bands", )
+    fboGlsl->uniform("bands", mBands);
     
     
     gl::drawSolidRect(Rectf(vec2(0), fbos[pingPong]->getSize()));
