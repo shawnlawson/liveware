@@ -8,13 +8,15 @@
 #include "cinder/Log.h"
 #include "cinder/Timeline.h"
 #include "cinder/audio/audio.h"
+#include "cinder/params/Params.h"
 
 //Blocks
-#include "cinder/osc/Osc.h"
+
 #include "MidiHeaders.h"
 
 //User
-#import "MyWebView.h"
+#include "MyNSScrollView.h"
+#include "MyNSTextView.h"
 #include "AudioDrawUtils.h"
 
 
@@ -22,12 +24,8 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-//UDP only, see example if TCP required
-const uint16_t localPort = 10001;
-
 class CinderProjectBasicApp : public App {
 public:
-    CinderProjectBasicApp(); //OSC needs this
     void setup() override;
     void mouseDown( MouseEvent event ) override;
     void keyDown( KeyEvent event ) override;
@@ -40,11 +38,6 @@ public:
     vector <int> notes;
     vector <int> cc;
     std::string status;
-    
-    //OSC - can be multithreaded if needed
-    ivec2	mCurrentCirclePos; //from example, could be anything
-    osc::ReceiverUdp mReceiver;
-    std::map<uint64_t, asio::ip::udp::endpoint> mConnections;
     
     //audio
     audio::InputDeviceNodeRef		mInputDeviceNode;
@@ -69,11 +62,14 @@ public:
 
     //editor
     void shaderListener( std::string code);
-    MyWebView *wv;
     NSView * theView;
     bool loadedShader = false;
+    MyNSTextView *tv;
+    NSScrollView *sv;
     
-    
+    params::InterfaceGlRef	mParams;
+    vector<string>			mEnumNames;
+    int						mEnumSelection;
 };
 
 void CinderProjectBasicApp::setup()
@@ -84,7 +80,7 @@ void CinderProjectBasicApp::setup()
     gl::enableVerticalSync();
     setWindowSize(1280, 720);
     NSArray *tl;
-    [[NSBundle mainBundle] loadNibNamed:@"MainMenuTest"
+    [[NSBundle mainBundle] loadNibNamed:@"MyMainMenu"
                                   owner:[NSApplication sharedApplication]
                         topLevelObjects:&tl];
     
@@ -122,21 +118,18 @@ void CinderProjectBasicApp::setup()
     mTextureFont = gl::TextureFont::create( mFont );
 
     
-    /////////////////////////////////////////////
-    //  Web View
-    /////////////////////////////////////////////
-    wv = [MyWebView alloc];
-    [wv setupWithPath:[NSString stringWithUTF8String:
-                       getAssetPath("ACE/index.html").c_str()]];
-    [wv setStartCode:fragProg];
+    // Create the interface and give it a name.
+    mParams = params::InterfaceGl::create( getWindow(), "App parameters", toPixels( ivec2( 200, 400 ) ) );
+    mParams->setPosition(ivec2(500, 10));
+    // Add an enum (list) selector.
+    mEnumSelection = 0;
+    mEnumNames = { "apple", "banana", "orange" };
     
-    //attaching to cinder view, attaching to window view doesn't work
-    theView = [[NSApp mainWindow].contentView subviews][0];
-    [theView addSubview:wv];
-    
-    //callback from webview when shader code changes
-    wv.ShaderSignal->connect([this](std::string code) { shaderListener( code ); });
-    
+    mParams->addParam( "an enum", mEnumNames, &mEnumSelection )
+    .keyDecr( "[" )
+    .keyIncr( "]" )
+    .updateFn( [this] { console() << "enum updated: " << mEnumNames[mEnumSelection] << endl; } );
+
     
 /////////////////MIDI
     mInput.listPorts();
@@ -172,30 +165,21 @@ void CinderProjectBasicApp::setup()
     mSpectrumPlot.enableBorder(false);
     
     /////////////////////////////////////////////
-    //  Open Sound Control
+    //  Text View
     /////////////////////////////////////////////
-    mReceiver.setListener( "/mousemove/1",
-                          [&]( const osc::Message &msg ){
-                              mCurrentCirclePos.x = msg[0].int32();
-                              mCurrentCirclePos.y = msg[1].int32();
-                          });
-    try {
-        mReceiver.bind();
-    }
-    catch( const osc::Exception &ex ) {
-        CI_LOG_E( "Error binding: " << ex.what() << " val: " << ex.value() );
-        quit();
-    }
-    mReceiver.listen(
-             []( asio::error_code error, asio::ip::udp::endpoint endpoint ) -> bool {
-                 if( error ) {
-                     CI_LOG_E( "Error Listening: " << error.message() << " val: " << error.value() << " endpoint: " << endpoint );
-                     return false;
-                 }
-                 else
-                     return true;
-             });
-
+    NSUInteger index = [tl indexOfObjectPassingTest:^BOOL (id obj, NSUInteger idx, BOOL *stop) {
+        return [obj isKindOfClass:[NSScrollView class]];
+    }];
+    sv = tl[index];
+    tv = (MyNSTextView*)[sv documentView];
+    [tv assignShader:fragProg];
+    
+    //callback from webview when shader code changes
+    tv.ShaderSignal->connect([this](std::string code) { shaderListener( code ); });
+    
+    //attaching to cinder view, attaching to window view doesn't work
+    theView = [[NSApp mainWindow].contentView subviews][0];
+    [theView addSubview:sv];
 }
 
 
@@ -261,15 +245,16 @@ void CinderProjectBasicApp::draw()
     
     gl::draw(audioMidiTex, Rectf( 0, 0, 1024, 100 ));
     
-    mSpectrumPlot.setBounds( Rectf( 60, getWindowHeight()-60, 160, getWindowHeight() - 10 ) );
+    mSpectrumPlot.setBounds( Rectf( 110, getWindowHeight()-60, 210, getWindowHeight() - 10 ) );
     mSpectrumPlot.draw( mMagSpectrum );
     gl::color( Color::white() );
-    mTextureFont->drawString( toString( floor(getAverageFps()) ), vec2( 10, getWindowHeight() - mTextureFont->getDescent()-10 ) );
+    mTextureFont->drawString( toString( floor(getAverageFps()) ), vec2( 60, getWindowHeight() - mTextureFont->getDescent()-10 ) );
 //this causes things to not render correctly in the spectal fft
 //        drawAudioBuffer(mMonitorSpectralNode->getBuffer(),
 //                        Rectf( 110, getWindowHeight()-60, 210, getWindowHeight() - 10 ));
 
-    
+    // Draw the interface
+    mParams->draw();
 }
 
 void CinderProjectBasicApp::shaderListener( std::string code) {
@@ -285,18 +270,18 @@ void CinderProjectBasicApp::shaderListener( std::string code) {
         trialGlsl = gl::GlslProg::create( renderFormat );
     } 	catch( ci::gl::GlslProgCompileExc &exc )
     {
-        [wv setErrors:exc.what()];
+//        [wv setErrors:exc.what()];
 //        CI_LOG_E( "Shader load error: " << exc.what() );
         return;
     }
     catch( ci::Exception &exc )
     {
-        [wv setErrors:exc.what()];
+//        [wv setErrors:exc.what()];
 //        CI_LOG_E( "Shader load error: " << exc.what() );
         return;
     }
     
-    [wv clearErrors];
+
     fboGlsl = trialGlsl;
     
 }
@@ -340,11 +325,5 @@ void CinderProjectBasicApp::midiListener( midi::Message msg )
     
 }
 
-/////////////////////////////////////////////
-//  OSC needs this constructor override
-/////////////////////////////////////////////
-CinderProjectBasicApp::CinderProjectBasicApp()
-: mReceiver( localPort )
-{
-}
+
 CINDER_APP( CinderProjectBasicApp, RendererGl )

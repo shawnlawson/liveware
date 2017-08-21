@@ -20,16 +20,17 @@
 		51CA7AD9B7364030B35A1885 /* CinderApp.icns in Resources */ = {isa = PBXBuildFile; fileRef = 4A48FE7062534F0192F8A5FB /* CinderApp.icns */; };
 		5323E6B20EAFCA74003A9687 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B10EAFCA74003A9687 /* CoreVideo.framework */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
-		99367D161F428BAF00936572 /* NSString+EscapeForJavaScript.m in Sources */ = {isa = PBXBuildFile; fileRef = 99367D151F428BAF00936572 /* NSString+EscapeForJavaScript.m */; };
+		992BDE0F1F4AF23D001BDFBC /* MyLineNumberView.m in Sources */ = {isa = PBXBuildFile; fileRef = 992BDE0C1F4AF23D001BDFBC /* MyLineNumberView.m */; };
+		992BDE101F4AF23D001BDFBC /* MyNSScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = 992BDE0D1F4AF23D001BDFBC /* MyNSScrollView.m */; };
+		992BDE111F4AF23D001BDFBC /* MyNSTextView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 992BDE0E1F4AF23D001BDFBC /* MyNSTextView.mm */; };
+		992BDE161F4AF8B6001BDFBC /* MyMainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 992BDE151F4AF8B5001BDFBC /* MyMainMenu.xib */; };
+		992BDE191F4B0C77001BDFBC /* SourceTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 992BDE181F4B0C77001BDFBC /* SourceTextView.m */; };
 		9951A9FC1F40D46E0007F2A3 /* RtMidi.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9951A9BB1F40D46D0007F2A3 /* RtMidi.cpp */; };
 		9951AA171F40D46E0007F2A3 /* MidiHub.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9951A9ED1F40D46E0007F2A3 /* MidiHub.cpp */; };
 		9951AA181F40D46E0007F2A3 /* MidiIn.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9951A9EE1F40D46E0007F2A3 /* MidiIn.cpp */; };
 		9951AA191F40D46E0007F2A3 /* MidiMessage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9951A9EF1F40D46E0007F2A3 /* MidiMessage.cpp */; };
 		9951AA1A1F40D46E0007F2A3 /* MidiOut.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9951A9F01F40D46E0007F2A3 /* MidiOut.cpp */; };
-		9951AB611F40D4770007F2A3 /* Osc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9951AAF51F40D4770007F2A3 /* Osc.cpp */; };
 		9951AB8C1F40D4950007F2A3 /* CoreMIDI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9951AB8B1F40D4950007F2A3 /* CoreMIDI.framework */; };
-		995E47DC1F3A5164009DD340 /* MyWebView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 995E47DB1F3A5164009DD340 /* MyWebView.mm */; };
-		9963DB961F44941E00569341 /* MainMenuTest.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9963DB951F44941E00569341 /* MainMenuTest.xib */; };
 		99E982051F366B930013A336 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 99E982041F366B930013A336 /* WebKit.framework */; };
 		99EBEB641F3E997200453241 /* AudioDrawUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 99EBEB631F3E997200453241 /* AudioDrawUtils.cpp */; };
 /* End PBXBuildFile section */
@@ -46,16 +47,21 @@
 		00B995591B128DF400A5C623 /* IOSurface.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOSurface.framework; path = System/Library/Frameworks/IOSurface.framework; sourceTree = SDKROOT; };
 		02FAB0FF541A4FECB8818EDB /* CinderProjectBasicApp.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = CinderProjectBasicApp.mm; path = ../src/CinderProjectBasicApp.mm; sourceTree = "<group>"; };
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
-		12C4C38655B54528977C7147 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		4442529699194DE2A42C0BAF /* Resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Resources.h; path = ../include/Resources.h; sourceTree = "<group>"; };
 		4A48FE7062534F0192F8A5FB /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = CinderApp.icns; path = ../resources/CinderApp.icns; sourceTree = "<group>"; };
 		5323E6B10EAFCA74003A9687 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = /System/Library/Frameworks/CoreVideo.framework; sourceTree = "<absolute>"; };
 		8D1107320486CEB800E47090 /* CinderProjectBasic.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CinderProjectBasic.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		991EA6E01F44D6F2006570D6 /* MyWebView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MyWebView.h; sourceTree = "<group>"; };
-		99367D141F428BA500936572 /* NSString+EscapeForJavaScript.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSString+EscapeForJavaScript.h"; path = "../include/NSString+EscapeForJavaScript.h"; sourceTree = "<group>"; };
-		99367D151F428BAF00936572 /* NSString+EscapeForJavaScript.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSString+EscapeForJavaScript.m"; path = "../src/NSString+EscapeForJavaScript.m"; sourceTree = "<group>"; };
+		992BDE0C1F4AF23D001BDFBC /* MyLineNumberView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MyLineNumberView.m; path = ../src/MyLineNumberView.m; sourceTree = "<group>"; };
+		992BDE0D1F4AF23D001BDFBC /* MyNSScrollView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MyNSScrollView.m; path = ../src/MyNSScrollView.m; sourceTree = "<group>"; };
+		992BDE0E1F4AF23D001BDFBC /* MyNSTextView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = MyNSTextView.mm; path = ../src/MyNSTextView.mm; sourceTree = "<group>"; };
+		992BDE121F4AF24C001BDFBC /* MyLineNumberView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MyLineNumberView.h; path = ../include/MyLineNumberView.h; sourceTree = "<group>"; };
+		992BDE131F4AF24C001BDFBC /* MyNSScrollView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MyNSScrollView.h; path = ../include/MyNSScrollView.h; sourceTree = "<group>"; };
+		992BDE141F4AF24C001BDFBC /* MyNSTextView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MyNSTextView.h; path = ../include/MyNSTextView.h; sourceTree = "<group>"; };
+		992BDE151F4AF8B5001BDFBC /* MyMainMenu.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = MyMainMenu.xib; path = ../../CinderProjectswift/resources/MyMainMenu.xib; sourceTree = "<group>"; };
+		992BDE171F4B0C77001BDFBC /* SourceTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SourceTextView.h; path = "../../SourceTextView-master/Source/SourceTextView.h"; sourceTree = "<group>"; };
+		992BDE181F4B0C77001BDFBC /* SourceTextView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SourceTextView.m; path = "../../SourceTextView-master/Source/SourceTextView.m"; sourceTree = "<group>"; };
 		9951A9B31F40D46D0007F2A3 /* MidiConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MidiConstants.h; sourceTree = "<group>"; };
 		9951A9B41F40D46D0007F2A3 /* MidiExceptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MidiExceptions.h; sourceTree = "<group>"; };
 		9951A9B51F40D46D0007F2A3 /* MidiHeaders.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MidiHeaders.h; sourceTree = "<group>"; };
@@ -69,13 +75,7 @@
 		9951A9EE1F40D46E0007F2A3 /* MidiIn.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MidiIn.cpp; sourceTree = "<group>"; };
 		9951A9EF1F40D46E0007F2A3 /* MidiMessage.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MidiMessage.cpp; sourceTree = "<group>"; };
 		9951A9F01F40D46E0007F2A3 /* MidiOut.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MidiOut.cpp; sourceTree = "<group>"; };
-		9951AAF51F40D4770007F2A3 /* Osc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Osc.cpp; sourceTree = "<group>"; };
-		9951AAF61F40D4770007F2A3 /* Osc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Osc.h; sourceTree = "<group>"; };
 		9951AB8B1F40D4950007F2A3 /* CoreMIDI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMIDI.framework; path = System/Library/Frameworks/CoreMIDI.framework; sourceTree = SDKROOT; };
-		995E47DB1F3A5164009DD340 /* MyWebView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = MyWebView.mm; path = ../src/MyWebView.mm; sourceTree = "<group>"; };
-		9963DB951F44941E00569341 /* MainMenuTest.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MainMenuTest.xib; sourceTree = "<group>"; };
-		99AFCD151F43187500F6A92E /* NSStringFromBool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NSStringFromBool.h; path = ../include/NSStringFromBool.h; sourceTree = "<group>"; };
-		99AFCD161F43193C00F6A92E /* Tokenize.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Tokenize.h; path = ../include/Tokenize.h; sourceTree = "<group>"; };
 		99E982041F366B930013A336 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 		99EBEB621F3E997200453241 /* AudioDrawUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AudioDrawUtils.h; path = ../include/AudioDrawUtils.h; sourceTree = "<group>"; };
 		99EBEB631F3E997200453241 /* AudioDrawUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AudioDrawUtils.cpp; path = ../src/AudioDrawUtils.cpp; sourceTree = "<group>"; };
@@ -111,7 +111,6 @@
 		01B97315FEAEA392516A2CEA /* Blocks */ = {
 			isa = PBXGroup;
 			children = (
-				9951AA201F40D4760007F2A3 /* OSC */,
 				9951A9AD1F40D46D0007F2A3 /* MIDI2 */,
 			);
 			name = Blocks;
@@ -120,9 +119,12 @@
 		080E96DDFE201D6D7F000001 /* Source */ = {
 			isa = PBXGroup;
 			children = (
-				99367D151F428BAF00936572 /* NSString+EscapeForJavaScript.m */,
+				992BDE171F4B0C77001BDFBC /* SourceTextView.h */,
+				992BDE181F4B0C77001BDFBC /* SourceTextView.m */,
+				992BDE0C1F4AF23D001BDFBC /* MyLineNumberView.m */,
+				992BDE0D1F4AF23D001BDFBC /* MyNSScrollView.m */,
+				992BDE0E1F4AF23D001BDFBC /* MyNSTextView.mm */,
 				99EBEB631F3E997200453241 /* AudioDrawUtils.cpp */,
-				995E47DB1F3A5164009DD340 /* MyWebView.mm */,
 				02FAB0FF541A4FECB8818EDB /* CinderProjectBasicApp.mm */,
 			);
 			name = Source;
@@ -181,13 +183,12 @@
 		29B97315FDCFA39411CA2CEA /* Headers */ = {
 			isa = PBXGroup;
 			children = (
-				99AFCD161F43193C00F6A92E /* Tokenize.h */,
-				99AFCD151F43187500F6A92E /* NSStringFromBool.h */,
-				99367D141F428BA500936572 /* NSString+EscapeForJavaScript.h */,
+				992BDE121F4AF24C001BDFBC /* MyLineNumberView.h */,
+				992BDE131F4AF24C001BDFBC /* MyNSScrollView.h */,
+				992BDE141F4AF24C001BDFBC /* MyNSTextView.h */,
 				99EBEB621F3E997200453241 /* AudioDrawUtils.h */,
 				4442529699194DE2A42C0BAF /* Resources.h */,
 				BF3BC0CF9B3544B0B72671CE /* CinderProjectBasic_Prefix.pch */,
-				991EA6E01F44D6F2006570D6 /* MyWebView.h */,
 			);
 			name = Headers;
 			sourceTree = "<group>";
@@ -195,11 +196,10 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				992BDE151F4AF8B5001BDFBC /* MyMainMenu.xib */,
 				99F22F381F423DC20091620D /* render.frag */,
 				99F22F391F423DC20091620D /* render.vert */,
 				4A48FE7062534F0192F8A5FB /* CinderApp.icns */,
-				12C4C38655B54528977C7147 /* Info.plist */,
-				9963DB951F44941E00569341 /* MainMenuTest.xib */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -258,40 +258,6 @@
 			path = src;
 			sourceTree = "<group>";
 		};
-		9951AA201F40D4760007F2A3 /* OSC */ = {
-			isa = PBXGroup;
-			children = (
-				9951AAF21F40D4770007F2A3 /* src */,
-			);
-			name = OSC;
-			path = ../../../Downloads/cinder_0.9.1_mac/blocks/OSC;
-			sourceTree = "<group>";
-		};
-		9951AAF21F40D4770007F2A3 /* src */ = {
-			isa = PBXGroup;
-			children = (
-				9951AAF31F40D4770007F2A3 /* cinder */,
-			);
-			path = src;
-			sourceTree = "<group>";
-		};
-		9951AAF31F40D4770007F2A3 /* cinder */ = {
-			isa = PBXGroup;
-			children = (
-				9951AAF41F40D4770007F2A3 /* osc */,
-			);
-			path = cinder;
-			sourceTree = "<group>";
-		};
-		9951AAF41F40D4770007F2A3 /* osc */ = {
-			isa = PBXGroup;
-			children = (
-				9951AAF51F40D4770007F2A3 /* Osc.cpp */,
-				9951AAF61F40D4770007F2A3 /* Osc.h */,
-			);
-			path = osc;
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -345,7 +311,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				51CA7AD9B7364030B35A1885 /* CinderApp.icns in Resources */,
-				9963DB961F44941E00569341 /* MainMenuTest.xib in Resources */,
+				992BDE161F4AF8B6001BDFBC /* MyMainMenu.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -357,14 +323,15 @@
 			buildActionMask = 2147483647;
 			files = (
 				9951A9FC1F40D46E0007F2A3 /* RtMidi.cpp in Sources */,
-				99367D161F428BAF00936572 /* NSString+EscapeForJavaScript.m in Sources */,
-				9951AB611F40D4770007F2A3 /* Osc.cpp in Sources */,
+				992BDE0F1F4AF23D001BDFBC /* MyLineNumberView.m in Sources */,
 				9951AA191F40D46E0007F2A3 /* MidiMessage.cpp in Sources */,
+				992BDE191F4B0C77001BDFBC /* SourceTextView.m in Sources */,
 				99EBEB641F3E997200453241 /* AudioDrawUtils.cpp in Sources */,
 				2EA9E40767FF4E2E94793C12 /* CinderProjectBasicApp.mm in Sources */,
 				9951AA181F40D46E0007F2A3 /* MidiIn.cpp in Sources */,
-				995E47DC1F3A5164009DD340 /* MyWebView.mm in Sources */,
+				992BDE101F4AF23D001BDFBC /* MyNSScrollView.m in Sources */,
 				9951AA171F40D46E0007F2A3 /* MidiHub.cpp in Sources */,
+				992BDE111F4AF23D001BDFBC /* MyNSTextView.mm in Sources */,
 				9951AA1A1F40D46E0007F2A3 /* MidiOut.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -390,12 +357,12 @@
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
-				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				OTHER_LDFLAGS = "\"$(CINDER_PATH)/lib/macosx/$(CONFIGURATION)/libcinder.a\"";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.libcinder.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = CinderProjectBasic;
 				SYMROOT = ./build;
-				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" ../include $(CINDER_PATH)/blocks/OSC/src $(CINDER_PATH/blocks/MIDI2/lib $(CINDER_PATH/blocks/MIDI2/src $(CINDER_PATH/blocks/MIDI2/include";
+				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" ../include $(CINDER_PATH/blocks/MIDI2/lib $(CINDER_PATH/blocks/MIDI2/src $(CINDER_PATH/blocks/MIDI2/include ../src/GMCodeEditor\" ../src/Noodle\"";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -419,13 +386,13 @@
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
-				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				OTHER_LDFLAGS = "\"$(CINDER_PATH)/lib/macosx/$(CONFIGURATION)/libcinder.a\"";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.libcinder.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = CinderProjectBasic;
 				STRIP_INSTALLED_PRODUCT = YES;
 				SYMROOT = ./build;
-				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" ../include $(CINDER_PATH)/blocks/OSC/src $(CINDER_PATH/blocks/MIDI2/lib $(CINDER_PATH/blocks/MIDI2/src $(CINDER_PATH/blocks/MIDI2/include";
+				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" ../include $(CINDER_PATH/blocks/MIDI2/lib $(CINDER_PATH/blocks/MIDI2/src $(CINDER_PATH/blocks/MIDI2/include ../src/GMCodeEditor\" ../src/Noodle\"";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;

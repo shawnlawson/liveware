@@ -3,6 +3,7 @@
     <dependencies>
         <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="12121"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="NSApplication"/>
@@ -492,109 +493,20 @@
                                     </items>
                                 </menu>
                             </menuItem>
-                            <menuItem title="Text" id="Fal-I4-PZk">
-                                <modifierMask key="keyEquivalentModifierMask"/>
-                                <menu key="submenu" title="Text" id="d9c-me-L2H">
-                                    <items>
-                                        <menuItem title="Align Left" keyEquivalent="{" id="ZM1-6Q-yy1">
-                                            <connections>
-                                                <action selector="alignLeft:" target="-1" id="zUv-R1-uAa"/>
-                                            </connections>
-                                        </menuItem>
-                                        <menuItem title="Center" keyEquivalent="|" id="VIY-Ag-zcb">
-                                            <connections>
-                                                <action selector="alignCenter:" target="-1" id="spX-mk-kcS"/>
-                                            </connections>
-                                        </menuItem>
-                                        <menuItem title="Justify" id="J5U-5w-g23">
-                                            <modifierMask key="keyEquivalentModifierMask"/>
-                                            <connections>
-                                                <action selector="alignJustified:" target="-1" id="ljL-7U-jND"/>
-                                            </connections>
-                                        </menuItem>
-                                        <menuItem title="Align Right" keyEquivalent="}" id="wb2-vD-lq4">
-                                            <connections>
-                                                <action selector="alignRight:" target="-1" id="r48-bG-YeY"/>
-                                            </connections>
-                                        </menuItem>
-                                        <menuItem isSeparatorItem="YES" id="4s2-GY-VfK"/>
-                                        <menuItem title="Writing Direction" id="H1b-Si-o9J">
-                                            <modifierMask key="keyEquivalentModifierMask"/>
-                                            <menu key="submenu" title="Writing Direction" id="8mr-sm-Yjd">
-                                                <items>
-                                                    <menuItem title="Paragraph" enabled="NO" id="ZvO-Gk-QUH">
-                                                        <modifierMask key="keyEquivalentModifierMask"/>
-                                                    </menuItem>
-                                                    <menuItem id="YGs-j5-SAR">
-                                                        <string key="title">	Default</string>
-                                                        <modifierMask key="keyEquivalentModifierMask"/>
-                                                        <connections>
-                                                            <action selector="makeBaseWritingDirectionNatural:" target="-1" id="qtV-5e-UBP"/>
-                                                        </connections>
-                                                    </menuItem>
-                                                    <menuItem id="Lbh-J2-qVU">
-                                                        <string key="title">	Left to Right</string>
-                                                        <modifierMask key="keyEquivalentModifierMask"/>
-                                                        <connections>
-                                                            <action selector="makeBaseWritingDirectionLeftToRight:" target="-1" id="S0X-9S-QSf"/>
-                                                        </connections>
-                                                    </menuItem>
-                                                    <menuItem id="jFq-tB-4Kx">
-                                                        <string key="title">	Right to Left</string>
-                                                        <modifierMask key="keyEquivalentModifierMask"/>
-                                                        <connections>
-                                                            <action selector="makeBaseWritingDirectionRightToLeft:" target="-1" id="5fk-qB-AqJ"/>
-                                                        </connections>
-                                                    </menuItem>
-                                                    <menuItem isSeparatorItem="YES" id="swp-gr-a21"/>
-                                                    <menuItem title="Selection" enabled="NO" id="cqv-fj-IhA">
-                                                        <modifierMask key="keyEquivalentModifierMask"/>
-                                                    </menuItem>
-                                                    <menuItem id="Nop-cj-93Q">
-                                                        <string key="title">	Default</string>
-                                                        <modifierMask key="keyEquivalentModifierMask"/>
-                                                        <connections>
-                                                            <action selector="makeTextWritingDirectionNatural:" target="-1" id="lPI-Se-ZHp"/>
-                                                        </connections>
-                                                    </menuItem>
-                                                    <menuItem id="BgM-ve-c93">
-                                                        <string key="title">	Left to Right</string>
-                                                        <modifierMask key="keyEquivalentModifierMask"/>
-                                                        <connections>
-                                                            <action selector="makeTextWritingDirectionLeftToRight:" target="-1" id="caW-Bv-w94"/>
-                                                        </connections>
-                                                    </menuItem>
-                                                    <menuItem id="RB4-Sm-HuC">
-                                                        <string key="title">	Right to Left</string>
-                                                        <modifierMask key="keyEquivalentModifierMask"/>
-                                                        <connections>
-                                                            <action selector="makeTextWritingDirectionRightToLeft:" target="-1" id="EXD-6r-ZUu"/>
-                                                        </connections>
-                                                    </menuItem>
-                                                </items>
-                                            </menu>
-                                        </menuItem>
-                                        <menuItem isSeparatorItem="YES" id="fKy-g9-1gm"/>
-                                        <menuItem title="Show Ruler" id="vLm-3I-IUL">
-                                            <modifierMask key="keyEquivalentModifierMask"/>
-                                            <connections>
-                                                <action selector="toggleRuler:" target="-1" id="FOx-HJ-KwY"/>
-                                            </connections>
-                                        </menuItem>
-                                        <menuItem title="Copy Ruler" keyEquivalent="c" id="MkV-Pr-PK5">
-                                            <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
-                                            <connections>
-                                                <action selector="copyRuler:" target="-1" id="71i-fW-3W2"/>
-                                            </connections>
-                                        </menuItem>
-                                        <menuItem title="Paste Ruler" keyEquivalent="v" id="LVM-kO-fVI">
-                                            <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
-                                            <connections>
-                                                <action selector="pasteRuler:" target="-1" id="cSh-wd-qM2"/>
-                                            </connections>
-                                        </menuItem>
-                                    </items>
-                                </menu>
+                            <menuItem title="Indent" keyEquivalent="]" id="QbG-pc-a6I">
+                                <connections>
+                                    <action selector="indent:" target="-1" id="teH-Rp-0ah"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Dedent" keyEquivalent="[" id="GUr-yj-ITP">
+                                <connections>
+                                    <action selector="dedent:" target="-1" id="AVK-fw-duX"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Toggle Comments" keyEquivalent="/" id="PXm-hE-huv">
+                                <connections>
+                                    <action selector="toggleComments:" target="-1" id="aTc-cC-u73"/>
+                                </connections>
                             </menuItem>
                         </items>
                     </menu>
@@ -656,7 +568,48 @@
                         </items>
                     </menu>
                 </menuItem>
+                <menuItem title="Help" id="wpr-3q-Mcd">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <menu key="submenu" title="Help" systemMenu="help" id="F2S-fz-NVQ">
+                        <items>
+                            <menuItem title="NewApplication Help" keyEquivalent="?" id="FKE-Sm-Kum">
+                                <connections>
+                                    <action selector="showHelp:" target="-1" id="y7X-2Q-9no"/>
+                                </connections>
+                            </menuItem>
+                        </items>
+                    </menu>
+                </menuItem>
             </items>
+            <point key="canvasLocation" x="33" y="-24"/>
         </menu>
+        <scrollView borderType="none" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" id="hce-0P-StE" customClass="MyNSScrollView">
+            <rect key="frame" x="0.0" y="0.0" width="462" height="417"/>
+            <autoresizingMask key="autoresizingMask"/>
+            <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="0RJ-3z-eLp">
+                <rect key="frame" x="0.0" y="0.0" width="462" height="417"/>
+                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                <subviews>
+                    <textView drawsBackground="NO" importsGraphics="NO" horizontallyResizable="YES" usesFontPanel="YES" findStyle="panel" allowsUndo="YES" usesRuler="YES" allowsNonContiguousLayout="YES" spellingCorrection="YES" smartInsertDelete="YES" id="o6W-rC-yme" customClass="MyNSTextView">
+                        <rect key="frame" x="0.0" y="0.0" width="462" height="417"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <size key="minSize" width="462" height="417"/>
+                        <size key="maxSize" width="463" height="10000000"/>
+                        <color key="insertionPointColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    </textView>
+                </subviews>
+                <color key="backgroundColor" white="1" alpha="0.0" colorSpace="calibratedWhite"/>
+            </clipView>
+            <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="YES" id="Zho-7d-4Mk">
+                <rect key="frame" x="-100" y="-100" width="87" height="18"/>
+                <autoresizingMask key="autoresizingMask"/>
+            </scroller>
+            <scroller key="verticalScroller" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="ITA-yE-pbr">
+                <rect key="frame" x="446" y="0.0" width="16" height="417"/>
+                <autoresizingMask key="autoresizingMask"/>
+            </scroller>
+            <point key="canvasLocation" x="40" y="385"/>
+        </scrollView>
     </objects>
 </document>
