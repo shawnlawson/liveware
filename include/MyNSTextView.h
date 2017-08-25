@@ -28,6 +28,7 @@
 - (IBAction)toggleComments:(id)sender;
 
 - (void)assignShader:(std::string)shader;
+- (void) errorLineHighlight:(std::string)errors;
 
 - (ci::signals::Signal<void(std::string)>*) ShaderSignal;
 

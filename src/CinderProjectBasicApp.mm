@@ -1,4 +1,5 @@
 #include "cinder/app/App.h"
+#include "cinder/app/cocoa/CinderViewMac.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 #include "cinder/gl/GlslProg.h"
@@ -11,7 +12,6 @@
 #include "cinder/params/Params.h"
 
 //Blocks
-
 #include "MidiHeaders.h"
 
 //User
@@ -64,6 +64,7 @@ public:
     void shaderListener( std::string code);
     NSView * theView;
     bool loadedShader = false;
+    CinderViewMac *cvm;
     MyNSTextView *tv;
     NSScrollView *sv;
     
@@ -178,8 +179,8 @@ void CinderProjectBasicApp::setup()
     tv.ShaderSignal->connect([this](std::string code) { shaderListener( code ); });
     
     //attaching to cinder view, attaching to window view doesn't work
-    theView = [[NSApp mainWindow].contentView subviews][0];
-    [theView addSubview:sv];
+     cvm =  (__bridge CinderViewMac *)getWindow()->getNative();
+    [cvm addSubview:sv];
 }
 
 
@@ -257,11 +258,10 @@ void CinderProjectBasicApp::draw()
     mParams->draw();
 }
 
-void CinderProjectBasicApp::shaderListener( std::string code) {
-
+void CinderProjectBasicApp::shaderListener( std::string code)
+{
 //    std::cout << code << std::endl;
 //    std::cout << "returned" << std::endl;
-    
     gl::GlslProg::Format renderFormat;
     try {
         renderFormat.vertex( vertProg )
@@ -270,20 +270,19 @@ void CinderProjectBasicApp::shaderListener( std::string code) {
         trialGlsl = gl::GlslProg::create( renderFormat );
     } 	catch( ci::gl::GlslProgCompileExc &exc )
     {
-//        [wv setErrors:exc.what()];
+        [tv errorLineHighlight:exc.what()];
 //        CI_LOG_E( "Shader load error: " << exc.what() );
         return;
     }
     catch( ci::Exception &exc )
     {
-//        [wv setErrors:exc.what()];
+        [tv errorLineHighlight:exc.what()];
 //        CI_LOG_E( "Shader load error: " << exc.what() );
         return;
     }
     
-
+    [tv errorLineHighlight:""];
     fboGlsl = trialGlsl;
-    
 }
 
 void CinderProjectBasicApp::mouseDown( MouseEvent event )

@@ -53,13 +53,14 @@
 		4A48FE7062534F0192F8A5FB /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = CinderApp.icns; path = ../resources/CinderApp.icns; sourceTree = "<group>"; };
 		5323E6B10EAFCA74003A9687 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = /System/Library/Frameworks/CoreVideo.framework; sourceTree = "<absolute>"; };
 		8D1107320486CEB800E47090 /* CinderProjectBasic.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CinderProjectBasic.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		990626481F4F918F00A9E73F /* Tokenize.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Tokenize.h; sourceTree = "<group>"; };
 		992BDE0C1F4AF23D001BDFBC /* MyLineNumberView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MyLineNumberView.m; path = ../src/MyLineNumberView.m; sourceTree = "<group>"; };
 		992BDE0D1F4AF23D001BDFBC /* MyNSScrollView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MyNSScrollView.m; path = ../src/MyNSScrollView.m; sourceTree = "<group>"; };
 		992BDE0E1F4AF23D001BDFBC /* MyNSTextView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = MyNSTextView.mm; path = ../src/MyNSTextView.mm; sourceTree = "<group>"; };
 		992BDE121F4AF24C001BDFBC /* MyLineNumberView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MyLineNumberView.h; path = ../include/MyLineNumberView.h; sourceTree = "<group>"; };
 		992BDE131F4AF24C001BDFBC /* MyNSScrollView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MyNSScrollView.h; path = ../include/MyNSScrollView.h; sourceTree = "<group>"; };
 		992BDE141F4AF24C001BDFBC /* MyNSTextView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MyNSTextView.h; path = ../include/MyNSTextView.h; sourceTree = "<group>"; };
-		992BDE151F4AF8B5001BDFBC /* MyMainMenu.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = MyMainMenu.xib; path = ../../CinderProjectswift/resources/MyMainMenu.xib; sourceTree = "<group>"; };
+		992BDE151F4AF8B5001BDFBC /* MyMainMenu.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = MyMainMenu.xib; path = ../resources/MyMainMenu.xib; sourceTree = "<group>"; };
 		992BDE171F4B0C77001BDFBC /* SourceTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SourceTextView.h; path = "../../SourceTextView-master/Source/SourceTextView.h"; sourceTree = "<group>"; };
 		992BDE181F4B0C77001BDFBC /* SourceTextView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SourceTextView.m; path = "../../SourceTextView-master/Source/SourceTextView.m"; sourceTree = "<group>"; };
 		9951A9B31F40D46D0007F2A3 /* MidiConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MidiConstants.h; sourceTree = "<group>"; };
@@ -183,6 +184,7 @@
 		29B97315FDCFA39411CA2CEA /* Headers */ = {
 			isa = PBXGroup;
 			children = (
+				990626481F4F918F00A9E73F /* Tokenize.h */,
 				992BDE121F4AF24C001BDFBC /* MyLineNumberView.h */,
 				992BDE131F4AF24C001BDFBC /* MyNSScrollView.h */,
 				992BDE141F4AF24C001BDFBC /* MyNSTextView.h */,
