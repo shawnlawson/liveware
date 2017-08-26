@@ -95,7 +95,7 @@
 }
 
 - (void)textDidChange:(NSNotification *)notification {
-    //[self highlightGLSL];
+    [self highlightGLSL];
 }
 
 - (void) changeTextFormatFinalize:(NSRange)r andCharLength:(int)numChars
@@ -229,11 +229,12 @@
 {
     NSScanner *scanner = [NSScanner scannerWithString:[self.textStorage string]];
     unsigned preScan = 0;
+    scanner.charactersToBeSkipped =  [NSCharacterSet whitespaceCharacterSet];
+
     while (![scanner isAtEnd])
     {
         preScan = scanner.scanLocation;
-        scanner.charactersToBeSkipped = [NSCharacterSet whitespaceCharacterSet];
-        
+       
         //pre-compiler
         if([scanner scanString:@"#" intoString:NULL])
         {
@@ -258,14 +259,17 @@
                          range:NSMakeRange(preScan, scanner.scanLocation - preScan)];
             continue;
         }
-        //numbers
-        if([scanner scanDouble:NULL])
+        //words & numbers, ie vec4, etc
+        if([scanner scanCharactersFromSet:[NSCharacterSet letterCharacterSet]
+                               intoString:NULL] &&
+           [scanner scanInt:NULL])
         {
-            [self setTextColor:[NSColor purpleColor]
+            [self setTextColor:[NSColor blueColor]
                          range:NSMakeRange(preScan, scanner.scanLocation - preScan)];
             continue;
         }
-        //words
+        scanner.scanLocation = preScan;
+        //words & numbers, ie vec4, etc
         if([scanner scanCharactersFromSet:[NSCharacterSet letterCharacterSet]
                                intoString:NULL])
         {
@@ -273,9 +277,23 @@
                          range:NSMakeRange(preScan, scanner.scanLocation - preScan)];
             continue;
         }
+        //numbers
+        if([scanner scanDouble:NULL])
+        {
+            [self setTextColor:[NSColor purpleColor]
+                         range:NSMakeRange(preScan, scanner.scanLocation - preScan)];
+            continue;
+        }
         //else
-        [scanner scanUpToString:@"\n" intoString:NULL ];
-        scanner.scanLocation += 1;
+        [scanner scanCharactersFromSet:[NSCharacterSet punctuationCharacterSet]
+                           intoString:NULL];
+        
+        [scanner scanCharactersFromSet:[NSCharacterSet symbolCharacterSet]
+                            intoString:NULL];
+        
+        [scanner scanCharactersFromSet:[NSCharacterSet newlineCharacterSet]
+                            intoString:NULL];
+//        scanner.scanLocation += 1;
         
     }
 }

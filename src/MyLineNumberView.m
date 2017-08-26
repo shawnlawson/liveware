@@ -78,7 +78,7 @@ CGFloat lineNumberPadding = 4.0;
         yinset = [view textContainerInset].height;
         visibleRect = [[[self scrollView] contentView] bounds];
         
-        [[NSGraphicsContext currentContext] saveGraphicsState];
+   //     [[NSGraphicsContext currentContext] saveGraphicsState];
 //        [[NSColor redColor] setFill];
 //        [NSBezierPath fillRect:aRect];
         
@@ -148,7 +148,7 @@ CGFloat lineNumberPadding = 4.0;
 //                        withRect:aRect];
 //        }
         
-        [[NSGraphicsContext currentContext] restoreGraphicsState];
+   //     [[NSGraphicsContext currentContext] restoreGraphicsState];
     }
 }
 
