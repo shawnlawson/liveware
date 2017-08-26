@@ -13,9 +13,9 @@
 
 int minNumberOfDigits = 2;
 CGFloat minVerticalThickness = 32.0;
-CGFloat minHorizontalThickness = 20.0;
+CGFloat minHorizontalThickness = 32.0;
 CGFloat lineNumberPadding = 4.0;
-CGFloat fontSizeFactor = .9;
+
 
 
 @implementation MyLineNumberView
@@ -30,19 +30,19 @@ CGFloat fontSizeFactor = .9;
      
         [aScrollView.documentView setUsesRuler:YES];
         
-        [NSNotificationCenter.defaultCenter
-                                addObserver:self
-                                   selector:@selector(textDidChange:)
-                                       name:NSTextDidChangeNotification
-                                     object:[aScrollView documentView]];
+//        [NSNotificationCenter.defaultCenter
+//                                addObserver:self
+//                                   selector:@selector(textDidChange:)
+//                                       name:NSTextDidChangeNotification
+//                                     object:[aScrollView documentView]];
     }
     return self;
 }
 
-- (void)textDidChange:(NSNotification *)obj
-{
-//    NSLog(@"needing recount");
-}
+//- (void)textDidChange:(NSNotification *)obj
+//{
+////    NSLog(@"needing recount");
+//}
 
 - (void)drawRect:(NSRect)dirtyRect {
 //    NSLog(@"dirtyRect");
@@ -127,7 +127,7 @@ CGFloat fontSizeFactor = .9;
                 if (lineWrapCount == 0)
                 {
                     [self drawLineNumber:lineNumber
-                              atPosition:NSMinY(lineRect)
+                              atPosition:NSMinY(lineRect) - NSMinY(visibleRect)
                                 withRect:aRect];
                 } else {
                     //draw wrapped
@@ -142,11 +142,11 @@ CGFloat fontSizeFactor = .9;
         } //end of all visible glyphs, looped by hardbreak line
         
         
-        if ([layoutManager extraLineFragmentTextContainer]) {
-            [self drawLineNumber:lineNumber
-                      atPosition:NSMinY(layoutManager.extraLineFragmentRect)
-                        withRect:aRect];
-        }
+//        if ([layoutManager extraLineFragmentTextContainer]) {
+//            [self drawLineNumber:lineNumber
+//                      atPosition:NSMinY(layoutManager.extraLineFragmentRect)
+//                        withRect:aRect];
+//        }
         
         [[NSGraphicsContext currentContext] restoreGraphicsState];
     }
@@ -155,15 +155,8 @@ CGFloat fontSizeFactor = .9;
 - (BOOL) isOpaque{ return NO; }
 
 - (CGFloat) requiredThickness {
-    if (self.orientation == NSHorizontalRuler) {
-        return self.ruleThickness;
-    }
-    if (minVerticalThickness > self.ruleThickness) {
-        return minVerticalThickness;
-    } else {
-        return self.ruleThickness;
-    }
-    
+    return minVerticalThickness;
+  
 }
 
 - (void) drawLineNumber:(int)num atPosition:(CGFloat)yPos withRect:(NSRect)aRect

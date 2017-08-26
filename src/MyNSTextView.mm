@@ -31,7 +31,8 @@
     [[self enclosingScrollView] setHasHorizontalRuler:NO];
     [[self enclosingScrollView] setHasVerticalRuler:YES];
     [[self enclosingScrollView] setRulersVisible:YES];
-    
+    [[self enclosingScrollView] setVerticalRulerView:lineNumberView];
+    [lineNumberView setClientView:self];
     [self setUsesFontPanel:YES];
     
     [[self textStorage] setDelegate:self];
@@ -49,9 +50,9 @@
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(textViewDidChangeSelection:) name:NSTextViewDidChangeSelectionNotification
                                                object:self];
-    //    [[NSNotificationCenter defaultCenter] addObserver:self
-    //                                             selector:@selector(textDidChange:) name:NSTextDidChangeNotification
-    //                                               object:self];
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(textDidChange:) name:NSTextDidChangeNotification
+                                                   object:self];
     
 }
 
@@ -94,7 +95,7 @@
 }
 
 - (void)textDidChange:(NSNotification *)notification {
-    NSLog(@"change");
+    //[self highlightGLSL];
 }
 
 - (void) changeTextFormatFinalize:(NSRange)r andCharLength:(int)numChars
@@ -224,6 +225,60 @@
     }
 }
 
+- (void) highlightGLSL
+{
+    NSScanner *scanner = [NSScanner scannerWithString:[self.textStorage string]];
+    unsigned preScan = 0;
+    while (![scanner isAtEnd])
+    {
+        preScan = scanner.scanLocation;
+        scanner.charactersToBeSkipped = [NSCharacterSet whitespaceCharacterSet];
+        
+        //pre-compiler
+        if([scanner scanString:@"#" intoString:NULL])
+        {
+            [scanner scanUpToString:@"\n" intoString:NULL ];
+            [self setTextColor:[NSColor brownColor]
+                         range:NSMakeRange(preScan, scanner.scanLocation - preScan)];
+             continue;
+        }
+        //comments
+        if([scanner scanString:@"//" intoString:NULL])
+        {
+            [scanner scanUpToString:@"\n" intoString:NULL ];
+            [self setTextColor:[NSColor grayColor]
+                         range:NSMakeRange(preScan, scanner.scanLocation - preScan)];
+            continue;
+        }
+        //strings
+        if([scanner scanString:@"\"" intoString:NULL])
+        {
+            [scanner scanUpToString:@"\"" intoString:NULL ];
+            [self setTextColor:[NSColor redColor]
+                         range:NSMakeRange(preScan, scanner.scanLocation - preScan)];
+            continue;
+        }
+        //numbers
+        if([scanner scanDouble:NULL])
+        {
+            [self setTextColor:[NSColor purpleColor]
+                         range:NSMakeRange(preScan, scanner.scanLocation - preScan)];
+            continue;
+        }
+        //words
+        if([scanner scanCharactersFromSet:[NSCharacterSet letterCharacterSet]
+                               intoString:NULL])
+        {
+            [self setTextColor:[NSColor blueColor]
+                         range:NSMakeRange(preScan, scanner.scanLocation - preScan)];
+            continue;
+        }
+        //else
+        [scanner scanUpToString:@"\n" intoString:NULL ];
+        scanner.scanLocation += 1;
+        
+    }
+}
 #pragma mark - UI Commands
 //////////////////////////////////
 // UI functions
