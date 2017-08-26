@@ -21,6 +21,13 @@
     NSUInteger tabWidth;
     NSFont *currentFont;
     NSTimer *shaderTimer;
+    NSMutableDictionary *colormap;
+    NSMutableDictionary *colors;
+    NSMutableArray *functions;
+    NSMutableArray *uniforms;
+    NSMutableArray *math;
+    NSMutableArray *storage;
+    NSMutableArray *keyword;
 }
 
 - (IBAction)indent:(id)sender;

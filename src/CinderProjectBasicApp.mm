@@ -15,7 +15,6 @@
 #include "MidiHeaders.h"
 
 //User
-#include "MyNSScrollView.h"
 #include "MyNSTextView.h"
 #include "AudioDrawUtils.h"
 
