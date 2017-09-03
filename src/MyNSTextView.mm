@@ -47,6 +47,9 @@
     [self setCurrentFont:[fontManager convertFont:oldFont]];
     [self setTextColor:[NSColor whiteColor]];
     
+
+    
+    
     NSDictionary *theDict = [NSDictionary
                              dictionaryWithContentsOfFile:[[NSBundle mainBundle]
                                                            pathForResource:@"GLSL"
@@ -155,6 +158,14 @@
 
 - (void)textDidChange:(NSNotification *)notification {
     [self highlightGLSL];
+    
+    NSShadow *shadow = [[NSShadow alloc] init];
+    shadow.shadowColor = [[NSColor blackColor] colorWithAlphaComponent:0.5];
+    shadow.shadowBlurRadius = 1;
+    shadow.shadowOffset = NSMakeSize(1, -1);
+    [self.textStorage addAttribute:NSShadowAttributeName
+                             value:shadow
+                             range:NSMakeRange(0, [self.textStorage length])];
 }
 
 - (void) changeTextFormatFinalize:(NSRange)r andCharLength:(int)numChars

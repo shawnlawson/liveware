@@ -169,6 +169,14 @@ CGFloat lineNumberPadding = 4.0;
               forKey:NSFontAttributeName];
     [attrs setObject:[NSColor colorWithWhite:1.0 alpha:0.5]
               forKey:NSForegroundColorAttributeName];
+    
+    NSShadow *shadow = [[NSShadow alloc] init];
+    shadow.shadowColor = [[NSColor blackColor] colorWithAlphaComponent:0.5];
+    shadow.shadowBlurRadius = 1;
+    shadow.shadowOffset = NSMakeSize(1, -1);
+    [attrs setObject:shadow
+              forKey:NSShadowAttributeName];
+    
     NSRect bounds = [self bounds];
     NSString *numText = [NSString stringWithFormat:@"%jd", (intmax_t)num];
     NSSize numSize = [numText sizeWithAttributes:attrs];
