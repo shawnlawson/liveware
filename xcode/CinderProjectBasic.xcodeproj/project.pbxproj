@@ -30,6 +30,7 @@
 		9951AA191F40D46E0007F2A3 /* MidiMessage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9951A9EF1F40D46E0007F2A3 /* MidiMessage.cpp */; };
 		9951AA1A1F40D46E0007F2A3 /* MidiOut.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9951A9F01F40D46E0007F2A3 /* MidiOut.cpp */; };
 		9951AB8C1F40D4950007F2A3 /* CoreMIDI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9951AB8B1F40D4950007F2A3 /* CoreMIDI.framework */; };
+		99BF83491F60C91D00E0B4A8 /* LUA.plist in Resources */ = {isa = PBXBuildFile; fileRef = 99BF83481F60C91D00E0B4A8 /* LUA.plist */; };
 		99E982051F366B930013A336 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 99E982041F366B930013A336 /* WebKit.framework */; };
 		99EBEB641F3E997200453241 /* AudioDrawUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 99EBEB631F3E997200453241 /* AudioDrawUtils.cpp */; };
 /* End PBXBuildFile section */
@@ -73,6 +74,7 @@
 		9951A9EF1F40D46E0007F2A3 /* MidiMessage.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MidiMessage.cpp; sourceTree = "<group>"; };
 		9951A9F01F40D46E0007F2A3 /* MidiOut.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MidiOut.cpp; sourceTree = "<group>"; };
 		9951AB8B1F40D4950007F2A3 /* CoreMIDI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMIDI.framework; path = System/Library/Frameworks/CoreMIDI.framework; sourceTree = SDKROOT; };
+		99BF83481F60C91D00E0B4A8 /* LUA.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = LUA.plist; path = ../resources/LUA.plist; sourceTree = "<group>"; };
 		99E982041F366B930013A336 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 		99EBEB621F3E997200453241 /* AudioDrawUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AudioDrawUtils.h; path = ../include/AudioDrawUtils.h; sourceTree = "<group>"; };
 		99EBEB631F3E997200453241 /* AudioDrawUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AudioDrawUtils.cpp; path = ../src/AudioDrawUtils.cpp; sourceTree = "<group>"; };
@@ -119,6 +121,7 @@
 				992BDE0C1F4AF23D001BDFBC /* MyLineNumberView.m */,
 				992BDE0E1F4AF23D001BDFBC /* MyNSTextView.mm */,
 				991A61FB1F51BB5A001E44E8 /* GLSL.plist */,
+				99BF83481F60C91D00E0B4A8 /* LUA.plist */,
 				99EBEB631F3E997200453241 /* AudioDrawUtils.cpp */,
 				02FAB0FF541A4FECB8818EDB /* CinderProjectBasicApp.mm */,
 			);
@@ -306,6 +309,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				991A61FC1F51BB5A001E44E8 /* GLSL.plist in Resources */,
+				99BF83491F60C91D00E0B4A8 /* LUA.plist in Resources */,
 				51CA7AD9B7364030B35A1885 /* CinderApp.icns in Resources */,
 				992BDE161F4AF8B6001BDFBC /* MyMainMenu.xib in Resources */,
 			);

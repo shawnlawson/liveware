@@ -46,67 +46,7 @@
     NSFont *oldFont = [NSFont fontWithName:@"fira code" size:16];
     [self setCurrentFont:[fontManager convertFont:oldFont]];
     [self setTextColor:[NSColor whiteColor]];
-    
-
-    
-    
-    NSDictionary *theDict = [NSDictionary
-                             dictionaryWithContentsOfFile:[[NSBundle mainBundle]
-                                                           pathForResource:@"GLSL"
-                                                                    ofType:@"plist"]];
-    
-    if(theDict != nil) {
-        if(theDict[@"colormap"]) {
-            colormap = [[NSMutableDictionary alloc] init];
-            for (NSString *key in theDict[@"colormap"]) {
-                [colormap setObject:theDict[@"colormap"][key] forKey:key];
-            }
-        } else
-            NSLog(@"no color mapping");
-        
-        if(theDict[@"colors"]) {
-            colors = [[NSMutableDictionary alloc] init];
-            
-            for (NSString *key in theDict[@"colors"]) {
-                unsigned colorInt = 0;
-                NSString *s = theDict[@"colors"][key];
-                [[NSScanner scannerWithString:s]
-                                    scanHexInt:&colorInt];
-                [colors setObject:NSColorFromRGB(colorInt) forKey:key];
-            }
-        } else
-            NSLog(@"no color list");
-        
-        if(theDict[@"functions"]) {
-            functions = [[NSMutableArray alloc] init];
-            [functions addObjectsFromArray:theDict[@"functions"]];
-        } else
-            NSLog(@"no function list");
-        
-        if(theDict[@"uniforms"]) {
-            uniforms = [[NSMutableArray alloc] init];
-            [uniforms addObjectsFromArray:theDict[@"uniforms"]];
-        } else
-            NSLog(@"no uniform list");
-        
-        if(theDict[@"math"]) {
-            math = [[NSMutableArray alloc] init];
-            [math addObjectsFromArray:theDict[@"math"]];
-        } else
-            NSLog(@"no math list");
-        
-        if(theDict[@"storage"]){
-            storage = [[NSMutableArray alloc] init];
-            [storage addObjectsFromArray:theDict[@"storage"]];
-        } else
-            NSLog(@"no storage list");
-        
-        if(theDict[@"keyword"]) {
-            keyword = [[NSMutableArray alloc] init];
-            [keyword addObjectsFromArray:theDict[@"keyword"]];
-        } else
-            NSLog(@"no keyword list");
-    }
+    [self loadHighliter:"GLSL"];
     
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(textViewDidChangeSelection:)
@@ -129,6 +69,7 @@
     
     [self setCurrentFont:[fontManager convertFont:oldFont]];
     [self setTextColor:[NSColor whiteColor]];
+    [self textDidChange:nil];
 }
 
 - (void) updateRuler {
@@ -137,7 +78,16 @@
 
 
 - (void) textStorageDidProcessEditing:(NSNotification *)aNotification {
-    //    [self highlight];
+    //make more efficient by checking for visible range, and threaded
+    [self highlight];
+    
+    NSShadow *shadow = [[NSShadow alloc] init];
+    shadow.shadowColor = [[NSColor blackColor] colorWithAlphaComponent:0.5];
+    shadow.shadowBlurRadius = 1;
+    shadow.shadowOffset = NSMakeSize(1, -1);
+    [self.textStorage addAttribute:NSShadowAttributeName
+                             value:shadow
+                             range:NSMakeRange(0, [self.textStorage length])];
     
     //TODO: checked for leaks but didn't find any, still suspicious.
     shaderTimer = nil;
@@ -157,15 +107,7 @@
 }
 
 - (void)textDidChange:(NSNotification *)notification {
-    [self highlightGLSL];
     
-    NSShadow *shadow = [[NSShadow alloc] init];
-    shadow.shadowColor = [[NSColor blackColor] colorWithAlphaComponent:0.5];
-    shadow.shadowBlurRadius = 1;
-    shadow.shadowOffset = NSMakeSize(1, -1);
-    [self.textStorage addAttribute:NSShadowAttributeName
-                             value:shadow
-                             range:NSMakeRange(0, [self.textStorage length])];
 }
 
 - (void) changeTextFormatFinalize:(NSRange)r andCharLength:(int)numChars
@@ -214,10 +156,23 @@
     [self changeTextFormatFinalize:NSMakeRange(r.location,0) andCharLength:0];
 }
 
+//helper function
+- (NSRange) getVisibleRange {
+    NSRect visibleRect = [self.enclosingScrollView.contentView documentVisibleRect];
+    return [self.layoutManager glyphRangeForBoundingRect:visibleRect
+                                         inTextContainer:self.textContainer];
+}
+
+//override to capture code execution
+- (void)insertNewline:(id)sender
+{
+    [super insertNewline:sender];
+}
+
 - (void) currentLineHighlight
 {
     [self.layoutManager removeTemporaryAttribute:NSBackgroundColorAttributeName
-                               forCharacterRange:NSMakeRange(0, [self.textStorage length])];
+                               forCharacterRange:[self getVisibleRange]];
     
     [self.layoutManager addTemporaryAttribute:NSBackgroundColorAttributeName
                                         value:[NSColor colorWithCalibratedRed:0 green:0 blue:0 alpha:0.3]
@@ -226,14 +181,16 @@
 
 - (void) errorLineHighlight:(std::string)errors
 {
+    NSRange visible = [self getVisibleRange];
     [self.layoutManager removeTemporaryAttribute:NSUnderlineStyleAttributeName
-                               forCharacterRange:NSMakeRange(0, [self.textStorage length])];
+                               forCharacterRange:visible];
+//                               forCharacterRange:NSMakeRange(0, [self.textStorage length])];
     
     [self.layoutManager removeTemporaryAttribute:NSUnderlineColorAttributeName
-                               forCharacterRange:NSMakeRange(0, [self.textStorage length])];
+                               forCharacterRange:visible];
     
     [self.layoutManager removeTemporaryAttribute:NSToolTipAttributeName
-                               forCharacterRange:NSMakeRange(0, [self.textStorage length])];
+                               forCharacterRange:visible];
     
     std::istringstream f(errors);
     std::string line;
@@ -294,93 +251,6 @@
     }
 }
 
-- (void) highlightGLSL
-{
-    NSScanner *scanner = [NSScanner scannerWithString:[self.textStorage string]];
-    unsigned preScan = 0;
-    scanner.charactersToBeSkipped =  [NSCharacterSet whitespaceCharacterSet];
-
-    while (![scanner isAtEnd])
-    {
-        preScan = scanner.scanLocation;
-       
-        //pre-compiler
-        if([scanner scanString:@"#" intoString:NULL])
-        {
-            [scanner scanUpToString:@"\n" intoString:NULL ];
-            [self setTextColor:colors[ colormap[@"preprocessor"] ]
-                         range:NSMakeRange(preScan, scanner.scanLocation - preScan)];
-             continue;
-        }
-        //comments
-        if([scanner scanString:@"//" intoString:NULL])
-        {
-            [scanner scanUpToString:@"\n" intoString:NULL ];
-            [self setTextColor:colors[ colormap[@"comment"] ]
-                         range:NSMakeRange(preScan, scanner.scanLocation - preScan)];
-            continue;
-        }
-        //strings
-        if([scanner scanString:@"\"" intoString:NULL])
-        {
-            [scanner scanUpToString:@"\"" intoString:NULL ];
-            [self setTextColor:colors[ colormap[@"string"] ]
-                         range:NSMakeRange(preScan, scanner.scanLocation - preScan)];
-            continue;
-        }
-        //words & numbers, ie vec4, etc
-        if([scanner scanCharactersFromSet:[NSCharacterSet letterCharacterSet]
-                               intoString:NULL] &&
-           [scanner scanInt:NULL])
-        {
-            [self setTextColor:colors[ colormap[@"storage"] ]
-                         range:NSMakeRange(preScan, scanner.scanLocation - preScan)];
-            continue;
-        }
-        //this resets for found words that don't have numbers in them
-        scanner.scanLocation = preScan;
-        //and now we need a string holder
-        NSMutableString * s = [[NSMutableString alloc] init];
-        //words & numbers, ie vec4, etc
-        if([scanner scanCharactersFromSet:[NSCharacterSet letterCharacterSet]
-                               intoString:&s])
-        {
-            if ([functions containsObject:s]) {
-            [self setTextColor:colors[ colormap[@"functions"] ]
-                         range:NSMakeRange(preScan, scanner.scanLocation - preScan)];
-            } else if ([uniforms containsObject:s]) {
-                [self setTextColor:colors[ colormap[@"uniforms"] ]
-                             range:NSMakeRange(preScan, scanner.scanLocation - preScan)];
-            } else if ([math containsObject:s]) {
-                [self setTextColor:colors[ colormap[@"math"] ]
-                             range:NSMakeRange(preScan, scanner.scanLocation - preScan)];
-            } else if ([storage containsObject:s]) {
-                [self setTextColor:colors[ colormap[@"storage"] ]
-                             range:NSMakeRange(preScan, scanner.scanLocation - preScan)];
-            } else if ([keyword containsObject:s]) {
-                [self setTextColor:colors[ colormap[@"keyword"] ]
-                             range:NSMakeRange(preScan, scanner.scanLocation - preScan)];
-            }
-            continue;
-        }
-        //numbers
-        if([scanner scanDouble:NULL])
-        {
-            [self setTextColor:colors[ colormap[@"numbers"] ]
-                         range:NSMakeRange(preScan, scanner.scanLocation - preScan)];
-            continue;
-        }
-        //else
-        [scanner scanCharactersFromSet:[NSCharacterSet punctuationCharacterSet]
-                           intoString:NULL];
-        
-        [scanner scanCharactersFromSet:[NSCharacterSet symbolCharacterSet]
-                            intoString:NULL];
-        
-        [scanner scanCharactersFromSet:[NSCharacterSet newlineCharacterSet]
-                            intoString:NULL];
-    }
-}
 #pragma mark - UI Commands
 //////////////////////////////////
 // UI functions
@@ -474,6 +344,241 @@
 }
 
 
+#pragma mark - Syntax Highlighting
+/////////////////////////////////////////////
+//  Syntax Highlighting
+/////////////////////////////////////////////
+-(void) loadHighliter:(std::string)language
+{
+    whichLanguage = [[NSMutableString stringWithUTF8String:language.c_str()] copy];
+    NSDictionary *theDict = [NSDictionary
+                             dictionaryWithContentsOfFile:[[NSBundle mainBundle]
+                                                           pathForResource:whichLanguage
+                                                           ofType:@"plist"]];
+
+    if(theDict != nil) {
+        if(theDict[@"colormap"])
+        {
+            if (colormap == nil) {
+                colormap = [[NSMutableDictionary alloc] init];
+            } else {
+                [colormap removeAllObjects];
+            }
+            
+            for (NSString *key in theDict[@"colormap"]) {
+                [colormap setObject:theDict[@"colormap"][key] forKey:key];
+            }
+        } else {
+            NSLog(@"no color mapping");
+        }
+        
+        if(theDict[@"colors"])
+        {
+            if (colors == nil) {
+                colors = [[NSMutableDictionary alloc] init];
+            } else {
+                [colors removeAllObjects];
+            }
+            
+            for (NSString *key in theDict[@"colors"])
+            {
+                unsigned colorInt = 0;
+                NSString *s = theDict[@"colors"][key];
+                [[NSScanner scannerWithString:s]
+                 scanHexInt:&colorInt];
+                [colors setObject:NSColorFromRGB(colorInt) forKey:key];
+            }
+        } else {
+            NSLog(@"no color list");
+        }
+        
+        if(theDict[@"functions"])
+        {
+            if (functions == nil) {
+                functions = [[NSMutableArray alloc] init];
+            } else {
+                [functions removeAllObjects];
+            }
+            [functions addObjectsFromArray:theDict[@"functions"]];
+        } else {
+            NSLog(@"no function list");
+        }
+        
+        if(theDict[@"uniforms"])
+        {
+            if (uniforms == nil) {
+                uniforms = [[NSMutableArray alloc] init];
+            } else {
+                [uniforms removeAllObjects];
+            }
+            [uniforms addObjectsFromArray:theDict[@"uniforms"]];
+        } else {
+            NSLog(@"no uniform list");
+        }
+        
+        if(theDict[@"math"])
+        {
+            if (math == nil) {
+                math = [[NSMutableArray alloc] init];
+            } else {
+                [math removeAllObjects];
+            }
+            [math addObjectsFromArray:theDict[@"math"]];
+        } else {
+            NSLog(@"no math list");
+        }
+        
+        if(theDict[@"storage"])
+        {
+            if (storage == nil) {
+                storage = [[NSMutableArray alloc] init];
+            } else {
+                [storage removeAllObjects];
+            }
+            [storage addObjectsFromArray:theDict[@"storage"]];
+        } else {
+            NSLog(@"no storage list");
+        }
+        
+        if(theDict[@"operators"])
+        {
+            NSString *s = [theDict objectForKey:@"operators"];
+            operators = [NSMutableString stringWithString:s];
+            [operators retain];
+        } else {
+            operators = [NSMutableString stringWithString:@""];
+            NSLog(@"no storage list");
+         }
+        
+        if(theDict[@"keyword"])
+        {
+            if (keyword == nil) {
+                keyword = [[NSMutableArray alloc] init];
+            } else {
+                [keyword removeAllObjects];
+            }
+            
+            [keyword addObjectsFromArray:theDict[@"keyword"]];
+        } else {
+            NSLog(@"no keyword list");
+        }
+        
+        if (theDict[@"comment"])
+        {
+            commentString = [NSMutableString stringWithString:theDict[@"comment"]];
+            [commentString retain];
+        } else {
+            commentString = [NSMutableString stringWithString:@""];
+            NSLog(@"no comment string");
+        }
+    }
+}
+
+- (void) highlight
+{
+    NSScanner *scanner = [NSScanner scannerWithString:[self.textStorage string]];
+    unsigned preScan = 0;
+    scanner.charactersToBeSkipped =  [NSCharacterSet whitespaceCharacterSet];
+    
+    while (![scanner isAtEnd])
+    {
+        preScan = scanner.scanLocation;
+        
+        //comments
+        if([scanner scanString:commentString intoString:NULL])
+        {
+            [scanner scanUpToString:@"\n" intoString:NULL ];
+            [self setTextColor:colors[ colormap[@"comment"] ]
+                         range:NSMakeRange(preScan, scanner.scanLocation - preScan)];
+            continue;
+        }
+        //define
+        
+        if([scanner scanString:@"#" intoString:NULL])
+        {
+            [scanner scanUpToString:@"\n" intoString:NULL ];
+            [self setTextColor:colors[ colormap[@"preprocessor"] ]
+                         range:NSMakeRange(preScan, scanner.scanLocation - preScan)];
+            continue;
+        }
+        //strings
+        if([scanner scanString:@"\"" intoString:NULL])
+        {
+            [scanner scanUpToString:@"\"" intoString:NULL ];
+            [self setTextColor:colors[ colormap[@"string"] ]
+                         range:NSMakeRange(preScan, scanner.scanLocation - preScan)];
+            continue;
+        }
+        if ([whichLanguage compare:@"LUA"] == NSOrderedSame) {
+            if([scanner scanString:@"\'" intoString:NULL])
+            {
+                [scanner scanUpToString:@"\'" intoString:NULL ];
+                [self setTextColor:colors[ colormap[@"string"] ]
+                             range:NSMakeRange(preScan, scanner.scanLocation - preScan)];
+                continue;
+            }
+        }
+        
+        //and now we need a string holder
+        NSMutableString * s = [[NSMutableString alloc] init];
+        
+        //words & numbers, ie vec4, etc
+        if([scanner scanCharactersFromSet:[NSCharacterSet alphanumericCharacterSet]
+                               intoString:&s])
+        {
+            if ([functions containsObject:s]) {
+                [self setTextColor:colors[ colormap[@"functions"] ]
+                             range:NSMakeRange(preScan, scanner.scanLocation - preScan)];
+                continue;
+            } else if ([uniforms containsObject:s]) {
+                [self setTextColor:colors[ colormap[@"uniforms"] ]
+                             range:NSMakeRange(preScan, scanner.scanLocation - preScan)];
+                continue;
+            } else if ([math containsObject:s]) {
+                [self setTextColor:colors[ colormap[@"math"] ]
+                             range:NSMakeRange(preScan, scanner.scanLocation - preScan)];
+                continue;
+            } else if ([storage containsObject:s]) {
+                [self setTextColor:colors[ colormap[@"storage"] ]
+                             range:NSMakeRange(preScan, scanner.scanLocation - preScan)];
+                continue;
+            } else if ([keyword containsObject:s]) {
+                [self setTextColor:colors[ colormap[@"keyword"] ]
+                             range:NSMakeRange(preScan, scanner.scanLocation - preScan)];
+                continue;
+            } else if ([s rangeOfCharacterFromSet:[NSCharacterSet decimalDigitCharacterSet]].location != NSNotFound) {
+                //something we made up on the fly -> ignore
+                //must be someting else: number, punctuation, symbol. reset location
+                scanner.scanLocation = preScan;
+            }
+        }
+        
+        //numbers
+        if([scanner scanDouble:NULL])
+        {
+            [self setTextColor:colors[ colormap[@"numbers"] ]
+                         range:NSMakeRange(preScan, scanner.scanLocation - preScan)];
+            continue;
+        }
+        //operations
+        if([scanner scanCharactersFromSet:[NSCharacterSet characterSetWithCharactersInString:operators ]
+                               intoString:nil]) {
+            [self setTextColor:colors[ @"red" ]
+                         range:NSMakeRange(preScan, scanner.scanLocation - preScan)];
+            continue;
+        }
+        
+        //else
+        [scanner scanCharactersFromSet:[NSCharacterSet punctuationCharacterSet]
+                            intoString:NULL];
+        
+        [scanner scanCharactersFromSet:[NSCharacterSet symbolCharacterSet]
+                            intoString:NULL];
+        
+        [scanner scanCharactersFromSet:[NSCharacterSet newlineCharacterSet]
+                            intoString:NULL];
+    }
+}
 
 
 #pragma mark - Font Window & Manager

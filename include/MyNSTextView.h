@@ -15,7 +15,7 @@
 @interface MyNSTextView : NSTextView <NSTextStorageDelegate> {
     
     MyLineNumberView * lineNumberView;
-//    MySyntaxHighlighter *syntaxHighlighter;
+
     //NSDictionary *_autocompletes;
 //    NSString *lastAutoInsert;
     NSUInteger tabWidth;
@@ -28,6 +28,9 @@
     NSMutableArray *math;
     NSMutableArray *storage;
     NSMutableArray *keyword;
+    NSMutableString *operators;
+    NSMutableString *commentString;
+    NSMutableString *whichLanguage;
 }
 
 - (IBAction)indent:(id)sender;

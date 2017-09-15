@@ -243,7 +243,7 @@ void CinderProjectBasicApp::draw()
     auto tex0 = fbos[pingPong]->getTexture2d( GL_COLOR_ATTACHMENT0 );
     gl::draw( tex0, tex0->getBounds(), Rectf(0, 0, getWindowWidth(), getWindowHeight()) );
     
-    gl::draw(audioMidiTex, Rectf( 0, 0, 1024, 100 ));
+   gl::draw(audioMidiTex, Rectf( 0, 0, 1024, 100 ));
     
     mSpectrumPlot.setBounds( Rectf( 110, getWindowHeight()-60, 210, getWindowHeight() - 10 ) );
     mSpectrumPlot.draw( mMagSpectrum );
@@ -260,7 +260,7 @@ void CinderProjectBasicApp::draw()
 void CinderProjectBasicApp::shaderListener( std::string code)
 {
 //    std::cout << code << std::endl;
-//    std::cout << "returned" << std::endl;
+    std::cout << "returned" << std::endl;
     gl::GlslProg::Format renderFormat;
     try {
         renderFormat.vertex( vertProg )
@@ -279,7 +279,7 @@ void CinderProjectBasicApp::shaderListener( std::string code)
 //        CI_LOG_E( "Shader load error: " << exc.what() );
         return;
     }
-    
+        std::cout << "running" << std::endl;
     [tv errorLineHighlight:""];
     fboGlsl = trialGlsl;
 }
