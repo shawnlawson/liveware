@@ -62,13 +62,12 @@ CGFloat lineNumberPadding = 4.0;
         NSRect					visibleRect, markerRect;
         NSRange					visibleGlyphRange, nullRange;
         NSString				*text, *labelText;
-        NSRectArray				rects;
+      //  NSRectArray				rects;
         CGFloat					ypos, yinset;
-        NSDictionary			*textAttributes, *currentTextAttributes;
-        NSSize					stringSize, markerSize;
-//        NoodleLineNumberMarker	*marker;
-        NSImage					*markerImage;
-        NSMutableArray			*lines;
+       // NSDictionary			*textAttributes, *currentTextAttributes;
+       // NSSize					stringSize, markerSize;
+       // NSImage					*markerImage;
+       // NSMutableArray			*lines;
         
         layoutManager = [view layoutManager];
         container = [view textContainer];

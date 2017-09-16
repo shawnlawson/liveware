@@ -46,7 +46,7 @@
     NSFont *oldFont = [NSFont fontWithName:@"fira code" size:16];
     [self setCurrentFont:[fontManager convertFont:oldFont]];
     [self setTextColor:[NSColor whiteColor]];
-    [self loadHighliter:"GLSL"];
+//    [self loadHighliter:"GLSL"];
     
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(textViewDidChangeSelection:)
@@ -58,9 +58,10 @@
                                                object:self];
 }
 
-- (void)assignShader:(std::string)shader{
+- (void)assignCode:(std::string)code withLanguage:(std::string)lang{
+    [self loadHighliter:lang];
     [[self textStorage] replaceCharactersInRange:NSMakeRange(0, [[self textStorage] length])
-                                      withString:[NSString stringWithUTF8String:shader.c_str()]];
+                                      withString:[NSString stringWithUTF8String:code.c_str()]];
     NSRange area = NSMakeRange(0, [[self textStorage] length]);
     [[self textStorage] removeAttribute:NSForegroundColorAttributeName range:area];
     
@@ -89,13 +90,15 @@
                              value:shadow
                              range:NSMakeRange(0, [self.textStorage length])];
     
+    if ([whichLanguage compare:@"GLSL"] == NSOrderedSame) {
     //TODO: checked for leaks but didn't find any, still suspicious.
-    shaderTimer = nil;
-    shaderTimer = [NSTimer scheduledTimerWithTimeInterval:0.2
-                                                   target:self
-                                                 selector:@selector(sendShaderCode)
-                                                 userInfo:nil
-                                                  repeats:NO];
+        shaderTimer = nil;
+        shaderTimer = [NSTimer scheduledTimerWithTimeInterval:0.2
+                                                       target:self
+                                                     selector:@selector(sendShaderCode)
+                                                     userInfo:nil
+                                                      repeats:NO];
+    }
 }
 
 #pragma mark - Formatting Commands
@@ -121,6 +124,7 @@
     
     //this finalizes the change
     [self didChangeText];
+    
     //this corrects any selections
     if(r.length > 0 && [self selectedRange].length > 0) {
         r = [self selectionRangeForProposedRange:NSMakeRange(r.location, r.length + numChars)
@@ -128,7 +132,6 @@
         [self setSelectedRange:[self selectionRangeForProposedRange:r
                                                         granularity:NSSelectByParagraph]];
     }
-    
 }
 
 - (BOOL) changeTextAt:(NSRange)aRange withString:(NSString*)aString
@@ -141,6 +144,7 @@
         [self.textStorage beginEditing];
         [self.textStorage replaceCharactersInRange:aRange
                                         withString:aString];
+        //register change
         [self.textStorage endEditing];
         return YES;
     } else {
@@ -161,12 +165,6 @@
     NSRect visibleRect = [self.enclosingScrollView.contentView documentVisibleRect];
     return [self.layoutManager glyphRangeForBoundingRect:visibleRect
                                          inTextContainer:self.textContainer];
-}
-
-//override to capture code execution
-- (void)insertNewline:(id)sender
-{
-    [super insertNewline:sender];
 }
 
 - (void) currentLineHighlight
@@ -327,14 +325,14 @@
                                                           NSRange enclosingRange,
                                                           BOOL *stop)
      {
-         if ([substring hasPrefix:@"// "])
+         if ([substring hasPrefix:[NSString stringWithFormat:@"%@ ", commentString ]])
          {
              NSRange replaceRange = NSMakeRange(substringRange.location, 3);
              if([self changeTextAt:replaceRange withString:@""])
                  numChars -= 3;
          } else {
              NSRange replaceRange = NSMakeRange(substringRange.location, 0);
-             if([self changeTextAt:replaceRange withString:@"// "])
+             if([self changeTextAt:replaceRange withString:[NSString stringWithFormat:@"%@ ", commentString ]])
                  numChars += 3;
          }
      }
@@ -343,6 +341,25 @@
     [self changeTextFormatFinalize:r andCharLength:numChars];
 }
 
+//capture shift+return and command+return
+-(void) keyDown:(NSEvent *)theEvent
+{
+    //    NSLog(@"%d", theEvent.keyCode);
+    if ([theEvent modifierFlags] & NSShiftKeyMask && theEvent.keyCode == 36)
+    {
+        if ([whichLanguage compare:@"LUA"] == NSOrderedSame) {
+            //line execution
+            //get selection, beginning to \n end to \n
+        }
+    } else if ([theEvent modifierFlags] & NSCommandKeyMask && theEvent.keyCode == 36)
+    {
+        if ([whichLanguage compare:@"LUA"] == NSOrderedSame) {
+//            function execution, beginning to function count if, else, ... end to end popping if/else/etc
+        }
+    } else {
+        [super keyDown:theEvent];
+    }
+}
 
 #pragma mark - Syntax Highlighting
 /////////////////////////////////////////////
@@ -493,13 +510,14 @@
             continue;
         }
         //define
-        
-        if([scanner scanString:@"#" intoString:NULL])
-        {
-            [scanner scanUpToString:@"\n" intoString:NULL ];
-            [self setTextColor:colors[ colormap[@"preprocessor"] ]
-                         range:NSMakeRange(preScan, scanner.scanLocation - preScan)];
-            continue;
+        if ([whichLanguage compare:@"GLSL"] == NSOrderedSame) {
+            if([scanner scanString:@"#" intoString:NULL])
+            {
+                [scanner scanUpToString:@"\n" intoString:NULL ];
+                [self setTextColor:colors[ colormap[@"preprocessor"] ]
+                             range:NSMakeRange(preScan, scanner.scanLocation - preScan)];
+                continue;
+            }
         }
         //strings
         if([scanner scanString:@"\"" intoString:NULL])
@@ -518,7 +536,13 @@
                 continue;
             }
         }
-        
+        //operations
+        if([scanner scanCharactersFromSet:[NSCharacterSet characterSetWithCharactersInString:operators ]
+                               intoString:nil]) {
+            [self setTextColor:colors[ @"yellow" ]
+                         range:NSMakeRange(preScan, scanner.scanLocation - preScan)];
+            continue;
+        }
         //and now we need a string holder
         NSMutableString * s = [[NSMutableString alloc] init];
         
@@ -546,11 +570,16 @@
                 [self setTextColor:colors[ colormap[@"keyword"] ]
                              range:NSMakeRange(preScan, scanner.scanLocation - preScan)];
                 continue;
-            } else if ([s rangeOfCharacterFromSet:[NSCharacterSet decimalDigitCharacterSet]].location != NSNotFound) {
+            }
+            
+            if ([s rangeOfCharacterFromSet:[NSCharacterSet decimalDigitCharacterSet]].location == NSNotFound) {
                 //something we made up on the fly -> ignore
                 //must be someting else: number, punctuation, symbol. reset location
-                scanner.scanLocation = preScan;
+                [self setTextColor:colors[ @"white" ]
+                             range:NSMakeRange(preScan, scanner.scanLocation - preScan)];
+                continue;
             }
+            scanner.scanLocation = preScan;
         }
         
         //numbers
@@ -560,13 +589,7 @@
                          range:NSMakeRange(preScan, scanner.scanLocation - preScan)];
             continue;
         }
-        //operations
-        if([scanner scanCharactersFromSet:[NSCharacterSet characterSetWithCharactersInString:operators ]
-                               intoString:nil]) {
-            [self setTextColor:colors[ @"red" ]
-                         range:NSMakeRange(preScan, scanner.scanLocation - preScan)];
-            continue;
-        }
+
         
         //else
         [scanner scanCharactersFromSet:[NSCharacterSet punctuationCharacterSet]

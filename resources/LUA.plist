@@ -7,8 +7,6 @@
 	<key>functions</key>
 	<array>
 		<string>texture</string>
-		<string>gl_FragCoord</string>
-		<string>gl_FragColor</string>
 		<string>rand</string>
 		<string>box</string>
 		<string>circle</string>
@@ -108,22 +106,17 @@
 		<string>mouse</string>
 		<string>deltaTime</string>
 	</array>
-	<key>language</key>
-	<array>
-		<string>false</string>
-		<string>nil</string>
-		<string>true</string>
-		<string>_G</string>
-		<string>_VERSION</string>
-		<string>math</string>
-		<string>self</string>
-		<string>and</string>
-		<string>or</string>
-		<string>not</string>
-	</array>
 	<key>keyword</key>
 	<array>
 		<string>break</string>
+		<string>nil</string>
+		<string>true</string>
+		<string>self</string>
+		<string>math</string>
+		<string>and</string>
+		<string>or</string>
+		<string>not</string>
+		<string>false</string>
 		<string>do</string>
 		<string>else</string>
 		<string>for</string>

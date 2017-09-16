@@ -11,10 +11,11 @@ uniform ivec2 ciWindowSize;
 
 uniform float time;
 uniform vec4 bands;
+uniform vec4 bandsR;
 out vec4 FragColor;
 
 void main() {
     vec3 bb = texture(uRenderMap, gl_FragCoord.xy/ciWindowSize).rgb;
-    vec3 aa = texture(uAudioMap, gl_FragCoord.xy).rgb;
-    FragColor = vec4(aa.r, sin(time), 0.0, 1.0);
+    vec3 aa = texture(uAudioMap, gl_FragCoord.xy/ciWindowSize).rgb;
+    FragColor = vec4(aa.r, aa.g, aa.b, 1.0);
 }

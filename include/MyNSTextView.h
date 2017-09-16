@@ -37,7 +37,7 @@
 - (IBAction)dedent:(id)sender;
 - (IBAction)toggleComments:(id)sender;
 
-- (void)assignShader:(std::string)shader;
+- (void) assignCode:(std::string)code withLanguage:(std::string)lang;
 - (void) errorLineHighlight:(std::string)errors;
 
 - (ci::signals::Signal<void(std::string)>*) ShaderSignal;
