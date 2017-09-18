@@ -30,6 +30,7 @@
 		9951AA191F40D46E0007F2A3 /* MidiMessage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9951A9EF1F40D46E0007F2A3 /* MidiMessage.cpp */; };
 		9951AA1A1F40D46E0007F2A3 /* MidiOut.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9951A9F01F40D46E0007F2A3 /* MidiOut.cpp */; };
 		9951AB8C1F40D4950007F2A3 /* CoreMIDI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9951AB8B1F40D4950007F2A3 /* CoreMIDI.framework */; };
+		9990BAA51F70051600C62B7A /* Osc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9990BA301F70051600C62B7A /* Osc.cpp */; };
 		99BF83491F60C91D00E0B4A8 /* LUA.plist in Resources */ = {isa = PBXBuildFile; fileRef = 99BF83481F60C91D00E0B4A8 /* LUA.plist */; };
 		99C5AC1D1F6DC75D009DB2FB /* liblua53.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 99C5AC1B1F6DC75D009DB2FB /* liblua53.a */; };
 		99C5AC1E1F6DC75D009DB2FB /* liblua53.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 99C5AC1C1F6DC75D009DB2FB /* liblua53.dylib */; };
@@ -75,9 +76,10 @@
 		9951A9EF1F40D46E0007F2A3 /* MidiMessage.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MidiMessage.cpp; sourceTree = "<group>"; };
 		9951A9F01F40D46E0007F2A3 /* MidiOut.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MidiOut.cpp; sourceTree = "<group>"; };
 		9951AB8B1F40D4950007F2A3 /* CoreMIDI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMIDI.framework; path = System/Library/Frameworks/CoreMIDI.framework; sourceTree = SDKROOT; };
+		9990BA301F70051600C62B7A /* Osc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Osc.cpp; sourceTree = "<group>"; };
+		9990BA311F70051600C62B7A /* Osc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Osc.h; sourceTree = "<group>"; };
 		99BF83481F60C91D00E0B4A8 /* LUA.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = LUA.plist; path = ../resources/LUA.plist; sourceTree = "<group>"; };
 		99C5AC161F6DC2CF009DB2FB /* sol.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = sol.hpp; path = ../include/sol.hpp; sourceTree = "<group>"; };
-		99C5AC171F6DC2DE009DB2FB /* Tokenize.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Tokenize.h; path = ../include/Tokenize.h; sourceTree = "<group>"; };
 		99C5AC181F6DC30A009DB2FB /* file.lua */ = {isa = PBXFileReference; lastKnownFileType = text; name = file.lua; path = ../assets/file.lua; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.lua; };
 		99C5AC1A1F6DC337009DB2FB /* thing.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = thing.hpp; path = ../include/thing.hpp; sourceTree = "<group>"; };
 		99C5AC1B1F6DC75D009DB2FB /* liblua53.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liblua53.a; path = ../../../../../usr/local/lib/liblua53.a; sourceTree = "<group>"; };
@@ -119,6 +121,7 @@
 		01B97315FEAEA392516A2CEA /* Blocks */ = {
 			isa = PBXGroup;
 			children = (
+				9990B94A1F70051600C62B7A /* OSC */,
 				9951A9AD1F40D46D0007F2A3 /* MIDI2 */,
 			);
 			name = Blocks;
@@ -190,7 +193,6 @@
 			isa = PBXGroup;
 			children = (
 				99C5AC161F6DC2CF009DB2FB /* sol.hpp */,
-				99C5AC171F6DC2DE009DB2FB /* Tokenize.h */,
 				992BDE121F4AF24C001BDFBC /* MyLineNumberView.h */,
 				992BDE141F4AF24C001BDFBC /* MyNSTextView.h */,
 				99EBEB621F3E997200453241 /* AudioDrawUtils.h */,
@@ -268,6 +270,40 @@
 				9951A9F01F40D46E0007F2A3 /* MidiOut.cpp */,
 			);
 			path = src;
+			sourceTree = "<group>";
+		};
+		9990B94A1F70051600C62B7A /* OSC */ = {
+			isa = PBXGroup;
+			children = (
+				9990BA2D1F70051600C62B7A /* src */,
+			);
+			name = OSC;
+			path = ../../../Downloads/cinder_0.9.1_mac/blocks/OSC;
+			sourceTree = "<group>";
+		};
+		9990BA2D1F70051600C62B7A /* src */ = {
+			isa = PBXGroup;
+			children = (
+				9990BA2E1F70051600C62B7A /* cinder */,
+			);
+			path = src;
+			sourceTree = "<group>";
+		};
+		9990BA2E1F70051600C62B7A /* cinder */ = {
+			isa = PBXGroup;
+			children = (
+				9990BA2F1F70051600C62B7A /* osc */,
+			);
+			path = cinder;
+			sourceTree = "<group>";
+		};
+		9990BA2F1F70051600C62B7A /* osc */ = {
+			isa = PBXGroup;
+			children = (
+				9990BA301F70051600C62B7A /* Osc.cpp */,
+				9990BA311F70051600C62B7A /* Osc.h */,
+			);
+			path = osc;
 			sourceTree = "<group>";
 		};
 		99C5AC191F6DC317009DB2FB /* Drawables */ = {
@@ -352,6 +388,7 @@
 				9951AA181F40D46E0007F2A3 /* MidiIn.cpp in Sources */,
 				9951AA171F40D46E0007F2A3 /* MidiHub.cpp in Sources */,
 				992BDE111F4AF23D001BDFBC /* MyNSTextView.mm in Sources */,
+				9990BAA51F70051600C62B7A /* Osc.cpp in Sources */,
 				9951AA1A1F40D46E0007F2A3 /* MidiOut.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -392,7 +429,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "org.libcinder.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = CinderProjectBasic;
 				SYMROOT = ./build;
-				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" ../include $(CINDER_PATH/blocks/MIDI2/lib $(CINDER_PATH/blocks/MIDI2/src $(CINDER_PATH/blocks/MIDI2/include ../src/GMCodeEditor\" ../src/Noodle\"";
+				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" ../include $(CINDER_PATH)/blocks/MIDI2/lib $(CINDER_PATH)/blocks/MIDI2/src $(CINDER_PATH)/blocks/MIDI2/include $(CINDER_PATH)/blocks/OSC/src \"$(CINDER_PATH)/blocks/OSC/src\"";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -432,7 +469,7 @@
 				PRODUCT_NAME = CinderProjectBasic;
 				STRIP_INSTALLED_PRODUCT = YES;
 				SYMROOT = ./build;
-				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" ../include $(CINDER_PATH/blocks/MIDI2/lib $(CINDER_PATH/blocks/MIDI2/src $(CINDER_PATH/blocks/MIDI2/include ../src/GMCodeEditor\" ../src/Noodle\"";
+				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" ../include $(CINDER_PATH)/blocks/MIDI2/lib $(CINDER_PATH)/blocks/MIDI2/src $(CINDER_PATH)/blocks/MIDI2/include $(CINDER_PATH)/blocks/OSC/src \"$(CINDER_PATH)/blocks/OSC/src\"";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;

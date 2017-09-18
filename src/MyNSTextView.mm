@@ -11,11 +11,11 @@
 
 #import "MyNSTextView.h"
 
-#include "Tokenize.h"
-
 #define NSColorFromRGB(rgbValue) [NSColor colorWithCalibratedRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 green:((float)((rgbValue & 0xFF00) >> 8))/255.0 blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 
 @implementation MyNSTextView
+
+//TODO:: disable clipview scrolling and text edit
 
 - (id)initWithCoder:(NSCoder *)aDecoder
 {
@@ -182,7 +182,6 @@
     NSRange visible = [self getVisibleRange];
     [self.layoutManager removeTemporaryAttribute:NSUnderlineStyleAttributeName
                                forCharacterRange:visible];
-//                               forCharacterRange:NSMakeRange(0, [self.textStorage length])];
     
     [self.layoutManager removeTemporaryAttribute:NSUnderlineColorAttributeName
                                forCharacterRange:visible];
@@ -190,27 +189,21 @@
     [self.layoutManager removeTemporaryAttribute:NSToolTipAttributeName
                                forCharacterRange:visible];
     
-    std::istringstream f(errors);
-    std::string line;
-    int row = 0;
-    NSString * annotation;
-    //    std::cout << errors << std::endl;
-    while(std::getline(f, line))
-    {
-        std::vector<std::string> tokens;
-        Tokenize(line, tokens, ":");
+    NSString *errs = [NSString stringWithUTF8String:errors.c_str()];
+    
+    [errs enumerateLinesUsingBlock:^(NSString *line, BOOL *stop) {
+        int row = 0;
+        NSString * annotation;
+        NSArray *tokens = [errs componentsSeparatedByString:@":"];
         
         //only look if there is something
-        if (tokens.size() > 3)
+        if (tokens.count > 3)
         {
             //first error always tells where
-            if (0 == tokens[0].compare("FRAGMENT")) {
-                row = std::stoi(tokens[3]) -1; //-1 is offset from header
-                //if multiple then token[0] is dropped
-            } else {
-                row = std::stoi(tokens[2]) -1;
-                
-            }
+            if (NSOrderedSame == [tokens[0] compare:@"FRAGMENT"])
+                row = [tokens[3] intValue] -1; //-1 is offset from header
+            else //if multiple then token[0] is dropped
+                row = [tokens[2] intValue] -1;
             
             //convert row to a NSRange
             unsigned numberOfLines, myIndex, stringLength = [self.textStorage length];
@@ -226,27 +219,22 @@
             
             [self.layoutManager addTemporaryAttribute:NSUnderlineStyleAttributeName
                                                 value:@(NSUnderlineStyleThick)
-                                    forCharacterRange:[[self.textStorage string] lineRangeForRange:NSMakeRange(myIndex, 0)]];
+                                    forCharacterRange:[[self.textStorage string] lineRangeForRange:NSMakeRange
+                                                       (myIndex, 0)]];
             
             //account for all lengths of information
-            if (tokens.size() > 5) {
-                annotation = [NSString stringWithFormat:@"%s : %s",
-                              tokens[4].c_str(), tokens[5].c_str() ];
-                
-            } else if (tokens.size() > 4) {
-                annotation = [NSString stringWithFormat:@"%s",
-                              tokens[4].c_str() ];
-            }
-            else {
-                annotation = [NSString stringWithFormat:@"%s",
-                              tokens[3].c_str() ];
-            }
+            if (tokens.count > 5)
+                annotation = [NSString stringWithFormat:@"%@ : %@", tokens[4], tokens[5]];
+            else if (tokens.count > 4)
+                annotation = tokens[4];
+            else
+                annotation = tokens[3];
             
             [self.layoutManager addTemporaryAttribute:NSToolTipAttributeName
                                                 value:annotation
                                     forCharacterRange:[[self.textStorage string] lineRangeForRange:NSMakeRange(myIndex, 0)]];
         }
-    }
+    }];
 }
 
 #pragma mark - UI Commands
@@ -347,14 +335,108 @@
     //    NSLog(@"%d", theEvent.keyCode);
     if ([theEvent modifierFlags] & NSShiftKeyMask && theEvent.keyCode == 36)
     {
-        if ([whichLanguage compare:@"LUA"] == NSOrderedSame) {
-            //line execution
-            //get selection, beginning to \n end to \n
+        if ([whichLanguage compare:@"LUA"] == NSOrderedSame)
+        {
+            NSRange r = [self selectionRangeForProposedRange:[self selectedRange]
+                                                 granularity:NSSelectByParagraph];
+            
+//            NSLog(@"%@", [self.textStorage.string substringWithRange:r]);
+        [self sendLuaCode:[self.textStorage.string substringWithRange:r]];
+            
         }
     } else if ([theEvent modifierFlags] & NSCommandKeyMask && theEvent.keyCode == 36)
     {
-        if ([whichLanguage compare:@"LUA"] == NSOrderedSame) {
-//            function execution, beginning to function count if, else, ... end to end popping if/else/etc
+        if ([whichLanguage compare:@"LUA"] == NSOrderedSame)
+        {
+            //start with grabbing paragraph
+            NSRange s = [self selectedRange];
+            NSRange r = [self selectionRangeForProposedRange:s
+                                                 granularity:NSSelectByParagraph];
+            NSRange rEnd = r;
+            int count = 0;
+            while(true)
+            {
+                NSString *subString = [self.textStorage.string substringWithRange:r];
+                if ([subString containsString:@"function"]) {
+                    //did we find "function"?
+                    count -= 1;
+                    break;
+                } else if ([subString containsString:@"if"]) {
+                    count -= 1;
+                } else if ([subString containsString:@"do"]) {
+                    count -= 1;
+                } else if ([subString containsString:@"while"]) {
+                    count -= 1;
+                } else if ([subString containsString:@"repeat"]) {
+                    count -= 1;
+                } else if ([subString containsString:@"until"]) {
+                    count += 1;
+                } else if ([subString containsString:@"end"]) {
+                    count += 1;
+                } else if (r.location == 0){
+                    //or are we at the beginning?
+                    return;
+                }
+                    
+                //otherwise step back one character and grab the previous line
+                r.location -= 1;
+                r.length = 0;
+                r = [self selectionRangeForProposedRange:r
+                                             granularity:NSSelectByParagraph];
+            }
+            
+            if (count == 0)
+            {
+                //we got something
+//                NSLog(@"%@", [self.textStorage.string substringWithRange:NSMakeRange(r.location, NSMaxRange(rEnd)-r.location)]);
+                [self sendLuaCode:[self.textStorage.string substringWithRange:NSMakeRange(r.location, NSMaxRange(rEnd)-r.location)]];
+                return;
+            } else if (count < 0)
+            {
+
+                rEnd.location = NSMaxRange(rEnd) + 1;
+                rEnd.length = 0;
+                rEnd = [self selectionRangeForProposedRange:rEnd
+                                                granularity:NSSelectByParagraph];
+                //find more "end" and until" but no "function"
+                while(true)
+                {
+                    NSString *subString = [self.textStorage.string substringWithRange:rEnd];
+                    if ([subString containsString:@"function"]) {
+                        //did we find "function"?
+                        return;
+                    } else if ([subString containsString:@"if"]) {
+                        count -= 1;
+                    } else if ([subString containsString:@"do"]) {
+                        count -= 1;
+                    } else if ([subString containsString:@"while"]) {
+                        count -= 1;
+                    } else if ([subString containsString:@"repeat"]) {
+                        count -= 1;
+                    } else if ([subString containsString:@"until"]) {
+                        count += 1;
+                    } else if ([subString containsString:@"end"]) {
+                        count += 1;
+                    } else if (NSMaxRange(rEnd) == self.textStorage.length){
+                        //or are we at the end?
+                        return;
+                    }
+            
+                    if (count == 0)
+                    {
+                        //we got something
+//                        NSLog(@"%@", [self.textStorage.string substringWithRange:NSMakeRange(r.location, NSMaxRange(rEnd)-r.location)]);
+                        [self sendLuaCode:[self.textStorage.string substringWithRange:NSMakeRange(r.location, NSMaxRange(rEnd)-r.location)]];
+                        return;
+                    }
+                    //otherwise step back one character and grab the previous line
+                    rEnd.location = NSMaxRange(rEnd) + 1;
+                    rEnd.length = 0;
+                    rEnd = [self selectionRangeForProposedRange:rEnd
+                                                 granularity:NSSelectByParagraph];
+                }
+            }
+            
         }
     } else {
         [super keyDown:theEvent];
@@ -589,7 +671,6 @@
                          range:NSMakeRange(preScan, scanner.scanLocation - preScan)];
             continue;
         }
-
         
         //else
         [scanner scanCharactersFromSet:[NSCharacterSet punctuationCharacterSet]
@@ -644,6 +725,25 @@
 - (void)sendShaderCode
 {
     shaderSignal.emit( std::string([[[self textStorage] string] UTF8String]) );
+}
+
+- (ci::signals::Signal<void(std::string)>*) LuaSignal
+{
+    return &luaSignal;
+}
+
+- (void)sendLuaCode:(NSString *)code //withRange:(NSRange)range
+{
+    luaSignal.emit( std::string([code UTF8String]) );
+    
+//    execRange = range;
+//    luaExecHighlightTimer = nil;
+//    luaExecHighlightTimer = [NSTimer scheduledTimerWithTimeInterval:0.2
+//                                                   target:self
+//                                                 selector:@selector(clearLuaExecHightlighting)
+//                                                 userInfo:nil
+//                                                  repeats:NO];
+    //onclear reset highlighted line.
 }
 
 

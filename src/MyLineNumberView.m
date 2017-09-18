@@ -30,29 +30,16 @@ CGFloat lineNumberPadding = 4.0;
      
         [aScrollView.documentView setUsesRuler:YES];
         
-//        [NSNotificationCenter.defaultCenter
-//                                addObserver:self
-//                                   selector:@selector(textDidChange:)
-//                                       name:NSTextDidChangeNotification
-//                                     object:[aScrollView documentView]];
     }
     return self;
 }
 
-//- (void)textDidChange:(NSNotification *)obj
-//{
-////    NSLog(@"needing recount");
-//}
-
 - (void)drawRect:(NSRect)dirtyRect {
-//    NSLog(@"dirtyRect");
     [self drawHashMarksAndLabelsInRect:dirtyRect];
 }
 
-- (void)drawHashMarksAndLabelsInRect:(NSRect)aRect{
-    
-//    NSLog(@"hash");
-    
+- (void)drawHashMarksAndLabelsInRect:(NSRect)aRect
+{
     id view = [self clientView];
     
     if ([view isKindOfClass:[NSTextView class]])

@@ -21,6 +21,8 @@
     NSUInteger tabWidth;
     NSFont *currentFont;
     NSTimer *shaderTimer;
+    NSTimer *luaExecHighlightTimer;
+    NSRange execRange;
     NSMutableDictionary *colormap;
     NSMutableDictionary *colors;
     NSMutableArray *functions;
@@ -41,7 +43,9 @@
 - (void) errorLineHighlight:(std::string)errors;
 
 - (ci::signals::Signal<void(std::string)>*) ShaderSignal;
+- (ci::signals::Signal<void(std::string)>*) LuaSignal;
 
 @end
 
 static ci::signals::Signal<void(std::string)>      shaderSignal;
+static ci::signals::Signal<void(std::string)>      luaSignal;

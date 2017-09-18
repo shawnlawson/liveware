@@ -13,6 +13,7 @@
 
 //Blocks
 #include "MidiHeaders.h"
+#include "cinder/osc/Osc.h"
 
 //User
 #include "MyNSTextView.h"
@@ -28,15 +29,30 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
+//OSC UDP
+using Receiver = osc::ReceiverUdp;
+using protocol = asio::ip::udp;
+
 class CinderProjectBasicApp : public App {
 public:
+    CinderProjectBasicApp(); //for OSC override
     void setup() override;
     void mouseDown( MouseEvent event ) override;
     void keyDown( KeyEvent event ) override;
     void update() override;
     void draw() override;
+    void cleanup() override;
     void swapCode();
     void loadFiles();
+    
+    //OSC
+    void openOSC();
+    void stopOSC();
+    std::shared_ptr<asio::io_service>		mIoService;
+    std::shared_ptr<asio::io_service::work>	mWork;
+    std::thread								mThread;
+    std::mutex                              mNNMutex;
+    Receiver                                mReceiver;
     
     
     //MIDI
@@ -74,6 +90,7 @@ public:
 
     //editor
     void shaderListener( std::string code);
+    void luaListener( std::string code);
     NSView * theView;
     bool loadedShader = false;
     CinderViewMac *cvm;
@@ -91,10 +108,20 @@ public:
     int						mEnumSelection;
     vector<string>          midiNames;
     int                     midiSelection;
+    vector<string>          oscNames;
+    int                     oscSelection;
+
 
     //time
     double lastFrameTime;
 };
+
+//contructor so that we have OSC
+CinderProjectBasicApp::CinderProjectBasicApp()
+    : mIoService( new asio::io_service ),
+    mWork( new asio::io_service::work( *mIoService ) ),
+    mReceiver( 10001, protocol::v4(), *mIoService )
+{}
 
 void CinderProjectBasicApp::setup()
 {
@@ -164,9 +191,7 @@ void CinderProjectBasicApp::setup()
         mMonitorSpectralNodeRight = ctx->makeNode( new audio::MonitorSpectralNode( monitorFormat ) );
         mInputDeviceNode >> channelRouterLeft->route(0, 0) >> mMonitorSpectralNode;
         mInputDeviceNode >> channelRouterRight->route(1, 0) >> mMonitorSpectralNodeRight;
-
-    } else {
-        //mono
+    } else { //mono
         auto monitorFormat = audio::MonitorSpectralNode::Format().fftSize( 2048 ).windowSize( 1024 );
         mMonitorSpectralNode = ctx->makeNode( new audio::MonitorSpectralNode( monitorFormat ) );
         mInputDeviceNode >> mMonitorSpectralNode;
@@ -181,21 +206,24 @@ void CinderProjectBasicApp::setup()
     /////////////////////////////////////////////
     mParams = params::InterfaceGl::create( getWindow(), "App parameters", toPixels( ivec2( 200, 400 ) ) );
     mParams->setPosition(ivec2(500, 10));
-    // Add an enum (list) selector.
     mEnumSelection = 0;
     mEnumNames = { "new GLSL", "new Lua", "Bach 1", "Bach 2", "Bach3 ", "Bach 4", "Accordion", "Mashup", "Improv" };
-    
     mParams->addParam( "Code", mEnumNames, &mEnumSelection )
     //    .keyDecr( "[" )
     //    .keyIncr( "]" )
 //    .updateFn( [this] { console() << "enum updated: " << mEnumNames[mEnumSelection] << endl; } );
     .updateFn( [&](){ swapCode(); } );
-    mParams->addSeparator();
     
+    mParams->addSeparator();
     midiSelection = midiNames.size() - 1;
     mParams->addParam( "MIDI In", midiNames, &midiSelection )
     .updateFn( [&](){ openMidi(); } );
+    
+    oscNames = {"UDP port 10001", "none"};
+    oscSelection = oscNames.size() -1;
     mParams->addSeparator();
+    mParams->addParam( "OSC In", oscNames, &oscSelection)
+    .updateFn( [&](){ openOSC(); } );
     
     
     /////////////////////////////////////////////
@@ -210,6 +238,7 @@ void CinderProjectBasicApp::setup()
     
     //callback from webview when shader code changes
     tv.ShaderSignal->connect([this](std::string code) { shaderListener( code ); });
+    tv.LuaSignal->connect([this](std::string code) { luaListener( code ); });
     
     //attaching to cinder view, attaching to window view doesn't work
      cvm =  (__bridge CinderViewMac *)getWindow()->getNative();
@@ -220,6 +249,11 @@ void CinderProjectBasicApp::setup()
 
 void CinderProjectBasicApp::update()
 {
+    {
+        std::lock_guard<std::mutex> lock( mNNMutex );
+//        use data? 
+    }
+    
     mMagSpectrum = mMonitorSpectralNode->getMagSpectrum();
     if (mInputDeviceNode->getNumChannels() > 1)
         mMagSpectrumRight = mMonitorSpectralNodeRight->getMagSpectrum();
@@ -313,9 +347,6 @@ void CinderProjectBasicApp::draw()
     mSpectrumPlot.draw( mMagSpectrum );
     gl::color( Color::white() );
     mTextureFont->drawString( toString( floor(getAverageFps()) ), vec2( 60, getWindowHeight() - mTextureFont->getDescent()-10 ) );
-//this causes things to not render correctly in the spectal fft
-//        drawAudioBuffer(mMonitorSpectralNode->getBuffer(),
-//                        Rectf( 110, getWindowHeight()-60, 210, getWindowHeight() - 10 ));
 
     //TODO:: if lua?
     for (int i = 0; i < things.size(); i++){
@@ -326,10 +357,22 @@ void CinderProjectBasicApp::draw()
     mParams->draw();
 }
 
+void CinderProjectBasicApp::luaListener( std::string code)
+{
+    auto simple_handler = [](lua_State*, sol::protected_function_result result) {
+        // You can just pass it through to let the call-site handle it
+        return result;
+    };
+    auto result = lua.script(code, simple_handler);
+    if (!result.valid()) {
+        sol::error err = result;
+        std::cout << "Error:" << err.what() << std::endl;
+    }
+    //TODO:: HANDLE THESE ERRORS!!
+}
+
 void CinderProjectBasicApp::shaderListener( std::string code)
 {
-
-//    std::cout << "returned" << std::endl;
     gl::GlslProg::Format renderFormat;
     try {
         renderFormat.vertex( vertProg )
@@ -520,5 +563,60 @@ void CinderProjectBasicApp::midiListener( midi::Message msg )
     
 }
 
+/////////////////////////////////////////////
+//  OSC
+/////////////////////////////////////////////
+
+void CinderProjectBasicApp::openOSC()
+{
+    stopOSC();
+    
+    if(oscSelection == 1) //none
+        return;
+    
+    mReceiver.setListener("/mousemove/1",
+                          [&]( const osc::Message &msg ){
+                              std::lock_guard<std::mutex> lock( mNNMutex );
+                              NSLog(@"data");
+                          });
+
+    try {
+        mReceiver.bind();
+        
+        mReceiver.listen([]( asio::error_code error, protocol::endpoint endpoint ) -> bool {
+                             if( error ) {
+                                 CI_LOG_E( "Error Listening: " << error.message() << " val: "
+                                          << error.value() << " endpoint: " << endpoint );
+                                 return false;
+                             }
+                             else
+                                 return true;
+                         });
+        
+        mThread = std::thread( std::bind([]( std::shared_ptr<asio::io_service> &service ){
+                                             service->run();
+                                         }, mIoService ));
+    }
+    catch( const osc::Exception &ex ) {
+        CI_LOG_E( "Error binding: " << ex.what() << " val: " << ex.value() );
+      //  quit();
+    }
+}
+
+void CinderProjectBasicApp::stopOSC()
+{
+     if (mThread.joinable() ){
+        mWork.reset();
+        mIoService->stop();
+        mThread.join();
+        mReceiver.removeListener("/mousemove/1");
+        mReceiver.close();
+     }
+}
+
+void CinderProjectBasicApp::cleanup()
+{
+    stopOSC();
+}
 
 CINDER_APP( CinderProjectBasicApp, RendererGl )
