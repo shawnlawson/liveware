@@ -24,6 +24,8 @@
 #include "sol.hpp"
 
 #include "thing.hpp"
+#include "PostProcess.h"
+#include "BuiltinPostProcesses.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -53,6 +55,7 @@ public:
     std::thread								mThread;
     std::mutex                              mNNMutex;
     Receiver                                mReceiver;
+    float                                   nnData[10];
     
     
     //MIDI
@@ -79,12 +82,13 @@ public:
     
     //graphics
     void renderToFBO();
-    gl::FboRef fbos[2];
+    gl::FboRef fbos[4];
     gl::GlslProgRef fboGlsl, trialGlsl;
     std::string vertProg, fragProg;
     
     int	FBO_WIDTH = 1280, FBO_HEIGHT = 720;
     int pingPong = 0;
+    int postPingPong = 0;
     gl::TextureRef audioMidiTex;
     Surface8u audioSuface;
 
@@ -101,6 +105,7 @@ public:
     std::string bach1, bach2;
     sol::state lua;
     vector<thing> things;
+    vector<PostProcess> postProcesses;
     
     //GUI
     params::InterfaceGlRef	mParams;
@@ -145,7 +150,9 @@ void CinderProjectBasicApp::setup()
 //    .attachment( GL_COLOR_ATTACHMENT1, gl::Texture2d::create( FBO_WIDTH, FBO_HEIGHT ) );
     fbos[0] = gl::Fbo::create( FBO_WIDTH, FBO_HEIGHT, format);
     fbos[1] = gl::Fbo::create( FBO_WIDTH, FBO_HEIGHT, format);
-
+    fbos[2] = gl::Fbo::create( FBO_WIDTH, FBO_HEIGHT, format);
+    fbos[3] = gl::Fbo::create( FBO_WIDTH, FBO_HEIGHT, format);
+    
     loadFiles();
     
     audioSuface = Surface8u(1024, 1, false);
@@ -180,6 +187,7 @@ void CinderProjectBasicApp::setup()
     /////////////////////////////////////////////
     //  Audio, check duplicate device INIT
     /////////////////////////////////////////////
+    //TODO:: force Mono at start
     auto ctx = audio::Context::master();
     mInputDeviceNode = ctx->createInputDeviceNode();
     if (mInputDeviceNode->getNumChannels() > 1)
@@ -205,7 +213,7 @@ void CinderProjectBasicApp::setup()
     //  GUI INIT
     /////////////////////////////////////////////
     mParams = params::InterfaceGl::create( getWindow(), "App parameters", toPixels( ivec2( 200, 400 ) ) );
-    mParams->setPosition(ivec2(500, 10));
+    mParams->setPosition(ivec2(800, 10));
     mEnumSelection = 0;
     mEnumNames = { "new GLSL", "new Lua", "Bach 1", "Bach 2", "Bach3 ", "Bach 4", "Accordion", "Mashup", "Improv" };
     mParams->addParam( "Code", mEnumNames, &mEnumSelection )
@@ -250,8 +258,12 @@ void CinderProjectBasicApp::setup()
 void CinderProjectBasicApp::update()
 {
     {
-        std::lock_guard<std::mutex> lock( mNNMutex );
-//        use data? 
+//        mThread.joinable()//check for OSC connected
+//        std::lock_guard<std::mutex> lock( mNNMutex );
+//        for (int i = 0; i < 10; ++i) {
+//            std::cout << nnData[i] << " ";
+//        }
+//        std::cout << std::endl;
     }
     
     mMagSpectrum = mMonitorSpectralNode->getMagSpectrum();
@@ -306,6 +318,11 @@ void CinderProjectBasicApp::update()
     sol::function luaUpdate = lua["update"];
     luaUpdate();
     
+//    int numEffects = postProcesses.size();
+//    for (int i = 0; i < numEffects; ++i) {
+//            postProcesses[i].updateUniforms();
+//    }
+//    
     renderToFBO();
 }
 
@@ -330,6 +347,11 @@ void CinderProjectBasicApp::renderToFBO()
     if (mInputDeviceNode->getNumChannels() > 1)
         fboGlsl->uniform("bandsR", mBandsR);
     
+    int numEffects = postProcesses.size();
+    for (int i = 0; i < numEffects; ++i)
+    {
+        postProcesses[i].updateUniforms();
+    }
     
     gl::drawSolidRect(Rectf(vec2(0), fbos[pingPong]->getSize()));
 }
@@ -337,9 +359,39 @@ void CinderProjectBasicApp::renderToFBO()
 void CinderProjectBasicApp::draw()
 {
     gl::clear( Color( 0, 0, 0 ) );
+    
+    //TODO:: if lua?
+    for (int i = 0; i < things.size(); i++){
+        things[i].draw();
+    }
+    
+    int numEffects = postProcesses.size();
+    
+    if (numEffects > 0)
+    {
+        postPingPong = 2;
+        
+        for (int i = 0; i < numEffects; ++i)
+        {
+            if(i == 0) {
+                auto tex0 = fbos[pingPong]->getTexture2d( GL_COLOR_ATTACHMENT0 );
+                postProcesses[i].draw(tex0, fbos[postPingPong]);
+            }else {
+                auto tex0 = fbos[postPingPong]->getTexture2d( GL_COLOR_ATTACHMENT0 );
+                postProcesses[i].draw(tex0, fbos[(postPingPong + 1) % 2 + 2]);
+                postPingPong = (postPingPong + 1) % 2 + 2;
+            }
+        }
+        
+        auto lastPass = fbos[postPingPong]->getTexture2d( GL_COLOR_ATTACHMENT0 );
+        gl::draw( lastPass, lastPass->getBounds(), Rectf(0, 0, getWindowWidth(), getWindowHeight()) );
+    }
+    else {
+        auto tex0 = fbos[pingPong]->getTexture2d( GL_COLOR_ATTACHMENT0 );
+        gl::draw( tex0, tex0->getBounds(), Rectf(0, 0, getWindowWidth(), getWindowHeight()) );
+    }
 
-    auto tex0 = fbos[pingPong]->getTexture2d( GL_COLOR_ATTACHMENT0 );
-    gl::draw( tex0, tex0->getBounds(), Rectf(0, 0, getWindowWidth(), getWindowHeight()) );
+    
     
 //   gl::draw(audioMidiTex, Rectf( 0, 0, 1024, 100 ));
     
@@ -348,10 +400,6 @@ void CinderProjectBasicApp::draw()
     gl::color( Color::white() );
     mTextureFont->drawString( toString( floor(getAverageFps()) ), vec2( 60, getWindowHeight() - mTextureFont->getDescent()-10 ) );
 
-    //TODO:: if lua?
-    for (int i = 0; i < things.size(); i++){
-        things[i].draw();
-    }
     
     // Draw the interface
     mParams->draw();
@@ -468,7 +516,7 @@ void CinderProjectBasicApp::loadFiles()
     lua.open_libraries(sol::lib::base);
     // you can open all libraries by passing no arguments
     //lua.open_libraries();
-    
+
     lua.new_usertype<thing>("thing",
                             "x", &thing::x,
                             "y", &thing::y,
@@ -480,7 +528,18 @@ void CinderProjectBasicApp::loadFiles()
                             "it", [](thing& t) {
                                 return sol::as_container(t); //act like container
                             });
+    
+    lua.new_usertype<Greyscale>("Greyscale",
+                                "amount", &Greyscale::amount,
+                                "listUniforms", &Greyscale::listUniforms
+//                            "draw", &Greyscale::draw,
+//                            "update", &Greyscale::update,
+//                            sol::base_classes, sol::bases<PostProcess>()
+                            );
+
+    
     lua["scene"] = &things;
+    lua["post"] = &postProcesses;
     
     // call lua code directly
     lua.script("print('hello world')");
@@ -574,10 +633,13 @@ void CinderProjectBasicApp::openOSC()
     if(oscSelection == 1) //none
         return;
     
-    mReceiver.setListener("/mousemove/1",
+    mReceiver.setListener("liveware/nn/",
                           [&]( const osc::Message &msg ){
                               std::lock_guard<std::mutex> lock( mNNMutex );
-                              NSLog(@"data");
+                              for (int i = 0; i < 10; ++i) {
+                                  nnData[i] = msg[i].flt();
+                              }
+//                              NSLog(@"data");
                           });
 
     try {

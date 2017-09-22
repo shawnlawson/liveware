@@ -57,6 +57,9 @@
 		5323E6B10EAFCA74003A9687 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = /System/Library/Frameworks/CoreVideo.framework; sourceTree = "<absolute>"; };
 		8D1107320486CEB800E47090 /* CinderProjectBasic.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CinderProjectBasic.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		991A61FB1F51BB5A001E44E8 /* GLSL.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = GLSL.plist; path = ../resources/GLSL.plist; sourceTree = "<group>"; };
+		991A81701F74250900D80CA3 /* PostProcess.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PostProcess.h; path = ../include/PostProcess.h; sourceTree = "<group>"; };
+		991A81711F7425D900D80CA3 /* Drawable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Drawable.h; path = ../include/Drawable.h; sourceTree = "<group>"; };
+		991A81731F74304400D80CA3 /* BuiltinPostProcesses.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BuiltinPostProcesses.h; path = ../include/BuiltinPostProcesses.h; sourceTree = "<group>"; };
 		992BDE0C1F4AF23D001BDFBC /* MyLineNumberView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MyLineNumberView.m; path = ../src/MyLineNumberView.m; sourceTree = "<group>"; };
 		992BDE0E1F4AF23D001BDFBC /* MyNSTextView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = MyNSTextView.mm; path = ../src/MyNSTextView.mm; sourceTree = "<group>"; };
 		992BDE121F4AF24C001BDFBC /* MyLineNumberView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MyLineNumberView.h; path = ../include/MyLineNumberView.h; sourceTree = "<group>"; };
@@ -309,7 +312,10 @@
 		99C5AC191F6DC317009DB2FB /* Drawables */ = {
 			isa = PBXGroup;
 			children = (
+				991A81731F74304400D80CA3 /* BuiltinPostProcesses.h */,
 				99C5AC1A1F6DC337009DB2FB /* thing.hpp */,
+				991A81701F74250900D80CA3 /* PostProcess.h */,
+				991A81711F7425D900D80CA3 /* Drawable.h */,
 			);
 			name = Drawables;
 			sourceTree = "<group>";

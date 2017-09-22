@@ -341,7 +341,7 @@
                                                  granularity:NSSelectByParagraph];
             
 //            NSLog(@"%@", [self.textStorage.string substringWithRange:r]);
-        [self sendLuaCode:[self.textStorage.string substringWithRange:r]];
+        [self sendLuaCode:[self.textStorage.string substringWithRange:r] withRange:r];
             
         }
     } else if ([theEvent modifierFlags] & NSCommandKeyMask && theEvent.keyCode == 36)
@@ -389,7 +389,7 @@
             {
                 //we got something
 //                NSLog(@"%@", [self.textStorage.string substringWithRange:NSMakeRange(r.location, NSMaxRange(rEnd)-r.location)]);
-                [self sendLuaCode:[self.textStorage.string substringWithRange:NSMakeRange(r.location, NSMaxRange(rEnd)-r.location)]];
+                [self sendLuaCode:[self.textStorage.string substringWithRange:NSMakeRange(r.location, NSMaxRange(rEnd)-r.location)] withRange:NSMakeRange(r.location, NSMaxRange(rEnd)-r.location)];
                 return;
             } else if (count < 0)
             {
@@ -426,7 +426,7 @@
                     {
                         //we got something
 //                        NSLog(@"%@", [self.textStorage.string substringWithRange:NSMakeRange(r.location, NSMaxRange(rEnd)-r.location)]);
-                        [self sendLuaCode:[self.textStorage.string substringWithRange:NSMakeRange(r.location, NSMaxRange(rEnd)-r.location)]];
+                        [self sendLuaCode:[self.textStorage.string substringWithRange:NSMakeRange(r.location, NSMaxRange(rEnd)-r.location)] withRange:NSMakeRange(r.location, NSMaxRange(rEnd)-r.location)];
                         return;
                     }
                     //otherwise step back one character and grab the previous line
@@ -625,6 +625,13 @@
                          range:NSMakeRange(preScan, scanner.scanLocation - preScan)];
             continue;
         }
+        //numbers
+        if([scanner scanDouble:NULL])
+        {
+            [self setTextColor:colors[ colormap[@"numbers"] ]
+                         range:NSMakeRange(preScan, scanner.scanLocation - preScan)];
+            continue;
+        }
         //and now we need a string holder
         NSMutableString * s = [[NSMutableString alloc] init];
         
@@ -654,7 +661,8 @@
                 continue;
             }
             
-            if ([s rangeOfCharacterFromSet:[NSCharacterSet decimalDigitCharacterSet]].location == NSNotFound) {
+//            if ([s rangeOfCharacterFromSet:[NSCharacterSet decimalDigitCharacterSet]].location == NSNotFound) {
+            else {
                 //something we made up on the fly -> ignore
                 //must be someting else: number, punctuation, symbol. reset location
                 [self setTextColor:colors[ @"white" ]
@@ -664,13 +672,7 @@
             scanner.scanLocation = preScan;
         }
         
-        //numbers
-        if([scanner scanDouble:NULL])
-        {
-            [self setTextColor:colors[ colormap[@"numbers"] ]
-                         range:NSMakeRange(preScan, scanner.scanLocation - preScan)];
-            continue;
-        }
+
         
         //else
         [scanner scanCharactersFromSet:[NSCharacterSet punctuationCharacterSet]
@@ -732,20 +734,26 @@
     return &luaSignal;
 }
 
-- (void)sendLuaCode:(NSString *)code //withRange:(NSRange)range
+- (void)sendLuaCode:(NSString *)code withRange:(NSRange)range
 {
     luaSignal.emit( std::string([code UTF8String]) );
     
-//    execRange = range;
-//    luaExecHighlightTimer = nil;
-//    luaExecHighlightTimer = [NSTimer scheduledTimerWithTimeInterval:0.2
-//                                                   target:self
-//                                                 selector:@selector(clearLuaExecHightlighting)
-//                                                 userInfo:nil
-//                                                  repeats:NO];
+    [self.layoutManager addTemporaryAttribute:NSBackgroundColorAttributeName
+                                        value:[NSColor colorWithCalibratedRed:0 green:0 blue:1.0 alpha:0.3]
+                            forCharacterRange:range];
+    execRange = range;
+    luaExecHighlightTimer = nil;
+    luaExecHighlightTimer = [NSTimer scheduledTimerWithTimeInterval:0.2
+                                                   target:self
+                                                 selector:@selector(clearLuaExecHightlighting)
+                                                 userInfo:nil
+                                                  repeats:NO];
     //onclear reset highlighted line.
 }
 
+- (void) clearLuaExecHightlighting {
+    [self currentLineHighlight];
+}
 
 @end
 

@@ -583,19 +583,22 @@
             <point key="canvasLocation" x="33" y="-24"/>
         </menu>
         <scrollView borderType="none" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" id="hce-0P-StE" customClass="MyNSScrollView">
-            <rect key="frame" x="0.0" y="0.0" width="462" height="417"/>
-            <autoresizingMask key="autoresizingMask"/>
+            <rect key="frame" x="0.0" y="0.0" width="800" height="680"/>
+            <autoresizingMask key="autoresizingMask" heightSizable="YES"/>
             <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="0RJ-3z-eLp">
-                <rect key="frame" x="0.0" y="0.0" width="462" height="417"/>
+                <rect key="frame" x="0.0" y="0.0" width="800" height="680"/>
                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                 <subviews>
-                    <textView drawsBackground="NO" importsGraphics="NO" horizontallyResizable="YES" usesFontPanel="YES" findStyle="panel" allowsUndo="YES" usesRuler="YES" allowsNonContiguousLayout="YES" spellingCorrection="YES" smartInsertDelete="YES" id="o6W-rC-yme" customClass="MyNSTextView">
-                        <rect key="frame" x="0.0" y="0.0" width="462" height="417"/>
+                    <textView drawsBackground="NO" importsGraphics="NO" usesFontPanel="YES" findStyle="panel" incrementalSearchingEnabled="YES" allowsUndo="YES" usesRuler="YES" smartInsertDelete="YES" id="o6W-rC-yme" customClass="MyNSTextView">
+                        <rect key="frame" x="0.0" y="0.0" width="800" height="680"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                        <size key="minSize" width="462" height="417"/>
-                        <size key="maxSize" width="463" height="10000000"/>
+                        <size key="minSize" width="800" height="680"/>
+                        <size key="maxSize" width="800" height="10000000"/>
                         <color key="insertionPointColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <allowedInputSourceLocales>
+                            <string>NSAllRomanInputSourcesLocaleIdentifier</string>
+                        </allowedInputSourceLocales>
                     </textView>
                 </subviews>
                 <color key="backgroundColor" white="1" alpha="0.0" colorSpace="calibratedWhite"/>
@@ -605,7 +608,7 @@
                 <autoresizingMask key="autoresizingMask"/>
             </scroller>
             <scroller key="verticalScroller" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="ITA-yE-pbr">
-                <rect key="frame" x="446" y="0.0" width="16" height="417"/>
+                <rect key="frame" x="784" y="0.0" width="16" height="680"/>
                 <autoresizingMask key="autoresizingMask"/>
             </scroller>
             <point key="canvasLocation" x="40" y="385"/>
