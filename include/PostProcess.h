@@ -20,6 +20,7 @@ class PostProcess {
     
 public:
     ci::gl::GlslProgRef mPostProcessShader;
+    float bufferWidth, bufferHeight;
     
     PostProcess(){}
     
@@ -44,23 +45,24 @@ public:
         CI_ASSERT(targetFbo != nullptr);
         CI_ASSERT(mPostProcessShader != nullptr);
         
+        bufferWidth = targetFbo->getWidth();
+        bufferHeight = targetFbo->getHeight();
+        
         ci::gl::ScopedFramebuffer   fboScp( targetFbo );
         ci::gl::ScopedViewport      viewScp( targetFbo->getSize() );
         ci::gl::ScopedGlslProg      glScp( mPostProcessShader );
         ci::gl::ScopedTextureBind   texScp( texture );
         ci::gl::ScopedMatrices      matScp;
         ci::gl::setMatricesWindow( targetFbo->getSize() );
-        ci::gl::clearColor(ci::ColorA::black());
-        
+//        ci::gl::clearColor(ci::ColorA::black());
+
         mPostProcessShader->uniform( "tex0", 0 );
 
         ci::gl::drawSolidRect( ci::Rectf(0, 0, targetFbo->getWidth(), targetFbo->getHeight()) );
     }
 
-   virtual void updateUniforms(){
-   
-   }
-    std::string listUniforms() {}
+    virtual void updateUniforms(){   }
+    std::string listUniforms() { return ""; }
     
 private:
     

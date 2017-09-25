@@ -47,6 +47,7 @@ public:
     void swapCode();
     void loadFiles();
     
+    
     //OSC
     void openOSC();
     void stopOSC();
@@ -68,6 +69,7 @@ public:
     std::string status;
     
     //audio
+    void monoOrStereo();
     audio::InputDeviceNodeRef		mInputDeviceNode;
     audio::MonitorSpectralNodeRef	mMonitorSpectralNode,
                                     mMonitorSpectralNodeRight;
@@ -75,6 +77,7 @@ public:
                                     mMagSpectrumRight;
     vec4                            mBands,
                                     mBandsR;
+    bool                            useStereo = false;
     
     SpectrumPlot					mSpectrumPlot;
     gl::TextureFontRef				mTextureFont;
@@ -85,6 +88,7 @@ public:
     gl::FboRef fbos[4];
     gl::GlslProgRef fboGlsl, trialGlsl;
     std::string vertProg, fragProg;
+    bool renderGLSL = true;
     
     int	FBO_WIDTH = 1280, FBO_HEIGHT = 720;
     int pingPong = 0;
@@ -102,10 +106,12 @@ public:
     NSScrollView *sv;
     
     //lua files
+    void drawLua();
     std::string bach1, bach2;
     sol::state lua;
     vector<thing> things;
-    vector<PostProcess> postProcesses;
+    vector<PostProcess *> postProcesses;
+    bool renderLUA = true;
     
     //GUI
     params::InterfaceGlRef	mParams;
@@ -145,9 +151,8 @@ void CinderProjectBasicApp::setup()
     //  OpenGL
     /////////////////////////////////////////////
     auto format = gl::Fbo::Format()
-//    .samples( 4 ) // uncomment this to enable 4x antialiasing
+    .samples( 4 ) // uncomment this to enable 4x antialiasing
     .attachment( GL_COLOR_ATTACHMENT0, gl::Texture2d::create( FBO_WIDTH, FBO_HEIGHT ) );
-//    .attachment( GL_COLOR_ATTACHMENT1, gl::Texture2d::create( FBO_WIDTH, FBO_HEIGHT ) );
     fbos[0] = gl::Fbo::create( FBO_WIDTH, FBO_HEIGHT, format);
     fbos[1] = gl::Fbo::create( FBO_WIDTH, FBO_HEIGHT, format);
     fbos[2] = gl::Fbo::create( FBO_WIDTH, FBO_HEIGHT, format);
@@ -187,25 +192,9 @@ void CinderProjectBasicApp::setup()
     /////////////////////////////////////////////
     //  Audio, check duplicate device INIT
     /////////////////////////////////////////////
-    //TODO:: force Mono at start
     auto ctx = audio::Context::master();
     mInputDeviceNode = ctx->createInputDeviceNode();
-    if (mInputDeviceNode->getNumChannels() > 1)
-    { //stereo
-        auto channelRouterLeft = ctx->makeNode(new audio::ChannelRouterNode(audio::Node::Format().channels(1)));
-        auto channelRouterRight = ctx->makeNode(new audio::ChannelRouterNode(audio::Node::Format().channels(1)));
-        auto monitorFormat = audio::MonitorSpectralNode::Format().fftSize( 2048 ).windowSize( 1024 );
-        mMonitorSpectralNode = ctx->makeNode( new audio::MonitorSpectralNode( monitorFormat ) );
-        mMonitorSpectralNodeRight = ctx->makeNode( new audio::MonitorSpectralNode( monitorFormat ) );
-        mInputDeviceNode >> channelRouterLeft->route(0, 0) >> mMonitorSpectralNode;
-        mInputDeviceNode >> channelRouterRight->route(1, 0) >> mMonitorSpectralNodeRight;
-    } else { //mono
-        auto monitorFormat = audio::MonitorSpectralNode::Format().fftSize( 2048 ).windowSize( 1024 );
-        mMonitorSpectralNode = ctx->makeNode( new audio::MonitorSpectralNode( monitorFormat ) );
-        mInputDeviceNode >> mMonitorSpectralNode;
-    }
-    mInputDeviceNode->enable();
-    ctx->enable();
+    monoOrStereo();
     mSpectrumPlot.enableBorder(false);
 
     
@@ -214,6 +203,12 @@ void CinderProjectBasicApp::setup()
     /////////////////////////////////////////////
     mParams = params::InterfaceGl::create( getWindow(), "App parameters", toPixels( ivec2( 200, 400 ) ) );
     mParams->setPosition(ivec2(800, 10));
+    mParams->addParam("Toggle GLSL", &renderGLSL);
+    mParams->addParam("Toggle LUA", &renderLUA);
+    mParams->addParam("Stereo", &useStereo)
+    .updateFn( [&](){ monoOrStereo(); } );
+    
+    mParams->addSeparator();
     mEnumSelection = 0;
     mEnumNames = { "new GLSL", "new Lua", "Bach 1", "Bach 2", "Bach3 ", "Bach 4", "Accordion", "Mashup", "Improv" };
     mParams->addParam( "Code", mEnumNames, &mEnumSelection )
@@ -257,17 +252,20 @@ void CinderProjectBasicApp::setup()
 
 void CinderProjectBasicApp::update()
 {
-    {
-//        mThread.joinable()//check for OSC connected
-//        std::lock_guard<std::mutex> lock( mNNMutex );
-//        for (int i = 0; i < 10; ++i) {
-//            std::cout << nnData[i] << " ";
-//        }
-//        std::cout << std::endl;
+    //update OSC
+    {//scoped for mutex
+        if(mThread.joinable()) {//check for OSC connected
+            std::lock_guard<std::mutex> lock( mNNMutex );
+            for (int i = 0; i < 10; ++i) {
+                std::cout << nnData[i] << " ";
+            }
+            std::cout << std::endl;
+        }
     }
     
+    //update Spectrum data
     mMagSpectrum = mMonitorSpectralNode->getMagSpectrum();
-    if (mInputDeviceNode->getNumChannels() > 1)
+    if (useStereo && mInputDeviceNode->getNumChannels() > 1)
         mMagSpectrumRight = mMonitorSpectralNodeRight->getMagSpectrum();
    
     pingPong = (pingPong+1)%2;
@@ -287,7 +285,7 @@ void CinderProjectBasicApp::update()
         else if (i < 768) mBands.z += b;
         else mBands.w += b;
         
-        if (mInputDeviceNode->getNumChannels() > 1) {
+        if (useStereo && mInputDeviceNode->getNumChannels() > 1) {
             b2 = audio::linearToDecibel( mMagSpectrumRight[i] );
             if (i < 256) mBandsR.x += b2;
             else if (i < 512) mBandsR.y += b2;
@@ -303,9 +301,8 @@ void CinderProjectBasicApp::update()
     
     audioMidiTex->update(audioSuface);
     
-    
     mBands /= vec4(25600.0); //average across bands and scale down
-    if (mInputDeviceNode->getNumChannels() > 1)
+    if (useStereo && mInputDeviceNode->getNumChannels() > 1)
         mBandsR /= vec4(25600.0);
     
     //TODO:: if lua?
@@ -318,27 +315,28 @@ void CinderProjectBasicApp::update()
     sol::function luaUpdate = lua["update"];
     luaUpdate();
     
-//    int numEffects = postProcesses.size();
-//    for (int i = 0; i < numEffects; ++i) {
-//            postProcesses[i].updateUniforms();
-//    }
-//    
-    renderToFBO();
+    int numEffects = postProcesses.size();
+    for (int i = 0; i < numEffects; ++i)
+    {   //protects against non postprocess objects
+        if(dynamic_cast<PostProcess*>(postProcesses[i]) != NULL){
+            postProcesses[i]->updateUniforms();
+            //send lua a message
+        }
+    }
+
 }
 
 void CinderProjectBasicApp::renderToFBO()
 {
-    CameraOrtho cam(0, 1280, 0, 720, -10, 10);
-    gl::ScopedViewport scpVp( ivec2( 0 ), fbos[pingPong]->getSize() );
+
     
-    gl::ScopedTextureBind scpFboBind(fbos[(pingPong+1)%2]->getColorTexture(), 0);
-    gl::ScopedTextureBind scpAudBind(audioMidiTex, 1);
-    
-    gl::ScopedFramebuffer  scpFbo( fbos[pingPong] );
-    gl::ScopedGlslProg scpShader( fboGlsl );
-    
-    gl::ScopedMatrices matScope;
-    gl::setMatrices( cam );
+    ci::gl::ScopedFramebuffer   fboScp( fbos[pingPong] );
+    ci::gl::ScopedViewport      viewScp( fbos[pingPong]->getSize() );
+    ci::gl::ScopedGlslProg      glScp( fboGlsl );
+    ci::gl::ScopedTextureBind   texScp( fbos[(pingPong+1)%2]->getColorTexture(), 0 );
+    gl::ScopedTextureBind       scpAudBind(audioMidiTex, 1);
+    ci::gl::ScopedMatrices      matScp;
+    ci::gl::setMatricesWindow( fbos[pingPong]->getSize() );
     
     fboGlsl->uniform("uRenderMap", 0);
     fboGlsl->uniform("uAudioMap", 1);
@@ -347,24 +345,38 @@ void CinderProjectBasicApp::renderToFBO()
     if (mInputDeviceNode->getNumChannels() > 1)
         fboGlsl->uniform("bandsR", mBandsR);
     
-    int numEffects = postProcesses.size();
-    for (int i = 0; i < numEffects; ++i)
-    {
-        postProcesses[i].updateUniforms();
-    }
-    
     gl::drawSolidRect(Rectf(vec2(0), fbos[pingPong]->getSize()));
+    
+}
+
+void CinderProjectBasicApp::drawLua()
+{
+    
+    CameraOrtho cam(0, 1280, 0, 720, -10, 10);
+    gl::ScopedViewport scpVp( ivec2( 0 ), fbos[pingPong]->getSize() );
+
+    gl::ScopedFramebuffer  scpFbo( fbos[pingPong] );
+
+    gl::ScopedMatrices matScope;
+    gl::setMatrices( cam );
+
+    if (!renderGLSL)
+        gl::clear( Color( 0, 0, 0 ) );
+    
+    for (int i = 0; i < things.size(); i++){
+        things[i].draw();
+    }
 }
 
 void CinderProjectBasicApp::draw()
 {
-    gl::clear( Color( 0, 0, 0 ) );
+    if (renderGLSL)
+         renderToFBO();
     
-    //TODO:: if lua?
-    for (int i = 0; i < things.size(); i++){
-        things[i].draw();
-    }
+    if (renderLUA)
+        drawLua();
     
+    gl::color(1.0, 1.0, 1.0, 1.0);
     int numEffects = postProcesses.size();
     
     if (numEffects > 0)
@@ -373,13 +385,18 @@ void CinderProjectBasicApp::draw()
         
         for (int i = 0; i < numEffects; ++i)
         {
-            if(i == 0) {
-                auto tex0 = fbos[pingPong]->getTexture2d( GL_COLOR_ATTACHMENT0 );
-                postProcesses[i].draw(tex0, fbos[postPingPong]);
+            if(dynamic_cast<PostProcess*>(postProcesses[i]) != NULL)
+            {
+                if(i == 0) {
+                    auto tex0 = fbos[pingPong]->getTexture2d( GL_COLOR_ATTACHMENT0 );
+                    postProcesses[i]->draw(tex0, fbos[postPingPong]);
+                }else {
+                    auto tex0 = fbos[postPingPong]->getTexture2d( GL_COLOR_ATTACHMENT0 );
+                    postProcesses[i]->draw(tex0, fbos[(postPingPong + 1) % 2 + 2]);
+                    postPingPong = (postPingPong + 1) % 2 + 2;
+                }
             }else {
-                auto tex0 = fbos[postPingPong]->getTexture2d( GL_COLOR_ATTACHMENT0 );
-                postProcesses[i].draw(tex0, fbos[(postPingPong + 1) % 2 + 2]);
-                postPingPong = (postPingPong + 1) % 2 + 2;
+                //send lua message
             }
         }
         
@@ -391,7 +408,6 @@ void CinderProjectBasicApp::draw()
         gl::draw( tex0, tex0->getBounds(), Rectf(0, 0, getWindowWidth(), getWindowHeight()) );
     }
 
-    
     
 //   gl::draw(audioMidiTex, Rectf( 0, 0, 1024, 100 ));
     
@@ -529,13 +545,36 @@ void CinderProjectBasicApp::loadFiles()
                                 return sol::as_container(t); //act like container
                             });
     
-    lua.new_usertype<Greyscale>("Greyscale",
-                                "amount", &Greyscale::amount,
-                                "listUniforms", &Greyscale::listUniforms
-//                            "draw", &Greyscale::draw,
-//                            "update", &Greyscale::update,
-//                            sol::base_classes, sol::bases<PostProcess>()
-                            );
+    lua.new_usertype<invert>("invert",
+                                "listUniforms", &invert::listUniforms
+                                );
+    
+    lua.new_usertype<greyscale>("greyscale",
+                                "amount", &greyscale::amount,
+                                "listUniforms", &greyscale::listUniforms
+                                );
+    
+    lua.new_usertype<vignette>("vignette",
+                                "amount", &vignette::amount,
+                                "listUniforms", &vignette::listUniforms
+                                );
+    
+    lua.new_usertype<aberration>("aberration",
+                                "amount", &aberration::amount,
+                                "listUniforms", &aberration::listUniforms
+                                );
+    
+    lua.new_usertype<scanline>("scanline",
+                                "amount", &scanline::amount,
+                               "speed", &scanline::speed,
+                                "listUniforms", &scanline::listUniforms
+                                );
+
+    lua.new_usertype<blur>("blur",
+                               "width", &blur::width,
+                               "height", &blur::height,
+                               "listUniforms", &blur::listUniforms
+                               );
 
     
     lua["scene"] = &things;
@@ -620,6 +659,56 @@ void CinderProjectBasicApp::midiListener( midi::Message msg )
     
     std::cout<< status << std::endl;
     
+}
+
+
+/////////////////////////////////////////////
+//  Mono or Stereo
+/////////////////////////////////////////////
+
+void CinderProjectBasicApp::monoOrStereo()
+{
+    auto ctx = audio::Context::master();
+   
+    if (useStereo) {
+        if(mInputDeviceNode->isEnabled() && ctx->isEnabled())
+        {
+            mInputDeviceNode->disable();
+            mInputDeviceNode->disconnectAll();
+            ctx->disable();
+            ctx->disconnectAllNodes();
+        }
+        
+        if (mInputDeviceNode->getNumChannels() > 1)
+        { //stereo
+            auto channelRouterLeft = ctx->makeNode(new audio::ChannelRouterNode(audio::Node::Format().channels(1)));
+            auto channelRouterRight = ctx->makeNode(new audio::ChannelRouterNode(audio::Node::Format().channels(1)));
+            auto monitorFormat = audio::MonitorSpectralNode::Format().fftSize( 2048 ).windowSize( 1024 );
+            mMonitorSpectralNode = ctx->makeNode( new audio::MonitorSpectralNode( monitorFormat ) );
+            mMonitorSpectralNodeRight = ctx->makeNode( new audio::MonitorSpectralNode( monitorFormat ) );
+            mInputDeviceNode >> channelRouterLeft->route(0, 0) >> mMonitorSpectralNode;
+            mInputDeviceNode >> channelRouterRight->route(1, 0) >> mMonitorSpectralNodeRight;
+        } else {
+            useStereo = false;
+        }
+    }
+    
+    if (!useStereo)
+    { //mono
+        if(mInputDeviceNode->isEnabled())
+        {
+            mInputDeviceNode->disable();
+            mInputDeviceNode->disconnectAll();
+        }
+        
+        auto monitorFormat = audio::MonitorSpectralNode::Format().fftSize( 2048 ).windowSize( 1024 );
+        mMonitorSpectralNode = ctx->makeNode( new audio::MonitorSpectralNode( monitorFormat ) );
+        mInputDeviceNode >> mMonitorSpectralNode;
+    }
+    
+    mInputDeviceNode->enable();
+    ctx->enable();
+
 }
 
 /////////////////////////////////////////////

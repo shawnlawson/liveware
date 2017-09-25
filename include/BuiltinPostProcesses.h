@@ -8,12 +8,15 @@
 
 // === MIRROR =================================================================
 
-class Mirror  : public PostProcess
+class mirror  : public PostProcess
 {
 public:
-    static PostProcessRef create()
+    mirror()
+    : PostProcess( getFragmentShader() ) {}
+    
+    static const std::string getFragmentShader()
     {
-        return std::make_shared<PostProcess>( CI_GLSL( 400,
+        return CI_GLSL( 400,
         
             uniform sampler2D tex0;
             in vec2 TexCoord;
@@ -22,22 +25,30 @@ public:
             void main()
             {
                 vec2 p = TexCoord;
+                //set for both horizontal and veritcal and which direction
                 FragColor = texture( tex0, vec2( 0.5 - abs( (p.x - 0.5) ), p.y ) );
             }
         
-        ));
+        );
+    }
+    
+    std::string listUniforms()
+    {
+        return "none";
     }
 };
 
 
 // === INVERT =================================================================
 
-class Invert  : public PostProcess
+class invert  : public PostProcess
 {
 public:
-    static PostProcessRef create()
+    invert() : PostProcess( getFragmentShader() ) {}
+    
+    static const std::string getFragmentShader()
     {
-        return std::make_shared<PostProcess>( CI_GLSL( 400,
+        return CI_GLSL( 400,
         
             uniform sampler2D tex0;
             in vec2 TexCoord;
@@ -48,67 +59,64 @@ public:
                 vec2 p = TexCoord;
                 vec4 col = texture( tex0, p );
                 col.xyz = vec3( 1.0 ) - col.xyz;
-                FragColor = col;
+                FragColor = vec4(col.rgb, 1.0);
             }
         
-        ));
+        );
+    }
+    
+    std::string listUniforms()
+    {
+        return "none";
     }
 };
 
 
 // === GREYSCALE ==============================================================
 
-class Greyscale  : public PostProcess
+class greyscale  : public PostProcess
 {
 public:
-    Greyscale( float newAmount = 1.0f )
+    greyscale( float newAmount = 1.0f )
     : PostProcess( getFragmentShader() )
     {
-        mAmount = newAmount;
+        amount = newAmount;
     }
     
     static const std::string getFragmentShader()
     {
         return  CI_GLSL( 400,
     
-        uniform sampler2D tex0;
-        uniform float amount;
-        in vec2 TexCoord;
-        out vec4 FragColor;
-        
-        
-        void main()
-        {
-            vec2 p = TexCoord;
-            vec4 tex = texture( tex0, p );
-            vec3 col = vec3( 0.0 );
+            uniform sampler2D tex0;
+            uniform float amount;
+            in vec2 TexCoord;
+            out vec4 FragColor;
             
-            float gray = dot( tex.rgb, vec3( 0.299, 0.587, 0.114 ) );
+            
+            void main()
+            {
+                vec2 p = TexCoord;
+                vec4 tex = texture( tex0, p );
+                
+                float gray = dot( tex.rgb, vec3( 0.299, 0.587, 0.114 ) );
 
-            FragColor = vec4( mix(tex.rgb, vec3(gray), amount), tex.a );
-//            FragColor = vec4( gray, gray, gray, 1.);
-        }
-    
+                FragColor = vec4( mix(tex.rgb, vec3(gray), amount), 1.0 );
+            }
+        
                         );
-    }
-    
-    void amount( float newAmount )
-    {
-        mAmount = newAmount;
-        mPostProcessShader->uniform( "amount", mAmount );
     }
 
     virtual void updateUniforms() override
     {
-        mPostProcessShader->uniform( "amount", mAmount );
+        mPostProcessShader->uniform( "amount", amount );
     }
 
     std::string listUniforms()
     {
-        return "amount";
+        return "float amount 1.";
     }
     
-    float mAmount;
+    float amount;
 };
 
 
@@ -199,39 +207,25 @@ private:
 
 // === VIGNETTE ==============================================================
 
-class Vignette   : public PostProcess
+class vignette   : public PostProcess
 {
 public:
 
-    static std::shared_ptr<Vignette> create( float black = 0.0f, float white = 1.0f )
+    vignette( float newAmount = .3f )
+    : PostProcess( getFragmentShader() )
     {
-        return std::make_shared<Vignette>( black, white );
-    }
-
-    Vignette( float black = 0.0f, float white = 1.0f )
-        : PostProcess( getFragmentShader() )
-    {
+        amount = newAmount;
     }
     
-    void updateUniforms() 
-    {
-
-    }
-
     static const std::string getFragmentShader()
     {
         return CI_GLSL( 400,
             
             uniform sampler2D tex0;
-            
+           uniform float amount;
             in vec2 TexCoord;
-            
             out vec4 FragColor;
             
-            float lengthSquared( vec2 p )
-            {
-                return p.x * p.x + p.y * p.y;
-            }
             
             void main()
             {
@@ -239,7 +233,7 @@ public:
                 
                 vec2 p = (TexCoord - 0.5) * 2.0;
                 
-                tex.xyz -= pow( lengthSquared( p * 0.8 ) - 0.1, 1.8 ) * 0.3;
+                tex.xyz *= 1.0 - pow( length(p), 3.5 ) * amount;
                 
                 FragColor = tex;
             }
@@ -247,9 +241,187 @@ public:
         );
     }
     
-private:
+    virtual void updateUniforms() override
+    {
+        mPostProcessShader->uniform( "amount", amount );
+    }
+    
+    std::string listUniforms()
+    {
+        return "float amount .3";
+    }
 
+    float amount;
+};
+
+
+// === ABERRATION ==============================================================
+
+class aberration    : public PostProcess
+{
+public:
+    
+    aberration( float newAmount = 0.003f )
+    : PostProcess( getFragmentShader() )
+    {
+        amount = newAmount;
+    }
+      
+      static const std::string getFragmentShader()
+      {
+          return CI_GLSL( 400,
+                         
+             uniform sampler2D tex0;
+             uniform float amount;
+             in vec2 TexCoord;
+             out vec4 FragColor;
+             
+             
+             void main()
+             {
+                 vec4 color;
+                 color.r = texture( tex0, vec2(TexCoord.x + amount, TexCoord.y) ).r;
+                 color.g = texture( tex0, TexCoord ).g;
+                 color.b = texture( tex0, vec2(TexCoord.x - amount, TexCoord.y) ).b;
+                 color.a = 1.0;
+                 
+                 FragColor = color;
+             }
+             
+             );
+      }
+      
+      virtual void updateUniforms() override
+      {
+          mPostProcessShader->uniform( "amount", amount );
+      }
+      
+      std::string listUniforms()
+      {
+          return "float amount .003";
+      }
+      
+      float amount;
+
+};
+
+
+// === SCANLINE ==============================================================
+
+class scanline    : public PostProcess
+{
+public:
+    
+    scanline( float newAmount = 300.0f, float newSpeed = 10.0f )
+    : PostProcess( getFragmentShader() )
+    {
+        amount = newAmount;
+        speed = newSpeed;
+    }
+    
+    static const std::string getFragmentShader()
+    {
+        return CI_GLSL( 400,
+                       
+                       uniform sampler2D tex0;
+                       uniform float amount;
+                       uniform float speed;
+                       uniform float time;
+                       in vec2 TexCoord;
+                       out vec4 FragColor;
+                       
+                       
+                       void main()
+                       {
+                           vec4 color = texture( tex0, TexCoord );
+                           color.rgb *= 0.9 + 0.1 * sin( speed * time + TexCoord.y * amount);
+                           
+                           FragColor = color;
+                       }
+                       
+                       );
+    }
+    
+    virtual void updateUniforms() override
+    {
+        float time = ci::app::getElapsedSeconds();
+        mPostProcessShader->uniform( "amount", amount );
+        mPostProcessShader->uniform( "speed", speed );
+        mPostProcessShader->uniform( "time", time);
+    }
+    
+    std::string listUniforms()
+    {
+        return "float amount 300. \n float speed 10.";
+    }
+    
+    float amount;
+    float speed;
     
 };
+
+
+// === BLUR ==============================================================
+//TODO:: work on this.
+class blur    : public PostProcess
+{
+public:
+    
+    blur( float newWidth = 1.0f, float newHeight = 1.0f )
+    : PostProcess( getFragmentShader() )
+    {
+        width = newWidth;
+        height = newHeight;
+    }
+    
+    static const std::string getFragmentShader()
+    {
+        return CI_GLSL( 400,
+                       
+                       uniform sampler2D tex0;
+                       uniform vec2 amount;
+                       uniform vec2 bufferResolution;
+                       
+                       in vec2 TexCoord;
+                       out vec4 FragColor;
+                       
+                       void main()
+                       {
+                           vec4 sampleM  = texture(tex0, TexCoord);
+                           vec4 sampleB0 = texture(tex0, TexCoord - amount/bufferResolution);
+                           vec4 sampleF0 = texture(tex0, TexCoord + amount/bufferResolution);
+                           vec4 sampleB1 = texture(tex0, TexCoord - amount/bufferResolution * 2.);
+                           vec4 sampleF1 = texture(tex0, TexCoord + amount/bufferResolution * 2.);
+                           vec4 sampleB2 = texture(tex0, TexCoord - amount/bufferResolution * 3.);
+                           vec4 sampleF2 = texture(tex0, TexCoord + amount/bufferResolution * 3.);
+                           
+                           vec4 color =	0.1752 * sampleM +
+                                       0.1658 * (sampleB0 + sampleF0) +
+                                       0.1403 * (sampleB1 + sampleF1) + 
+                                       0.1063 * (sampleB2 + sampleF2);
+                           
+                           FragColor = vec4(color.rgb, 1.0);
+                       }
+                       
+                       );
+    }
+    
+    virtual void updateUniforms() override
+    {
+        mPostProcessShader->uniform( "bufferResolution", ci::vec2(bufferWidth, bufferHeight) );
+        mPostProcessShader->uniform( "amount", ci::vec2(width, height) );
+        
+    }
+    
+    std::string listUniforms()
+    {
+        return "float width 1. \n float height 1.";
+    }
+    
+    float width;
+    float height;
+};
+
+
 
 #endif /* StockShaderProcesses_h */

@@ -592,7 +592,7 @@
                     <textView drawsBackground="NO" importsGraphics="NO" usesFontPanel="YES" findStyle="panel" incrementalSearchingEnabled="YES" allowsUndo="YES" usesRuler="YES" smartInsertDelete="YES" id="o6W-rC-yme" customClass="MyNSTextView">
                         <rect key="frame" x="0.0" y="0.0" width="800" height="680"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
                         <size key="minSize" width="800" height="680"/>
                         <size key="maxSize" width="800" height="10000000"/>
                         <color key="insertionPointColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -601,7 +601,7 @@
                         </allowedInputSourceLocales>
                     </textView>
                 </subviews>
-                <color key="backgroundColor" white="1" alpha="0.0" colorSpace="calibratedWhite"/>
+                <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
             </clipView>
             <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="YES" id="Zho-7d-4Mk">
                 <rect key="frame" x="-100" y="-100" width="87" height="18"/>

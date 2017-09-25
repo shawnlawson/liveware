@@ -48,6 +48,13 @@
     [self setTextColor:[NSColor whiteColor]];
 //    [self loadHighliter:"GLSL"];
     
+    [self setDrawsBackground:NO];
+    [self setBackgroundColor:[NSColor clearColor] ];
+    [self.enclosingScrollView setDrawsBackground:NO];
+    [self.enclosingScrollView setBackgroundColor:[NSColor clearColor]];
+    
+    
+    
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(textViewDidChangeSelection:)
                                                  name:NSTextViewDidChangeSelectionNotification
@@ -77,6 +84,7 @@
     [lineNumberView setNeedsDisplay:YES];
 }
 
+- (BOOL)isOpaque{ return NO; }
 
 - (void) textStorageDidProcessEditing:(NSNotification *)aNotification {
     //make more efficient by checking for visible range, and threaded
