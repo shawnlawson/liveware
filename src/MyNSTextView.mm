@@ -53,7 +53,8 @@
     [self.enclosingScrollView setDrawsBackground:NO];
     [self.enclosingScrollView setBackgroundColor:[NSColor clearColor]];
     
-    
+    self.automaticQuoteSubstitutionEnabled = NO;
+//    self.enabledTextCheckingTypes = NO;
     
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(textViewDidChangeSelection:)
@@ -369,9 +370,9 @@
                     //did we find "function"?
                     count -= 1;
                     break;
-                } else if ([subString containsString:@"if"]) {
+                } else if ([subString containsString:@"if"] && [subString containsString:@"then"]) {
                     count -= 1;
-                } else if ([subString containsString:@"do"]) {
+                } else if ([subString containsString:@"for"] && [subString containsString:@"do"]) {
                     count -= 1;
                 } else if ([subString containsString:@"while"]) {
                     count -= 1;
@@ -413,9 +414,9 @@
                     if ([subString containsString:@"function"]) {
                         //did we find "function"?
                         return;
-                    } else if ([subString containsString:@"if"]) {
+                    } else if ([subString containsString:@"if"] && [subString containsString:@"then"]) {
                         count -= 1;
-                    } else if ([subString containsString:@"do"]) {
+                    } else if ([subString containsString:@"for"] && [subString containsString:@"do"]) {
                         count -= 1;
                     } else if ([subString containsString:@"while"]) {
                         count -= 1;

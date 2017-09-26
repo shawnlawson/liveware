@@ -32,7 +32,7 @@ public:
         );
     }
     
-    std::string listUniforms()
+    virtual std::string listUniforms() override
     {
         return "none";
     }
@@ -65,7 +65,7 @@ public:
         );
     }
     
-    std::string listUniforms()
+    virtual std::string listUniforms() override
     {
         return "none";
     }
@@ -111,7 +111,7 @@ public:
         mPostProcessShader->uniform( "amount", amount );
     }
 
-    std::string listUniforms()
+    virtual std::string listUniforms() override
     {
         return "float amount 1.";
     }
@@ -246,7 +246,7 @@ public:
         mPostProcessShader->uniform( "amount", amount );
     }
     
-    std::string listUniforms()
+    virtual std::string listUniforms() override
     {
         return "float amount .3";
     }
@@ -296,7 +296,7 @@ public:
           mPostProcessShader->uniform( "amount", amount );
       }
       
-      std::string listUniforms()
+      virtual std::string listUniforms() override
       {
           return "float amount .003";
       }
@@ -350,7 +350,7 @@ public:
         mPostProcessShader->uniform( "time", time);
     }
     
-    std::string listUniforms()
+    virtual std::string listUniforms() override
     {
         return "float amount 300. \n float speed 10.";
     }
@@ -413,7 +413,7 @@ public:
         
     }
     
-    std::string listUniforms()
+    virtual std::string listUniforms() override
     {
         return "float width 1. \n float height 1.";
     }

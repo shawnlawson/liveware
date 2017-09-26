@@ -62,7 +62,7 @@ public:
     }
 
     virtual void updateUniforms(){   }
-    std::string listUniforms() { return ""; }
+    virtual std::string listUniforms() { return ""; }
     
 private:
     

@@ -23,7 +23,8 @@
 
 #include "sol.hpp"
 
-#include "thing.hpp"
+#include "Drawable.h"
+#include "Circle.hpp"
 #include "PostProcess.h"
 #include "BuiltinPostProcesses.h"
 
@@ -109,7 +110,7 @@ public:
     void drawLua();
     std::string bach1, bach2;
     sol::state lua;
-    vector<thing> things;
+    vector<Drawable *> drawables;
     vector<PostProcess *> postProcesses;
     bool renderLUA = true;
     
@@ -310,7 +311,11 @@ void CinderProjectBasicApp::update()
     float deltaTime = currentTime - lastFrameTime;
     lastFrameTime = currentTime;
     lua["deltaTime"] = deltaTime;
-    lua["currentTime"] = currentTime;
+    lua["time"] = currentTime;
+    lua["width"] = getWindowBounds().getWidth();
+    lua["height"] = getWindowBounds().getHeight();
+    //TODO::OSC lua["osc"] =
+    //TODO::MIDI lua["midi"] =
     
     sol::function luaUpdate = lua["update"];
     luaUpdate();
@@ -342,6 +347,11 @@ void CinderProjectBasicApp::renderToFBO()
     fboGlsl->uniform("uAudioMap", 1);
     fboGlsl->uniform("time", (float)getElapsedSeconds());
     fboGlsl->uniform("bands", mBands);
+
+    //TODO::OSC glsl["osc"] =
+    //TODO::MIDI glsl["midi"] =
+
+    
     if (mInputDeviceNode->getNumChannels() > 1)
         fboGlsl->uniform("bandsR", mBandsR);
     
@@ -363,9 +373,8 @@ void CinderProjectBasicApp::drawLua()
     if (!renderGLSL)
         gl::clear( Color( 0, 0, 0 ) );
     
-    for (int i = 0; i < things.size(); i++){
-        things[i].draw();
-    }
+    sol::function luaDraw = lua["draw"];
+    luaDraw();
 }
 
 void CinderProjectBasicApp::draw()
@@ -427,7 +436,7 @@ void CinderProjectBasicApp::luaListener( std::string code)
         // You can just pass it through to let the call-site handle it
         return result;
     };
-    auto result = lua.script(code, simple_handler);
+    auto result = lua.safe_script(code, simple_handler);
     if (!result.valid()) {
         sol::error err = result;
         std::cout << "Error:" << err.what() << std::endl;
@@ -533,17 +542,20 @@ void CinderProjectBasicApp::loadFiles()
     // you can open all libraries by passing no arguments
     //lua.open_libraries();
 
-    lua.new_usertype<thing>("thing",
-                            "x", &thing::x,
-                            "y", &thing::y,
-                            "z", &thing::z,
-                            "kids", &thing::kids,
-                            "print", &thing::print,
-                            "draw", &thing::draw,
-                            "update", &thing::update,
-                            "it", [](thing& t) {
-                                return sol::as_container(t); //act like container
-                            });
+
+        lua.new_usertype<mCircle>("circle",
+                                "x", &mCircle::x,
+                                "y", &mCircle::y,
+                                "z", &mCircle::z,
+                                  "rx", &mCircle::rX,
+                                  "ry", &mCircle::rY,
+                                  "rz", &mCircle::rZ,
+                                  "sx", &mCircle::sX,
+                                  "sy", &mCircle::sY,
+                                  "sz", &mCircle::sZ,
+                                "print", &mCircle::print,
+                                "draw", &mCircle::draw
+                                 );
     
     lua.new_usertype<invert>("invert",
                                 "listUniforms", &invert::listUniforms
@@ -573,16 +585,25 @@ void CinderProjectBasicApp::loadFiles()
     lua.new_usertype<blur>("blur",
                                "width", &blur::width,
                                "height", &blur::height,
+                                "updateUniforms", &blur::updateUniforms,
                                "listUniforms", &blur::listUniforms
                                );
 
     
-    lua["scene"] = &things;
+//    lua["scene"] = &drawables;
     lua["post"] = &postProcesses;
     
     // call lua code directly
-    lua.script("print('hello world')");
-    lua.safe_script("function update() end");
+    std::string s = loadString(loadAsset("startup.lua"));
+    auto simple_handler = [](lua_State*, sol::protected_function_result result) {
+        // You can just pass it through to let the call-site handle it
+        return result;
+    };
+    auto result = lua.safe_script(s, simple_handler);
+    if (!result.valid()) {
+        sol::error err = result;
+        std::cout << "Error:" << err.what() << std::endl;
+    }
 
     
     //for post-process shaders...
@@ -760,7 +781,7 @@ void CinderProjectBasicApp::stopOSC()
         mWork.reset();
         mIoService->stop();
         mThread.join();
-        mReceiver.removeListener("/mousemove/1");
+        mReceiver.removeListener("liveware/nn/");
         mReceiver.close();
      }
 }
