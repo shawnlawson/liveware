@@ -17,6 +17,7 @@
 
 //User
 #include "MyNSTextView.h"
+#include "FeedbackNSTextView.h"
 #include "AudioDrawUtils.h"
 
 //#define __OBJC__
@@ -104,6 +105,7 @@ public:
     bool loadedShader = false;
     CinderViewMac *cvm;
     MyNSTextView *tv;
+    FeedbackNSTextView *ftv;
     NSScrollView *sv;
     
     //lua files
@@ -234,9 +236,13 @@ void CinderProjectBasicApp::setup()
     //  Text View INIT
     /////////////////////////////////////////////
     NSUInteger index = [tl indexOfObjectPassingTest:^BOOL (id obj, NSUInteger idx, BOOL *stop) {
-        return [obj isKindOfClass:[NSScrollView class]];
+//        return [obj isKindOfClass:[NSScrollView class]];
+        return [obj isKindOfClass:[NSSplitView class]];
     }];
-    sv = tl[index];
+//    sv = tl[index];
+    NSSplitView* spv = tl[index];
+    sv = (NSScrollView*)[spv.subviews objectAtIndex:0];
+    
     tv = (MyNSTextView*)[sv documentView];
     [tv assignCode:fragProg withLanguage:"GLSL"];
     
@@ -244,9 +250,16 @@ void CinderProjectBasicApp::setup()
     tv.ShaderSignal->connect([this](std::string code) { shaderListener( code ); });
     tv.LuaSignal->connect([this](std::string code) { luaListener( code ); });
     
+    sv = (NSScrollView*)[spv.subviews objectAtIndex:1];
+    
+    ftv = (FeedbackNSTextView*)[sv documentView];
+    [ftv assignCode:"" withLanguage:"GLSL"];
+    
+    
     //attaching to cinder view, attaching to window view doesn't work
      cvm =  (__bridge CinderViewMac *)getWindow()->getNative();
-    [cvm addSubview:sv];
+//    [cvm addSubview:sv];
+    [cvm addSubview:spv];
 }
 
 
@@ -439,9 +452,10 @@ void CinderProjectBasicApp::luaListener( std::string code)
     auto result = lua.safe_script(code, simple_handler);
     if (!result.valid()) {
         sol::error err = result;
-        std::cout << "Error:" << err.what() << std::endl;
+        [ftv assignCode:err.what() withLanguage:"LUA"];
+    }else {
+        [ftv assignCode:"" withLanguage:"LUA"];
     }
-    //TODO:: HANDLE THESE ERRORS!!
 }
 
 void CinderProjectBasicApp::shaderListener( std::string code)
@@ -454,17 +468,20 @@ void CinderProjectBasicApp::shaderListener( std::string code)
         trialGlsl = gl::GlslProg::create( renderFormat );
     } 	catch( ci::gl::GlslProgCompileExc &exc )
     {
+        [ftv assignCode:exc.what() withLanguage:"GLSL"];
         [tv errorLineHighlight:exc.what()];
 //        CI_LOG_E( "Shader load error: " << exc.what() );
         return;
     }
     catch( ci::Exception &exc )
     {
+        [ftv assignCode:exc.what() withLanguage:"GLSL"];
         [tv errorLineHighlight:exc.what()];
 //        CI_LOG_E( "Shader load error: " << exc.what() );
         return;
     }
     
+    [ftv assignCode:"" withLanguage:"GLSL"];
     [tv errorLineHighlight:""];
     fboGlsl = trialGlsl;
 }
@@ -517,7 +534,6 @@ void CinderProjectBasicApp::swapCode()
     }
 }
 
-
 //some big batch loading system function here
 void CinderProjectBasicApp::loadFiles()
 {
@@ -538,7 +554,10 @@ void CinderProjectBasicApp::loadFiles()
         CI_LOG_E( "Shader load error: " << exc.what() );
     }
     
-    lua.open_libraries(sol::lib::base);
+    lua.open_libraries(sol::lib::base, sol::lib::math, sol::lib::package);
+//    const std::string package_path = lua["package"]["path"];
+//    lua["package"]["path"] = package_path + (!package_path.empty() ? ";" : "") + test::scripts_path("proc/valid/") + "?.lua";
+    
     // you can open all libraries by passing no arguments
     //lua.open_libraries();
 

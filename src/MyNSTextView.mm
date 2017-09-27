@@ -591,38 +591,22 @@
     while (![scanner isAtEnd])
     {
         preScan = scanner.scanLocation;
+        NSMutableString * s = [[NSMutableString alloc] init];
         
         //comments
-        if([scanner scanString:commentString intoString:NULL])
+        if([scanner scanString:commentString intoString:&s])
         {
-            [scanner scanUpToString:@"\n" intoString:NULL ];
+            [scanner scanUpToString:@"\n" intoString:&s ];
             [self setTextColor:colors[ colormap[@"comment"] ]
                          range:NSMakeRange(preScan, scanner.scanLocation - preScan)];
             continue;
         }
         //define
         if ([whichLanguage compare:@"GLSL"] == NSOrderedSame) {
-            if([scanner scanString:@"#" intoString:NULL])
+            if([scanner scanString:@"#" intoString:&s])
             {
-                [scanner scanUpToString:@"\n" intoString:NULL ];
+                [scanner scanUpToString:@"\n" intoString:&s ];
                 [self setTextColor:colors[ colormap[@"preprocessor"] ]
-                             range:NSMakeRange(preScan, scanner.scanLocation - preScan)];
-                continue;
-            }
-        }
-        //strings
-        if([scanner scanString:@"\"" intoString:NULL])
-        {
-            [scanner scanUpToString:@"\"" intoString:NULL ];
-            [self setTextColor:colors[ colormap[@"string"] ]
-                         range:NSMakeRange(preScan, scanner.scanLocation - preScan)];
-            continue;
-        }
-        if ([whichLanguage compare:@"LUA"] == NSOrderedSame) {
-            if([scanner scanString:@"\'" intoString:NULL])
-            {
-                [scanner scanUpToString:@"\'" intoString:NULL ];
-                [self setTextColor:colors[ colormap[@"string"] ]
                              range:NSMakeRange(preScan, scanner.scanLocation - preScan)];
                 continue;
             }
@@ -641,8 +625,7 @@
                          range:NSMakeRange(preScan, scanner.scanLocation - preScan)];
             continue;
         }
-        //and now we need a string holder
-        NSMutableString * s = [[NSMutableString alloc] init];
+        
         
         //words & numbers, ie vec4, etc
         if([scanner scanCharactersFromSet:[NSCharacterSet alphanumericCharacterSet]
@@ -692,6 +675,53 @@
         
         [scanner scanCharactersFromSet:[NSCharacterSet newlineCharacterSet]
                             intoString:NULL];
+    }
+    
+    
+    //strings
+    scanner.scanLocation = 0;
+    while (![scanner isAtEnd])
+    {
+        if([scanner scanUpToString:@"\"" intoString:nil])
+        {
+            if(![scanner isAtEnd])
+            {
+                preScan = scanner.scanLocation;
+                scanner.scanLocation += 1;
+                if([scanner scanUpToString:@"\"" intoString:nil ] && ![scanner isAtEnd])
+                {
+                    scanner.scanLocation += 1;
+                    [self setTextColor:colors[ colormap[@"string"] ]
+                                 range:NSMakeRange(preScan, scanner.scanLocation - preScan)];
+                    continue;
+                } else break;
+            } else break;
+        }
+    }
+    
+    
+    if ([whichLanguage compare:@"LUA"] == NSOrderedSame)
+    {
+        scanner.scanLocation = 0;
+        while (![scanner isAtEnd])
+        {
+            preScan = scanner.scanLocation;
+            if([scanner scanUpToString:@"'" intoString:nil])
+            {
+                if(![scanner isAtEnd])
+                {
+                    preScan = scanner.scanLocation;
+                    scanner.scanLocation += 1;
+                    if([scanner scanUpToString:@"'" intoString:nil ] && ![scanner isAtEnd])
+                    {
+                        scanner.scanLocation += 1;
+                        [self setTextColor:colors[ colormap[@"string"] ]
+                                     range:NSMakeRange(preScan, scanner.scanLocation - preScan)];
+                        continue;
+                    } else break;
+                } else break;
+            }
+        }
     }
 }
 

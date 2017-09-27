@@ -1,4 +1,4 @@
-c = mCircle.new()
+c = circle.new()
 scene.c = c
 
 function update()

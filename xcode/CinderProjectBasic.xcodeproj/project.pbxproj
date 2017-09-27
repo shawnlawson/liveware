@@ -35,6 +35,7 @@
 		99C5AC1D1F6DC75D009DB2FB /* liblua53.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 99C5AC1B1F6DC75D009DB2FB /* liblua53.a */; };
 		99C5AC1E1F6DC75D009DB2FB /* liblua53.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 99C5AC1C1F6DC75D009DB2FB /* liblua53.dylib */; };
 		99E08CB11F79C5C000DE1838 /* startup.lua in Resources */ = {isa = PBXBuildFile; fileRef = 99E08CB01F79C5C000DE1838 /* startup.lua */; };
+		99E08CB31F79E16600DE1838 /* FeedbackNSTextView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 99E08CB21F79E16600DE1838 /* FeedbackNSTextView.mm */; };
 		99E982051F366B930013A336 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 99E982041F366B930013A336 /* WebKit.framework */; };
 		99EBEB641F3E997200453241 /* AudioDrawUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 99EBEB631F3E997200453241 /* AudioDrawUtils.cpp */; };
 /* End PBXBuildFile section */
@@ -89,6 +90,8 @@
 		99C5AC1B1F6DC75D009DB2FB /* liblua53.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liblua53.a; path = ../../../../../usr/local/lib/liblua53.a; sourceTree = "<group>"; };
 		99C5AC1C1F6DC75D009DB2FB /* liblua53.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = liblua53.dylib; path = ../../../../../usr/local/lib/liblua53.dylib; sourceTree = "<group>"; };
 		99E08CB01F79C5C000DE1838 /* startup.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = startup.lua; path = ../assets/startup.lua; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.lua; };
+		99E08CB21F79E16600DE1838 /* FeedbackNSTextView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = FeedbackNSTextView.mm; path = ../src/FeedbackNSTextView.mm; sourceTree = "<group>"; };
+		99E08CB41F79E25C00DE1838 /* FeedbackNSTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FeedbackNSTextView.h; path = ../include/FeedbackNSTextView.h; sourceTree = "<group>"; };
 		99E982041F366B930013A336 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 		99EBEB621F3E997200453241 /* AudioDrawUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AudioDrawUtils.h; path = ../include/AudioDrawUtils.h; sourceTree = "<group>"; };
 		99EBEB631F3E997200453241 /* AudioDrawUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AudioDrawUtils.cpp; path = ../src/AudioDrawUtils.cpp; sourceTree = "<group>"; };
@@ -136,6 +139,7 @@
 			isa = PBXGroup;
 			children = (
 				992BDE0C1F4AF23D001BDFBC /* MyLineNumberView.m */,
+				99E08CB21F79E16600DE1838 /* FeedbackNSTextView.mm */,
 				992BDE0E1F4AF23D001BDFBC /* MyNSTextView.mm */,
 				99EBEB631F3E997200453241 /* AudioDrawUtils.cpp */,
 				02FAB0FF541A4FECB8818EDB /* CinderProjectBasicApp.mm */,
@@ -200,6 +204,7 @@
 				99C5AC161F6DC2CF009DB2FB /* sol.hpp */,
 				992BDE121F4AF24C001BDFBC /* MyLineNumberView.h */,
 				992BDE141F4AF24C001BDFBC /* MyNSTextView.h */,
+				99E08CB41F79E25C00DE1838 /* FeedbackNSTextView.h */,
 				99EBEB621F3E997200453241 /* AudioDrawUtils.h */,
 				4442529699194DE2A42C0BAF /* Resources.h */,
 				BF3BC0CF9B3544B0B72671CE /* CinderProjectBasic_Prefix.pch */,
@@ -392,6 +397,7 @@
 			files = (
 				9951A9FC1F40D46E0007F2A3 /* RtMidi.cpp in Sources */,
 				992BDE0F1F4AF23D001BDFBC /* MyLineNumberView.m in Sources */,
+				99E08CB31F79E16600DE1838 /* FeedbackNSTextView.mm in Sources */,
 				9951AA191F40D46E0007F2A3 /* MidiMessage.cpp in Sources */,
 				99EBEB641F3E997200453241 /* AudioDrawUtils.cpp in Sources */,
 				2EA9E40767FF4E2E94793C12 /* CinderProjectBasicApp.mm in Sources */,
