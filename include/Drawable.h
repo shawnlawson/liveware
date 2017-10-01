@@ -15,7 +15,9 @@ public:
 
     float x, y, z;
     float rX, rY, rZ;
+    float radians;
     float sX, sY, sZ;
+    float r, g, b, a;
     
 
     Drawable(){}

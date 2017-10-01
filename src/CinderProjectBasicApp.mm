@@ -25,7 +25,9 @@
 #include "sol.hpp"
 
 #include "Drawable.h"
-#include "Circle.hpp"
+#include "mCircle.h"
+#include "mRectangle.h"
+#include "mImage.h"
 #include "PostProcess.h"
 #include "BuiltinPostProcesses.h"
 
@@ -36,6 +38,33 @@ using namespace std;
 //OSC UDP
 using Receiver = osc::ReceiverUdp;
 using protocol = asio::ip::udp;
+
+//class mPrinter {
+//public:
+//    static ci::signals::Signal<void(std::string)>      printSignal;
+//    
+//    void my_print(sol::this_state ts)
+//    {
+//        lua_State* L = ts;
+//        //    sol::state_view lua(L);
+//        //    lua.safe_script("print('x, y, radius')");)
+//        
+//        int nargs = lua_gettop(L);
+//        string s = "in my_print:";
+//        for (int i=1; i <= nargs; ++i) {
+//            if (lua_isstring(L, i)) {
+//                s += lua_tostring(L, i);
+//            }
+//        }
+//        s += "\n";
+//        
+//        printSignal.emit( s );
+//    }
+//    
+//    ci::signals::Signal<void(std::string)>* LuaSignal() {
+//        return &luaSignal;
+//    }
+//};
 
 class CinderProjectBasicApp : public App {
 public:
@@ -130,6 +159,7 @@ public:
     double lastFrameTime;
 };
 
+
 //contructor so that we have OSC
 CinderProjectBasicApp::CinderProjectBasicApp()
     : mIoService( new asio::io_service ),
@@ -139,6 +169,8 @@ CinderProjectBasicApp::CinderProjectBasicApp()
 
 void CinderProjectBasicApp::setup()
 {
+    
+        
     /////////////////////////////////////////////
     //  App defaults
     /////////////////////////////////////////////
@@ -555,11 +587,9 @@ void CinderProjectBasicApp::loadFiles()
     }
     
     lua.open_libraries(sol::lib::base, sol::lib::math, sol::lib::package);
+    
 //    const std::string package_path = lua["package"]["path"];
 //    lua["package"]["path"] = package_path + (!package_path.empty() ? ";" : "") + test::scripts_path("proc/valid/") + "?.lua";
-    
-    // you can open all libraries by passing no arguments
-    //lua.open_libraries();
 
 
         lua.new_usertype<mCircle>("circle",
@@ -572,8 +602,59 @@ void CinderProjectBasicApp::loadFiles()
                                   "sx", &mCircle::sX,
                                   "sy", &mCircle::sY,
                                   "sz", &mCircle::sZ,
+                                  "r", &mCircle::r,
+                                  "g", &mCircle::g,
+                                  "b", &mCircle::b,
+                                  "a", &mCircle::a,
+                                  "radius", &mCircle::radius,
+                                  "outline", &mCircle::outline,
+                                  "lineWidth", &mCircle::lineWidth,
                                 "print", &mCircle::print,
                                 "draw", &mCircle::draw
+                                 );
+
+    
+    lua.new_usertype<mRectangle>("rect",
+                              "x", &mRectangle::x,
+                              "y", &mRectangle::y,
+                              "z", &mRectangle::z,
+                              "rx", &mRectangle::rX,
+                              "ry", &mRectangle::rY,
+                              "rz", &mRectangle::rZ,
+                              "sx", &mRectangle::sX,
+                              "sy", &mRectangle::sY,
+                              "sz", &mRectangle::sZ,
+                              "r", &mRectangle::r,
+                              "g", &mRectangle::g,
+                              "b", &mRectangle::b,
+                              "a", &mRectangle::a,
+                             "w", &mRectangle::w,
+                             "h", &mRectangle::h,
+                                 "radians", &mRectangle::radians,
+                              "outline", &mRectangle::outline,
+                             "lineWidth", &mRectangle::lineWidth,
+                              "print", &mRectangle::print,
+                              "draw", &mRectangle::draw
+                              );
+ 
+    lua.new_usertype<mImage>("image",
+                                 "x", &mImage::x,
+                                 "y", &mImage::y,
+                                 "z", &mImage::z,
+                                 "rx", &mImage::rX,
+                                 "ry", &mImage::rY,
+                                 "rz", &mImage::rZ,
+                                 "sx", &mImage::sX,
+                                 "sy", &mImage::sY,
+                                 "sz", &mImage::sZ,
+                                 "r", &mImage::r,
+                                 "g", &mImage::g,
+                                 "b", &mImage::b,
+                                 "a", &mImage::a,
+                                 "radians", &mImage::radians,
+                             "open", &mImage::open,
+                                "print", &mImage::print,
+                                 "draw", &mImage::draw
                                  );
     
     lua.new_usertype<invert>("invert",

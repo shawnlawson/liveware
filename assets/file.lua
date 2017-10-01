@@ -1,5 +1,6 @@
-c = circle.new()
+c = image.new()
 scene.c = c
+c:open('nyan.png')
 
 function update()
 

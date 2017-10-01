@@ -67,6 +67,8 @@
 		992BDE121F4AF24C001BDFBC /* MyLineNumberView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MyLineNumberView.h; path = ../include/MyLineNumberView.h; sourceTree = "<group>"; };
 		992BDE141F4AF24C001BDFBC /* MyNSTextView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MyNSTextView.h; path = ../include/MyNSTextView.h; sourceTree = "<group>"; };
 		992BDE151F4AF8B5001BDFBC /* MyMainMenu.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = MyMainMenu.xib; path = ../resources/MyMainMenu.xib; sourceTree = "<group>"; };
+		993638B91F7D35F3006117AD /* mRectangle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = mRectangle.h; path = ../include/mRectangle.h; sourceTree = "<group>"; };
+		993638BA1F7D5C0C006117AD /* mImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = mImage.h; path = ../include/mImage.h; sourceTree = "<group>"; };
 		9951A9B31F40D46D0007F2A3 /* MidiConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MidiConstants.h; sourceTree = "<group>"; };
 		9951A9B41F40D46D0007F2A3 /* MidiExceptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MidiExceptions.h; sourceTree = "<group>"; };
 		9951A9B51F40D46D0007F2A3 /* MidiHeaders.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MidiHeaders.h; sourceTree = "<group>"; };
@@ -86,7 +88,7 @@
 		99BF83481F60C91D00E0B4A8 /* LUA.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = LUA.plist; path = ../resources/LUA.plist; sourceTree = "<group>"; };
 		99C5AC161F6DC2CF009DB2FB /* sol.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = sol.hpp; path = ../include/sol.hpp; sourceTree = "<group>"; };
 		99C5AC181F6DC30A009DB2FB /* file.lua */ = {isa = PBXFileReference; lastKnownFileType = text; name = file.lua; path = ../assets/file.lua; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.lua; };
-		99C5AC1A1F6DC337009DB2FB /* Circle.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Circle.hpp; path = ../include/Circle.hpp; sourceTree = "<group>"; };
+		99C5AC1A1F6DC337009DB2FB /* mCircle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = mCircle.h; path = ../include/mCircle.h; sourceTree = "<group>"; };
 		99C5AC1B1F6DC75D009DB2FB /* liblua53.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liblua53.a; path = ../../../../../usr/local/lib/liblua53.a; sourceTree = "<group>"; };
 		99C5AC1C1F6DC75D009DB2FB /* liblua53.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = liblua53.dylib; path = ../../../../../usr/local/lib/liblua53.dylib; sourceTree = "<group>"; };
 		99E08CB01F79C5C000DE1838 /* startup.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = startup.lua; path = ../assets/startup.lua; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.lua; };
@@ -323,7 +325,9 @@
 				991A81701F74250900D80CA3 /* PostProcess.h */,
 				991A81731F74304400D80CA3 /* BuiltinPostProcesses.h */,
 				991A81711F7425D900D80CA3 /* Drawable.h */,
-				99C5AC1A1F6DC337009DB2FB /* Circle.hpp */,
+				993638BA1F7D5C0C006117AD /* mImage.h */,
+				99C5AC1A1F6DC337009DB2FB /* mCircle.h */,
+				993638B91F7D35F3006117AD /* mRectangle.h */,
 			);
 			name = Drawables;
 			sourceTree = "<group>";
