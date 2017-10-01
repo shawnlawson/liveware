@@ -69,27 +69,30 @@ public:
     {
         lua_State* L = ts;
         sol::state_view lua(L);
-        lua.safe_script("print('x, y, radius')");
+        lua.safe_script("prnt(obj, 'x, y, radians')");
     }
     
     virtual void draw() override
     {
         ci::gl::color(r, g, b, a);
         ci::gl::ScopedModelMatrix modelScope;
-        ci::gl::translate(ci::vec3(x, y, z));
+        ci::gl::translate(ci::vec3(x - w*.5, y - h* .5, z));
         ci::gl::rotate(radians, ci::vec3(rX, rY, rZ));
         ci::gl::scale(ci::vec3(sX, sY, sZ));
         if (image >= 0) {
             w = images[image]->getWidth();
             h = images[image]->getHeight();
         }
-        ci::Rectf rect = ci::Rectf(-w*.5, -h*.5, w*.5, h*.5);
+        //TODO:: not centered?
+        
         
         if (image >= 0)
             ci::gl::draw(images[image]);
-        else
+        else {
+            ci::Rectf rect = ci::Rectf(0, 0, w, h);
             ci::gl::drawSolidRect(rect);
-                
+        }
+        
     }
     
     

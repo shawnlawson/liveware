@@ -39,32 +39,6 @@ using namespace std;
 using Receiver = osc::ReceiverUdp;
 using protocol = asio::ip::udp;
 
-//class mPrinter {
-//public:
-//    static ci::signals::Signal<void(std::string)>      printSignal;
-//    
-//    void my_print(sol::this_state ts)
-//    {
-//        lua_State* L = ts;
-//        //    sol::state_view lua(L);
-//        //    lua.safe_script("print('x, y, radius')");)
-//        
-//        int nargs = lua_gettop(L);
-//        string s = "in my_print:";
-//        for (int i=1; i <= nargs; ++i) {
-//            if (lua_isstring(L, i)) {
-//                s += lua_tostring(L, i);
-//            }
-//        }
-//        s += "\n";
-//        
-//        printSignal.emit( s );
-//    }
-//    
-//    ci::signals::Signal<void(std::string)>* LuaSignal() {
-//        return &luaSignal;
-//    }
-//};
 
 class CinderProjectBasicApp : public App {
 public:
@@ -139,9 +113,9 @@ public:
     
     //lua files
     void drawLua();
+    void my_print(sol::object a, sol::this_state s);
     std::string bach1, bach2;
     sol::state lua;
-    vector<Drawable *> drawables;
     vector<PostProcess *> postProcesses;
     bool renderLUA = true;
     
@@ -362,8 +336,18 @@ void CinderProjectBasicApp::update()
     //TODO::OSC lua["osc"] =
     //TODO::MIDI lua["midi"] =
     
-    sol::function luaUpdate = lua["update"];
-    luaUpdate();
+    
+    auto simple_handler = [](lua_State*, sol::protected_function_result result) {
+        // You can just pass it through to let the call-site handle it
+        return result;
+    };
+    auto result = lua.safe_script("update()", simple_handler);
+    if (!result.valid()) {
+        sol::error err = result;
+//        std::cout << "Error:" << err.what() << std::endl;
+        [ftv assignCode:err.what() withLanguage:"LUA"];
+    }
+    
     
     int numEffects = postProcesses.size();
     for (int i = 0; i < numEffects; ++i)
@@ -397,8 +381,8 @@ void CinderProjectBasicApp::renderToFBO()
     //TODO::MIDI glsl["midi"] =
 
     
-    if (mInputDeviceNode->getNumChannels() > 1)
-        fboGlsl->uniform("bandsR", mBandsR);
+//    if (mInputDeviceNode->getNumChannels() > 1)
+    fboGlsl->uniform("bandsR", mBandsR);
     
     gl::drawSolidRect(Rectf(vec2(0), fbos[pingPong]->getSize()));
     
@@ -418,8 +402,16 @@ void CinderProjectBasicApp::drawLua()
     if (!renderGLSL)
         gl::clear( Color( 0, 0, 0 ) );
     
-    sol::function luaDraw = lua["draw"];
-    luaDraw();
+    auto simple_handler = [](lua_State*, sol::protected_function_result result) {
+        // You can just pass it through to let the call-site handle it
+        return result;
+    };
+    auto result = lua.safe_script("draw()", simple_handler);
+    if (!result.valid()) {
+        sol::error err = result;
+        //        std::cout << "Error:" << err.what() << std::endl;
+        [ftv assignCode:err.what() withLanguage:"LUA"];
+    }
 }
 
 void CinderProjectBasicApp::draw()
@@ -486,7 +478,8 @@ void CinderProjectBasicApp::luaListener( std::string code)
         sol::error err = result;
         [ftv assignCode:err.what() withLanguage:"LUA"];
     }else {
-        [ftv assignCode:"" withLanguage:"LUA"];
+        if(![[NSString stringWithUTF8String:code.c_str()] containsString:@"print()"])
+            [ftv assignCode:"" withLanguage:"LUA"];
     }
 }
 
@@ -566,6 +559,16 @@ void CinderProjectBasicApp::swapCode()
     }
 }
 
+void CinderProjectBasicApp::my_print(sol::object a, sol::this_state s) {
+    sol::state_view lua(s);
+    if (a.is<std::string>()) {
+        std::string tempString = a.as<std::string>();
+        [ftv assignCode:tempString withLanguage:"LUA"];
+    } else {
+        [ftv assignCode:"nada" withLanguage:"LUA"];
+    }
+}
+
 //some big batch loading system function here
 void CinderProjectBasicApp::loadFiles()
 {
@@ -588,30 +591,48 @@ void CinderProjectBasicApp::loadFiles()
     
     lua.open_libraries(sol::lib::base, sol::lib::math, sol::lib::package);
     
+    std::string s = loadString(loadAsset("startup.lua"));
+    auto simple_handler = [](lua_State*, sol::protected_function_result result) {
+        // You can just pass it through to let the call-site handle it
+        return result;
+    };
+    auto result = lua.safe_script(s, simple_handler);
+    if (!result.valid()) {
+        sol::error err = result;
+        std::cout << "Error:" << err.what() << std::endl;
+    }
+    
+    
+    
+    lua.set_function("prnt", &CinderProjectBasicApp::my_print);
+    lua.set("obj", this);
+    
 //    const std::string package_path = lua["package"]["path"];
 //    lua["package"]["path"] = package_path + (!package_path.empty() ? ";" : "") + test::scripts_path("proc/valid/") + "?.lua";
 
 
-        lua.new_usertype<mCircle>("circle",
-                                "x", &mCircle::x,
-                                "y", &mCircle::y,
-                                "z", &mCircle::z,
-                                  "rx", &mCircle::rX,
-                                  "ry", &mCircle::rY,
-                                  "rz", &mCircle::rZ,
-                                  "sx", &mCircle::sX,
-                                  "sy", &mCircle::sY,
-                                  "sz", &mCircle::sZ,
-                                  "r", &mCircle::r,
-                                  "g", &mCircle::g,
-                                  "b", &mCircle::b,
-                                  "a", &mCircle::a,
-                                  "radius", &mCircle::radius,
-                                  "outline", &mCircle::outline,
-                                  "lineWidth", &mCircle::lineWidth,
-                                "print", &mCircle::print,
-                                "draw", &mCircle::draw
-                                 );
+    lua.set_function("easeInExpo", &easeInExpo);
+    
+    lua.new_usertype<mCircle>("circle",
+                            "x", &mCircle::x,
+                            "y", &mCircle::y,
+                            "z", &mCircle::z,
+                              "rx", &mCircle::rX,
+                              "ry", &mCircle::rY,
+                              "rz", &mCircle::rZ,
+                              "sx", &mCircle::sX,
+                              "sy", &mCircle::sY,
+                              "sz", &mCircle::sZ,
+                              "r", &mCircle::r,
+                              "g", &mCircle::g,
+                              "b", &mCircle::b,
+                              "a", &mCircle::a,
+                              "radius", &mCircle::radius,
+                              "outline", &mCircle::outline,
+                              "lineWidth", &mCircle::lineWidth,
+                            "print", &mCircle::print,
+                            "draw", &mCircle::draw
+                             );
 
     
     lua.new_usertype<mRectangle>("rect",
@@ -693,17 +714,6 @@ void CinderProjectBasicApp::loadFiles()
 //    lua["scene"] = &drawables;
     lua["post"] = &postProcesses;
     
-    // call lua code directly
-    std::string s = loadString(loadAsset("startup.lua"));
-    auto simple_handler = [](lua_State*, sol::protected_function_result result) {
-        // You can just pass it through to let the call-site handle it
-        return result;
-    };
-    auto result = lua.safe_script(s, simple_handler);
-    if (!result.valid()) {
-        sol::error err = result;
-        std::cout << "Error:" << err.what() << std::endl;
-    }
 
     
     //for post-process shaders...

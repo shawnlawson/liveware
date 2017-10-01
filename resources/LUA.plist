@@ -6,14 +6,12 @@
 	<string>--</string>
 	<key>functions</key>
 	<array>
-		<string>texture</string>
+		<string>image</string>
 		<string>rand</string>
-		<string>box</string>
+		<string>rect</string>
 		<string>circle</string>
-		<string>rotate</string>
-		<string>snoise</string>
-		<string>noise</string>
-		<string>hsv2rgb</string>
+		<string></string>
+		<string></string>
 	</array>
 	<key>operators</key>
 	<string>+-=&lt;&gt;/*#^%~</string>
@@ -105,6 +103,10 @@
 		<string>bands</string>
 		<string>mouse</string>
 		<string>deltaTime</string>
+		<string>width</string>
+		<string>height</string>
+		<string>osc</string>
+		<string>midi</string>
 	</array>
 	<key>keyword</key>
 	<array>
