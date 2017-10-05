@@ -24,13 +24,14 @@ public:
     
     
     mImage() : Drawable() {
-        x = ci::app::getWindowCenter().x;
-        y = ci::app::getWindowCenter().y;
-        z = rX = rY = 0.0f;
-        sX = sY = sZ = rZ = 1.0f;
+        p.x = ci::app::getWindowCenter().x;
+        p.y = ci::app::getWindowCenter().y;
+        p.z = r.x = r.y = 0.0f;
+        s.x = s.y = s.z = r.z = 1.0f;
         radians = 0.0f;
         w = h = 100.f;
-        r = g = b = a = 1.0f;
+        c = ci::Color::white();
+//        r = g = b = a = 1.0f;
     }
     
     
@@ -74,11 +75,11 @@ public:
     
     virtual void draw() override
     {
-        ci::gl::color(r, g, b, a);
+        ci::gl::color(c);
         ci::gl::ScopedModelMatrix modelScope;
-        ci::gl::translate(ci::vec3(x - w*.5, y - h* .5, z));
-        ci::gl::rotate(radians, ci::vec3(rX, rY, rZ));
-        ci::gl::scale(ci::vec3(sX, sY, sZ));
+        ci::gl::translate(p - ci::vec3(w, h, 0.0f) * 0.5f);
+        ci::gl::rotate(radians, r);
+        ci::gl::scale(s);
         if (image >= 0) {
             w = images[image]->getWidth();
             h = images[image]->getHeight();

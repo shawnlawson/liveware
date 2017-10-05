@@ -32,10 +32,13 @@ public:
         );
     }
     
-    virtual std::string listUniforms() override
+    virtual void print(sol::this_state ts) override
     {
-        return "none";
+        lua_State* L = ts;
+        sol::state_view lua(L);
+        lua.safe_script("prnt(obj, 'nada')");
     }
+    
 };
 
 
@@ -65,9 +68,11 @@ public:
         );
     }
     
-    virtual std::string listUniforms() override
+    virtual void print(sol::this_state ts) override
     {
-        return "none";
+        lua_State* L = ts;
+        sol::state_view lua(L);
+        lua.safe_script("prnt(obj, 'nada')");
     }
 };
 
@@ -111,9 +116,11 @@ public:
         mPostProcessShader->uniform( "amount", amount );
     }
 
-    virtual std::string listUniforms() override
+    virtual void print(sol::this_state ts) override
     {
-        return "float amount 1.";
+        lua_State* L = ts;
+        sol::state_view lua(L);
+        lua.safe_script("prnt(obj, 'amount = 1.0')");
     }
     
     float amount;
@@ -246,9 +253,11 @@ public:
         mPostProcessShader->uniform( "amount", amount );
     }
     
-    virtual std::string listUniforms() override
+    virtual void print(sol::this_state ts) override
     {
-        return "float amount .3";
+        lua_State* L = ts;
+        sol::state_view lua(L);
+        lua.safe_script("prnt(obj, 'amount = 0.3')");
     }
 
     float amount;
@@ -296,11 +305,13 @@ public:
           mPostProcessShader->uniform( "amount", amount );
       }
       
-      virtual std::string listUniforms() override
-      {
-          return "float amount .003";
-      }
-      
+    virtual void print(sol::this_state ts) override
+    {
+        lua_State* L = ts;
+        sol::state_view lua(L);
+        lua.safe_script("prnt(obj, 'amount = 0.003')");
+    }
+    
       float amount;
 
 };
@@ -350,9 +361,11 @@ public:
         mPostProcessShader->uniform( "time", time);
     }
     
-    virtual std::string listUniforms() override
+    virtual void print(sol::this_state ts) override
     {
-        return "float amount 300. \n float speed 10.";
+        lua_State* L = ts;
+        sol::state_view lua(L);
+        lua.safe_script("prnt(obj, 'amount = 300.0 \t speed = 10.0')");
     }
     
     float amount;
@@ -363,15 +376,13 @@ public:
 
 // === BLUR ==============================================================
 //TODO:: work on this.
-class blur    : public PostProcess
+class edges    : public PostProcess
 {
 public:
     
-    blur( float newWidth = 1.0f, float newHeight = 1.0f )
+    edges()
     : PostProcess( getFragmentShader() )
     {
-        width = newWidth;
-        height = newHeight;
     }
     
     static const std::string getFragmentShader()
@@ -379,28 +390,122 @@ public:
         return CI_GLSL( 400,
                        
                        uniform sampler2D tex0;
-                       uniform vec2 amount;
+                       
+                       in vec2 TexCoord;
+                       out vec4 FragColor;
+                       
+                       
+                       float getIntensity(vec2 u){
+                           vec3 a = texture(tex0,u).xyz;
+                           return (a.x+a.y+a.z)/3.0;
+                       }
+                       
+                       void main(){
+                           vec2 uv = gl_FragCoord.xy;
+                           vec2 p = vec2(1.0);
+                           
+                           float avg = 0.0;
+                           avg += getIntensity(TexCoord+vec2(p.x,0.0));
+                           avg += getIntensity(TexCoord+vec2(-p.x,0.0));
+                           avg += getIntensity(TexCoord+vec2(0.0,p.y));
+                           avg += getIntensity(TexCoord+vec2(0.0,-p.y));
+                           avg += getIntensity(TexCoord+vec2(p.x,p.y));
+                           avg += getIntensity(TexCoord+vec2(-p.x,-p.y));
+                           avg += getIntensity(TexCoord+vec2(p.x,-p.y));
+                           avg += getIntensity(TexCoord+vec2(-p.x,p.y));
+                           avg /= 8.0;
+                           
+                           float result = (1.0-getIntensity(TexCoord)) + avg;
+                           result = (1.0 - result) * 10.0;
+                           
+                           FragColor = vec4(vec3(result),1.0);
+                       }
+                       
+                       
+                       );
+    }
+    
+    virtual void updateUniforms() override
+    {
+    }
+    
+    virtual void print(sol::this_state ts) override
+    {
+        lua_State* L = ts;
+        sol::state_view lua(L);
+        lua.safe_script("prnt(obj, 'nada");
+    }
+    
+};
+
+// === BLUR ==============================================================
+//TODO:: work on this.
+class blur    : public PostProcess
+{
+public:
+    
+    blur( float mAmount = 1.0f )
+    : PostProcess( getFragmentShader() )
+    {
+        amount = mAmount;
+    }
+    
+    static const std::string getFragmentShader()
+    {
+        return CI_GLSL( 400,
+                       
+                       uniform sampler2D tex0;
+                       uniform float amount;
                        uniform vec2 bufferResolution;
                        
                        in vec2 TexCoord;
                        out vec4 FragColor;
                        
+                       
+                       float normpdf(in float x, in float sigma)
+                        {
+                            return 0.39894*exp(-0.5*x*x/(sigma*sigma))/sigma;
+                        }
+                       
                        void main()
                        {
-                           vec4 sampleM  = texture(tex0, TexCoord);
-                           vec4 sampleB0 = texture(tex0, TexCoord - amount/bufferResolution);
-                           vec4 sampleF0 = texture(tex0, TexCoord + amount/bufferResolution);
-                           vec4 sampleB1 = texture(tex0, TexCoord - amount/bufferResolution * 2.);
-                           vec4 sampleF1 = texture(tex0, TexCoord + amount/bufferResolution * 2.);
-                           vec4 sampleB2 = texture(tex0, TexCoord - amount/bufferResolution * 3.);
-                           vec4 sampleF2 = texture(tex0, TexCoord + amount/bufferResolution * 3.);
+                           vec3 c = texture(tex0, gl_FragCoord.xy/bufferResolution).rgb;
                            
-                           vec4 color =	0.1752 * sampleM +
-                                       0.1658 * (sampleB0 + sampleF0) +
-                                       0.1403 * (sampleB1 + sampleF1) + 
-                                       0.1063 * (sampleB2 + sampleF2);
+                           //declare stuff
+                           const int mSize = 11;
+                           const int kSize = (mSize-1)/2;
+                           float kernel[mSize];
+                           vec3 final_colour = vec3(0.0);
                            
-                           FragColor = vec4(color.rgb, 1.0);
+                           //create the 1-D kernel
+                           float sigma = 7.0;
+                           float Z = 0.0;
+                           for (int j = 0; j <= kSize; ++j)
+                           {
+                               kernel[kSize+j] = kernel[kSize-j] = normpdf(float(j), sigma);
+                           }
+                           
+                           //get the normalization factor (as the gaussian has been clamped)
+                           for (int j = 0; j < mSize; ++j)
+                           {
+                               Z += kernel[j];
+                           }
+                           
+                           //read out the texels
+                           for (int i=-kSize; i <= kSize; ++i)
+                           {
+                               for (int j=-kSize; j <= kSize; ++j)
+                               {
+                                   final_colour += kernel[kSize+j] *
+                                                   kernel[kSize+i] *
+                                        texture(tex0, (gl_FragCoord.xy+vec2(float(i),float(j)))/bufferResolution  * amount).rgb;
+                                   
+                               }
+                           }
+                           
+                           
+                           FragColor = vec4(final_colour/(Z*Z), 1.0);
+                       
                        }
                        
                        );
@@ -409,19 +514,19 @@ public:
     virtual void updateUniforms() override
     {
         mPostProcessShader->uniform( "bufferResolution", ci::vec2(bufferWidth, bufferHeight) );
-        mPostProcessShader->uniform( "amount", ci::vec2(width, height) );
+        mPostProcessShader->uniform( "amount", amount);
         
     }
     
-    virtual std::string listUniforms() override
+    virtual void print(sol::this_state ts) override
     {
-        return "float width 1. \n float height 1.";
+        lua_State* L = ts;
+        sol::state_view lua(L);
+        lua.safe_script("prnt(obj, 'amount = 1.0')");
     }
-    
-    float width;
-    float height;
-};
 
+    float amount;
+};
 
 
 #endif /* StockShaderProcesses_h */

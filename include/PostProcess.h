@@ -61,8 +61,8 @@ public:
         ci::gl::drawSolidRect( ci::Rectf(0, 0, targetFbo->getWidth(), targetFbo->getHeight()) );
     }
 
-    virtual void updateUniforms(){   }
-    virtual std::string listUniforms() { return ""; }
+    virtual void updateUniforms() {}
+    virtual void print(sol::this_state ts) {}
     
 private:
     

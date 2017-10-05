@@ -1,33 +1,32 @@
 //
-//  mRectangle.h
+//  mLine.h
 //  CinderProjectBasic
 //
-//  Created by Shawn Lawson on 9/28/17.
+//  Created by Shawn Lawson on 10/3/17.
 //
 //
 
-#ifndef mRectangle_h
-#define mRectangle_h
+#ifndef mLine_h
+#define mLine_h
 
-#include "Drawable.h"
-
-class mRectangle : public Drawable{
+class mLine : public Drawable{
 public:
     
-    bool outline;
     float lineWidth;
-    float w, h;
+    ci::vec3 p1, p2;
     
     
-    mRectangle() : Drawable() {
+    mLine() : Drawable() {
         p.x = ci::app::getWindowCenter().x;
         p.y = ci::app::getWindowCenter().y;
         p.z = r.x = r.y =  0.0f;
         s.x = s.y = s.z = r.z = 1.0f;
-        outline = false;
+
         lineWidth = 1.0f;
         radians = 0.0f;
-        w = h = 100.f;
+        p1.x = -50.0f;
+        p2.x = 50.0f;
+        p1.y = p2.y = p1.z = p2.z = 0.0f;
         c = ci::Color::white();
 //        r = g = b = a = 1.0f;
     }
@@ -36,7 +35,7 @@ public:
     {
         lua_State* L = ts;
         sol::state_view lua(L);
-        lua.safe_script("print('outline = false \t lineWidth = float \t w = float \t h = float')");
+        lua.safe_script("print('lineWidth = float \t p1x, p1y, p1z, p2x, p2y, p2z = float')");
     }
     
     virtual void draw() override
@@ -46,16 +45,12 @@ public:
         ci::gl::translate(p);
         ci::gl::rotate(radians, r);
         ci::gl::scale(s);
-        ci::Rectf rect = ci::Rectf(-w*.5, -h*.5, w*.5, h*.5);
-        if (outline)
-            ci::gl::drawStrokedRect(rect, lineWidth);
-        else
-            ci::gl::drawSolidRect(rect);
-
+        
+        ci::gl::drawLine(p1, p2);
     }
     
     
 };
 
 
-#endif /* mRectangle_h */
+#endif /* mLine_h */

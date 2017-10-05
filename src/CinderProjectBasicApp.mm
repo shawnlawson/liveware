@@ -24,12 +24,10 @@
 
 #include "sol.hpp"
 
-#include "Drawable.h"
-#include "mCircle.h"
-#include "mRectangle.h"
-#include "mImage.h"
 #include "PostProcess.h"
 #include "BuiltinPostProcesses.h"
+
+#include "LuaBindings.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -53,7 +51,7 @@ public:
     void loadFiles();
     
     
-    //OSC
+/// OSC //////////////////////////////////////////////////
     void openOSC();
     void stopOSC();
     std::shared_ptr<asio::io_service>		mIoService;
@@ -64,7 +62,7 @@ public:
     float                                   nnData[10];
     
     
-    //MIDI
+/// MIDI //////////////////////////////////////////////////
     void midiListener( midi::Message msg );
     void openMidi();
     midi::Input mInput;
@@ -73,7 +71,7 @@ public:
     vector <int> cc;
     std::string status;
     
-    //audio
+//// audio /////////////////////////////////////////////////
     void monoOrStereo();
     audio::InputDeviceNodeRef		mInputDeviceNode;
     audio::MonitorSpectralNodeRef	mMonitorSpectralNode,
@@ -88,11 +86,10 @@ public:
     gl::TextureFontRef				mTextureFont;
     Font                            mFont;
     
-    //graphics
-    void renderToFBO();
+/// graphics /////////////////////////////////////////////////
     gl::FboRef fbos[4];
     gl::GlslProgRef fboGlsl, trialGlsl;
-    std::string vertProg, fragProg;
+    std::string vertProg, fragProg, headerProg;
     bool renderGLSL = true;
     
     int	FBO_WIDTH = 1280, FBO_HEIGHT = 720;
@@ -101,7 +98,7 @@ public:
     gl::TextureRef audioMidiTex;
     Surface8u audioSuface;
 
-    //editor
+/// editor //////////////////////////////////////////////////
     void shaderListener( std::string code);
     void luaListener( std::string code);
     NSView * theView;
@@ -110,16 +107,16 @@ public:
     MyNSTextView *tv;
     FeedbackNSTextView *ftv;
     NSScrollView *sv;
+    NSSplitView* spv;
     
-    //lua files
-    void drawLua();
+/// lua files /////////////////////////////////////////////
     void my_print(sol::object a, sol::this_state s);
     std::string bach1, bach2;
     sol::state lua;
     vector<PostProcess *> postProcesses;
     bool renderLUA = true;
     
-    //GUI
+/// GUI //////////////////////////////////////////////////
     params::InterfaceGlRef	mParams;
     vector<string>			mEnumNames;
     int						mEnumSelection;
@@ -128,9 +125,9 @@ public:
     vector<string>          oscNames;
     int                     oscSelection;
 
-
-    //time
+/// time //////////////////////////////////////////////////
     double lastFrameTime;
+    
 };
 
 
@@ -143,11 +140,9 @@ CinderProjectBasicApp::CinderProjectBasicApp()
 
 void CinderProjectBasicApp::setup()
 {
-    
-        
-    /////////////////////////////////////////////
-    //  App defaults
-    /////////////////////////////////////////////
+/////////////////////////////////////////////
+//  App defaults
+/////////////////////////////////////////////
     gl::enableVerticalSync();
     setWindowSize(1280, 720);
     NSArray *tl;
@@ -156,9 +151,9 @@ void CinderProjectBasicApp::setup()
                         topLevelObjects:&tl];
     lastFrameTime = ci::app::getElapsedSeconds();
     
-    /////////////////////////////////////////////
-    //  OpenGL
-    /////////////////////////////////////////////
+/////////////////////////////////////////////
+//  OpenGL
+/////////////////////////////////////////////
     auto format = gl::Fbo::Format()
     .samples( 4 ) // uncomment this to enable 4x antialiasing
     .attachment( GL_COLOR_ATTACHMENT0, gl::Texture2d::create( FBO_WIDTH, FBO_HEIGHT ) );
@@ -176,9 +171,9 @@ void CinderProjectBasicApp::setup()
     mFont = Font( "Fira Code", 12 );
     mTextureFont = gl::TextureFont::create( mFont );
 
-    /////////////////////////////////////////////
-    //  MIDI INIT
-    /////////////////////////////////////////////
+/////////////////////////////////////////////
+//  MIDI INIT
+/////////////////////////////////////////////
     mInput.listPorts();
 
     if( mInput.getNumPorts() > 0 )
@@ -198,18 +193,18 @@ void CinderProjectBasicApp::setup()
     }
     
     
-    /////////////////////////////////////////////
-    //  Audio, check duplicate device INIT
-    /////////////////////////////////////////////
+/////////////////////////////////////////////
+//  Audio, check duplicate device INIT
+/////////////////////////////////////////////
     auto ctx = audio::Context::master();
     mInputDeviceNode = ctx->createInputDeviceNode();
     monoOrStereo();
     mSpectrumPlot.enableBorder(false);
 
     
-    /////////////////////////////////////////////
-    //  GUI INIT
-    /////////////////////////////////////////////
+/////////////////////////////////////////////
+//  GUI INIT
+/////////////////////////////////////////////
     mParams = params::InterfaceGl::create( getWindow(), "App parameters", toPixels( ivec2( 200, 400 ) ) );
     mParams->setPosition(ivec2(800, 10));
     mParams->addParam("Toggle GLSL", &renderGLSL);
@@ -237,16 +232,17 @@ void CinderProjectBasicApp::setup()
     mParams->addParam( "OSC In", oscNames, &oscSelection)
     .updateFn( [&](){ openOSC(); } );
     
+    mParams->addSeparator();
+    mParams->addButton("Fix TextView", [&](){ [cvm addSubview:spv]; } );
     
-    /////////////////////////////////////////////
-    //  Text View INIT
-    /////////////////////////////////////////////
+/////////////////////////////////////////////
+//  Text View INIT
+/////////////////////////////////////////////
     NSUInteger index = [tl indexOfObjectPassingTest:^BOOL (id obj, NSUInteger idx, BOOL *stop) {
-//        return [obj isKindOfClass:[NSScrollView class]];
         return [obj isKindOfClass:[NSSplitView class]];
     }];
-//    sv = tl[index];
-    NSSplitView* spv = tl[index];
+
+    spv = tl[index];
     sv = (NSScrollView*)[spv.subviews objectAtIndex:0];
     
     tv = (MyNSTextView*)[sv documentView];
@@ -264,8 +260,23 @@ void CinderProjectBasicApp::setup()
     
     //attaching to cinder view, attaching to window view doesn't work
      cvm =  (__bridge CinderViewMac *)getWindow()->getNative();
-//    [cvm addSubview:sv];
     [cvm addSubview:spv];
+
+/////////////////////////////////////////////
+//  LUA
+/////////////////////////////////////////////
+    lua.open_libraries(sol::lib::base, sol::lib::math, sol::lib::package);
+    
+    std::string s = loadString(loadAsset("startup.lua"));
+    luaListener(s);
+    
+    lua.set_function("prnt", &CinderProjectBasicApp::my_print);
+    lua.set("obj", this);
+    lua["post"] = &postProcesses;
+    lua["PI"] = 3.14159f;
+    lua["epsilon"] = 0.000043f;
+
+    luaBinding(&lua);
 }
 
 
@@ -276,6 +287,8 @@ void CinderProjectBasicApp::update()
     {//scoped for mutex
         if(mThread.joinable()) {//check for OSC connected
             std::lock_guard<std::mutex> lock( mNNMutex );
+            lua["osc"] = &nnData;
+
             for (int i = 0; i < 10; ++i) {
                 std::cout << nnData[i] << " ";
             }
@@ -333,21 +346,12 @@ void CinderProjectBasicApp::update()
     lua["time"] = currentTime;
     lua["width"] = getWindowBounds().getWidth();
     lua["height"] = getWindowBounds().getHeight();
-    //TODO::OSC lua["osc"] =
-    //TODO::MIDI lua["midi"] =
+    lua["midiNotes"] = &notes;
+    lua["midiCC"] = &cc;
+    lua["bands"] = &mBands;
     
     
-    auto simple_handler = [](lua_State*, sol::protected_function_result result) {
-        // You can just pass it through to let the call-site handle it
-        return result;
-    };
-    auto result = lua.safe_script("update()", simple_handler);
-    if (!result.valid()) {
-        sol::error err = result;
-//        std::cout << "Error:" << err.what() << std::endl;
-        [ftv assignCode:err.what() withLanguage:"LUA"];
-    }
-    
+    luaListener("update()");
     
     int numEffects = postProcesses.size();
     for (int i = 0; i < numEffects; ++i)
@@ -360,67 +364,55 @@ void CinderProjectBasicApp::update()
 
 }
 
-void CinderProjectBasicApp::renderToFBO()
-{
-
-    
-    ci::gl::ScopedFramebuffer   fboScp( fbos[pingPong] );
-    ci::gl::ScopedViewport      viewScp( fbos[pingPong]->getSize() );
-    ci::gl::ScopedGlslProg      glScp( fboGlsl );
-    ci::gl::ScopedTextureBind   texScp( fbos[(pingPong+1)%2]->getColorTexture(), 0 );
-    gl::ScopedTextureBind       scpAudBind(audioMidiTex, 1);
-    ci::gl::ScopedMatrices      matScp;
-    ci::gl::setMatricesWindow( fbos[pingPong]->getSize() );
-    
-    fboGlsl->uniform("uRenderMap", 0);
-    fboGlsl->uniform("uAudioMap", 1);
-    fboGlsl->uniform("time", (float)getElapsedSeconds());
-    fboGlsl->uniform("bands", mBands);
-
-    //TODO::OSC glsl["osc"] =
-    //TODO::MIDI glsl["midi"] =
-
-    
-//    if (mInputDeviceNode->getNumChannels() > 1)
-    fboGlsl->uniform("bandsR", mBandsR);
-    
-    gl::drawSolidRect(Rectf(vec2(0), fbos[pingPong]->getSize()));
-    
-}
-
-void CinderProjectBasicApp::drawLua()
-{
-    
-    CameraOrtho cam(0, 1280, 0, 720, -10, 10);
-    gl::ScopedViewport scpVp( ivec2( 0 ), fbos[pingPong]->getSize() );
-
-    gl::ScopedFramebuffer  scpFbo( fbos[pingPong] );
-
-    gl::ScopedMatrices matScope;
-    gl::setMatrices( cam );
-
-    if (!renderGLSL)
-        gl::clear( Color( 0, 0, 0 ) );
-    
-    auto simple_handler = [](lua_State*, sol::protected_function_result result) {
-        // You can just pass it through to let the call-site handle it
-        return result;
-    };
-    auto result = lua.safe_script("draw()", simple_handler);
-    if (!result.valid()) {
-        sol::error err = result;
-        //        std::cout << "Error:" << err.what() << std::endl;
-        [ftv assignCode:err.what() withLanguage:"LUA"];
-    }
-}
 
 void CinderProjectBasicApp::draw()
 {
     if (renderGLSL)
-         renderToFBO();
+    {
+        ci::gl::ScopedFramebuffer   fboScp( fbos[pingPong] );
+        ci::gl::ScopedViewport      viewScp( fbos[pingPong]->getSize() );
+        ci::gl::ScopedGlslProg      glScp( fboGlsl );
+        ci::gl::ScopedTextureBind   texScp( fbos[(pingPong+1)%2]->getColorTexture(), 0 );
+        gl::ScopedTextureBind       scpAudBind(audioMidiTex, 1);
+        ci::gl::ScopedMatrices      matScp;
+        ci::gl::setMatricesWindow( fbos[pingPong]->getSize() );
+        
+        fboGlsl->uniform("backbuffer", 0);
+        fboGlsl->uniform("audiobuffer", 1);
+        fboGlsl->uniform("time", (float)getElapsedSeconds());
+        fboGlsl->uniform("bands", mBands);
+        fboGlsl->uniform("bandsR", mBandsR);
+        fboGlsl->uniform("resolution",
+                         vec2(fbos[pingPong]->getWidth(), fbos[pingPong]->getHeight()));
+        
+        //TODO::OSC glsl["osc"] =
+        //TODO::MIDI glsl["midi"] =
+        
+        
+        //    if (mInputDeviceNode->getNumChannels() > 1)
+        
+        
+        gl::drawSolidRect(Rectf(vec2(0), fbos[pingPong]->getSize()));
+    }
+    
     
     if (renderLUA)
-        drawLua();
+    {
+        CameraOrtho cam(0, 1280, 0, 720, -10, 10);
+        gl::ScopedViewport scpVp( ivec2( 0 ), fbos[pingPong]->getSize() );
+        
+        gl::ScopedFramebuffer  scpFbo( fbos[pingPong] );
+        
+        gl::ScopedMatrices matScope;
+        gl::setMatrices( cam );
+        
+        if (!renderGLSL)
+            gl::clear( Color( 0, 0, 0 ) );
+        
+        luaListener("draw()");
+    }
+    
+    
     
     gl::color(1.0, 1.0, 1.0, 1.0);
     int numEffects = postProcesses.size();
@@ -478,7 +470,10 @@ void CinderProjectBasicApp::luaListener( std::string code)
         sol::error err = result;
         [ftv assignCode:err.what() withLanguage:"LUA"];
     }else {
-        if(![[NSString stringWithUTF8String:code.c_str()] containsString:@"print()"])
+        NSString *s = [NSString stringWithUTF8String:code.c_str()];
+        if(![s containsString:@"print()"] &&
+           ![s isEqualToString:@"draw()"] &&
+           ![s isEqualToString:@"update()"])
             [ftv assignCode:"" withLanguage:"LUA"];
     }
 }
@@ -488,21 +483,19 @@ void CinderProjectBasicApp::shaderListener( std::string code)
     gl::GlslProg::Format renderFormat;
     try {
         renderFormat.vertex( vertProg )
-        .fragment( code );
+        .fragment( headerProg + code );
 
         trialGlsl = gl::GlslProg::create( renderFormat );
     } 	catch( ci::gl::GlslProgCompileExc &exc )
     {
         [ftv assignCode:exc.what() withLanguage:"GLSL"];
         [tv errorLineHighlight:exc.what()];
-//        CI_LOG_E( "Shader load error: " << exc.what() );
         return;
     }
     catch( ci::Exception &exc )
     {
         [ftv assignCode:exc.what() withLanguage:"GLSL"];
         [tv errorLineHighlight:exc.what()];
-//        CI_LOG_E( "Shader load error: " << exc.what() );
         return;
     }
     
@@ -538,20 +531,18 @@ void CinderProjectBasicApp::swapCode()
         case 2: // Bach 1
         {
             std::string s = loadString(loadAsset("file.lua"));
-            auto simple_handler = [](lua_State*, sol::protected_function_result result) {
-                // You can just pass it through to let the call-site handle it
-                return result;
-            };
-            auto result = lua.script(s, simple_handler);
-            if (!result.valid()) {
-                sol::error err = result;
-                std::cout << "Error:" << err.what() << std::endl;
-            }
+            [tv assignCode:s withLanguage:"LUA"];
+        }
+            break;
+            
+        case 3: // Bach 1
+        {
+            std::string s = loadString(loadAsset("file.lua"));
             [tv assignCode:s withLanguage:"LUA"];
         }
             break;
         
-        case 3: // new GLSL
+        case 4: // new GLSL
             break;
             
         default:
@@ -574,10 +565,11 @@ void CinderProjectBasicApp::loadFiles()
 {
     vertProg = loadString( loadAsset("render.vert"));
     fragProg = loadString( loadAsset("render.frag"));
+    headerProg = loadString( loadAsset("header.frag"));
     gl::GlslProg::Format renderFormat;
     try {
         renderFormat.vertex( vertProg )
-        .fragment( fragProg );
+        .fragment( headerProg + fragProg );
         
         fboGlsl = gl::GlslProg::create( renderFormat );
     } 	catch( ci::gl::GlslProgCompileExc &exc )
@@ -589,160 +581,35 @@ void CinderProjectBasicApp::loadFiles()
         CI_LOG_E( "Shader load error: " << exc.what() );
     }
     
-    lua.open_libraries(sol::lib::base, sol::lib::math, sol::lib::package);
-    
-    std::string s = loadString(loadAsset("startup.lua"));
-    auto simple_handler = [](lua_State*, sol::protected_function_result result) {
-        // You can just pass it through to let the call-site handle it
-        return result;
-    };
-    auto result = lua.safe_script(s, simple_handler);
-    if (!result.valid()) {
-        sol::error err = result;
-        std::cout << "Error:" << err.what() << std::endl;
-    }
-    
-    
-    
-    lua.set_function("prnt", &CinderProjectBasicApp::my_print);
-    lua.set("obj", this);
-    
-//    const std::string package_path = lua["package"]["path"];
-//    lua["package"]["path"] = package_path + (!package_path.empty() ? ";" : "") + test::scripts_path("proc/valid/") + "?.lua";
-
-
-    lua.set_function("easeInExpo", &easeInExpo);
-    
-    lua.new_usertype<mCircle>("circle",
-                            "x", &mCircle::x,
-                            "y", &mCircle::y,
-                            "z", &mCircle::z,
-                              "rx", &mCircle::rX,
-                              "ry", &mCircle::rY,
-                              "rz", &mCircle::rZ,
-                              "sx", &mCircle::sX,
-                              "sy", &mCircle::sY,
-                              "sz", &mCircle::sZ,
-                              "r", &mCircle::r,
-                              "g", &mCircle::g,
-                              "b", &mCircle::b,
-                              "a", &mCircle::a,
-                              "radius", &mCircle::radius,
-                              "outline", &mCircle::outline,
-                              "lineWidth", &mCircle::lineWidth,
-                            "print", &mCircle::print,
-                            "draw", &mCircle::draw
-                             );
-
-    
-    lua.new_usertype<mRectangle>("rect",
-                              "x", &mRectangle::x,
-                              "y", &mRectangle::y,
-                              "z", &mRectangle::z,
-                              "rx", &mRectangle::rX,
-                              "ry", &mRectangle::rY,
-                              "rz", &mRectangle::rZ,
-                              "sx", &mRectangle::sX,
-                              "sy", &mRectangle::sY,
-                              "sz", &mRectangle::sZ,
-                              "r", &mRectangle::r,
-                              "g", &mRectangle::g,
-                              "b", &mRectangle::b,
-                              "a", &mRectangle::a,
-                             "w", &mRectangle::w,
-                             "h", &mRectangle::h,
-                                 "radians", &mRectangle::radians,
-                              "outline", &mRectangle::outline,
-                             "lineWidth", &mRectangle::lineWidth,
-                              "print", &mRectangle::print,
-                              "draw", &mRectangle::draw
-                              );
- 
-    lua.new_usertype<mImage>("image",
-                                 "x", &mImage::x,
-                                 "y", &mImage::y,
-                                 "z", &mImage::z,
-                                 "rx", &mImage::rX,
-                                 "ry", &mImage::rY,
-                                 "rz", &mImage::rZ,
-                                 "sx", &mImage::sX,
-                                 "sy", &mImage::sY,
-                                 "sz", &mImage::sZ,
-                                 "r", &mImage::r,
-                                 "g", &mImage::g,
-                                 "b", &mImage::b,
-                                 "a", &mImage::a,
-                                 "radians", &mImage::radians,
-                             "open", &mImage::open,
-                                "print", &mImage::print,
-                                 "draw", &mImage::draw
-                                 );
-    
-    lua.new_usertype<invert>("invert",
-                                "listUniforms", &invert::listUniforms
-                                );
-    
-    lua.new_usertype<greyscale>("greyscale",
-                                "amount", &greyscale::amount,
-                                "listUniforms", &greyscale::listUniforms
-                                );
-    
-    lua.new_usertype<vignette>("vignette",
-                                "amount", &vignette::amount,
-                                "listUniforms", &vignette::listUniforms
-                                );
-    
-    lua.new_usertype<aberration>("aberration",
-                                "amount", &aberration::amount,
-                                "listUniforms", &aberration::listUniforms
-                                );
-    
-    lua.new_usertype<scanline>("scanline",
-                                "amount", &scanline::amount,
-                               "speed", &scanline::speed,
-                                "listUniforms", &scanline::listUniforms
-                                );
-
-    lua.new_usertype<blur>("blur",
-                               "width", &blur::width,
-                               "height", &blur::height,
-                                "updateUniforms", &blur::updateUniforms,
-                               "listUniforms", &blur::listUniforms
-                               );
-
-    
-//    lua["scene"] = &drawables;
-    lua["post"] = &postProcesses;
-    
-
     
     //for post-process shaders...
     // Shortcut for shader loading and error handling
-//    auto loadGlslProg = [ & ]( const gl::GlslProg::Format& format ) -> gl::GlslProgRef
-//    {
-//        string names = format.getVertexPath().string() + " + " +
-//        format.getFragmentPath().string();
-//        gl::GlslProgRef glslProg;
-//        try {
-//            glslProg = gl::GlslProg::create( format );
-//        } catch ( const Exception& ex ) {
-//            CI_LOG_EXCEPTION( names, ex );
-//            quit();
-//        }
-//        return glslProg;
-//    };
-//    gl::VboMeshRef rect			= gl::VboMesh::create( geom::Rect() );
-//    ci::gl::BatchRef			mBatchBloomBlurRect;
-//    int32_t version					= 330;
-//    DataSourceRef fragBloomBlur				= loadAsset( "bloom/blur.frag" );
-//    DataSourceRef vertPassThrough			= loadAsset( "pass_through.vert" );
-//    gl::GlslProgRef bloomBlur		= loadGlslProg( gl::GlslProg::Format().version( version )
-//                                                   .vertex( vertPassThrough ).fragment( fragBloomBlur )
-//                                                   
-//    mBatchBloomBlurRect				= gl::Batch::create( rect,		bloomBlur );
+    //    auto loadGlslProg = [ & ]( const gl::GlslProg::Format& format ) -> gl::GlslProgRef
+    //    {
+    //        string names = format.getVertexPath().string() + " + " +
+    //        format.getFragmentPath().string();
+    //        gl::GlslProgRef glslProg;
+    //        try {
+    //            glslProg = gl::GlslProg::create( format );
+    //        } catch ( const Exception& ex ) {
+    //            CI_LOG_EXCEPTION( names, ex );
+    //            quit();
+    //        }
+    //        return glslProg;
+    //    };
+    //    gl::VboMeshRef rect			= gl::VboMesh::create( geom::Rect() );
+    //    ci::gl::BatchRef			mBatchBloomBlurRect;
+    //    int32_t version					= 330;
+    //    DataSourceRef fragBloomBlur				= loadAsset( "bloom/blur.frag" );
+    //    DataSourceRef vertPassThrough			= loadAsset( "pass_through.vert" );
+    //    gl::GlslProgRef bloomBlur		= loadGlslProg( gl::GlslProg::Format().version( version )
+    //                                                   .vertex( vertPassThrough ).fragment( fragBloomBlur )
+    //
+    //    mBatchBloomBlurRect				= gl::Batch::create( rect,		bloomBlur );
     
 }
 
+    
 /////////////////////////////////////////////
 //  MIDI
 /////////////////////////////////////////////

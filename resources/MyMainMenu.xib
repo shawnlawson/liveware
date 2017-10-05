@@ -593,7 +593,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="800" height="548"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <textView drawsBackground="NO" importsGraphics="NO" usesFontPanel="YES" findStyle="panel" incrementalSearchingEnabled="YES" allowsUndo="YES" usesRuler="YES" id="o6W-rC-yme" customClass="MyNSTextView">
+                            <textView drawsBackground="NO" importsGraphics="NO" usesFontPanel="YES" findStyle="panel" incrementalSearchingEnabled="YES" allowsCharacterPickerTouchBarItem="NO" allowsUndo="YES" usesRuler="YES" textCompletion="NO" id="o6W-rC-yme" customClass="MyNSTextView">
                                 <rect key="frame" x="0.0" y="0.0" width="800" height="548"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>

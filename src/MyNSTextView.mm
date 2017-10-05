@@ -100,13 +100,23 @@
                              range:NSMakeRange(0, [self.textStorage length])];
     
     if ([whichLanguage compare:@"GLSL"] == NSOrderedSame) {
-    //TODO: checked for leaks but didn't find any, still suspicious.
-        shaderTimer = nil;
-        shaderTimer = [NSTimer scheduledTimerWithTimeInterval:0.2
+    
+        @try {
+            if([shaderTimer isValid]) {
+                [shaderTimer invalidate];
+                shaderTimer = nil;
+            }
+        } @catch (NSException *exception) {
+            NSLog(@"an Exeption");
+        } @finally {
+            //nada
+        }
+        //memory leak?
+        shaderTimer = [[NSTimer scheduledTimerWithTimeInterval:0.2
                                                        target:self
                                                      selector:@selector(sendShaderCode)
                                                      userInfo:nil
-                                                      repeats:NO];
+                                                      repeats:NO] retain];
     }
 }
 
@@ -210,9 +220,9 @@
         {
             //first error always tells where
             if (NSOrderedSame == [tokens[0] compare:@"FRAGMENT"])
-                row = [tokens[3] intValue] -1; //-1 is offset from header
+                row = [tokens[3] intValue] -353; // is offset from header
             else //if multiple then token[0] is dropped
-                row = [tokens[2] intValue] -1;
+                row = [tokens[2] intValue] -353;
             
             //convert row to a NSRange
             unsigned numberOfLines, myIndex, stringLength = [self.textStorage length];
@@ -348,9 +358,14 @@
         {
             NSRange r = [self selectionRangeForProposedRange:[self selectedRange]
                                                  granularity:NSSelectByParagraph];
-            
+         
+            if(r.length > self.textStorage.length) {
+                r.location = 0;
+                r.length = self.textStorage.length;
+            }
+                
 //            NSLog(@"%@", [self.textStorage.string substringWithRange:r]);
-        [self sendLuaCode:[self.textStorage.string substringWithRange:r] withRange:r];
+            [self sendLuaCode:[self.textStorage.string substringWithRange:r] withRange:r];
             
         }
     } else if ([theEvent modifierFlags] & NSCommandKeyMask && theEvent.keyCode == 36)

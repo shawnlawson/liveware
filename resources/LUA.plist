@@ -7,10 +7,9 @@
 	<key>functions</key>
 	<array>
 		<string>image</string>
-		<string>rand</string>
 		<string>rect</string>
 		<string>circle</string>
-		<string></string>
+		<string>perlin</string>
 		<string></string>
 	</array>
 	<key>operators</key>

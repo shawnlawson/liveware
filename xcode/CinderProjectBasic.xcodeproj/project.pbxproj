@@ -58,6 +58,8 @@
 		4A48FE7062534F0192F8A5FB /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = CinderApp.icns; path = ../resources/CinderApp.icns; sourceTree = "<group>"; };
 		5323E6B10EAFCA74003A9687 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = /System/Library/Frameworks/CoreVideo.framework; sourceTree = "<absolute>"; };
 		8D1107320486CEB800E47090 /* CinderProjectBasic.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CinderProjectBasic.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		99190E8B1F82A07E007EC646 /* LuaBindings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LuaBindings.h; path = ../include/LuaBindings.h; sourceTree = "<group>"; };
+		99190E8C1F82A7E6007EC646 /* header.frag */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = header.frag; path = ../assets/header.frag; sourceTree = "<group>"; };
 		991A61FB1F51BB5A001E44E8 /* GLSL.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = GLSL.plist; path = ../resources/GLSL.plist; sourceTree = "<group>"; };
 		991A81701F74250900D80CA3 /* PostProcess.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PostProcess.h; path = ../include/PostProcess.h; sourceTree = "<group>"; };
 		991A81711F7425D900D80CA3 /* Drawable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Drawable.h; path = ../include/Drawable.h; sourceTree = "<group>"; };
@@ -69,6 +71,7 @@
 		992BDE151F4AF8B5001BDFBC /* MyMainMenu.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = MyMainMenu.xib; path = ../resources/MyMainMenu.xib; sourceTree = "<group>"; };
 		993638B91F7D35F3006117AD /* mRectangle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = mRectangle.h; path = ../include/mRectangle.h; sourceTree = "<group>"; };
 		993638BA1F7D5C0C006117AD /* mImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = mImage.h; path = ../include/mImage.h; sourceTree = "<group>"; };
+		993A68DA1F81A01B007D6DA6 /* mPerlin.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = mPerlin.hpp; path = ../include/mPerlin.hpp; sourceTree = "<group>"; };
 		9951A9B31F40D46D0007F2A3 /* MidiConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MidiConstants.h; sourceTree = "<group>"; };
 		9951A9B41F40D46D0007F2A3 /* MidiExceptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MidiExceptions.h; sourceTree = "<group>"; };
 		9951A9B51F40D46D0007F2A3 /* MidiHeaders.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MidiHeaders.h; sourceTree = "<group>"; };
@@ -85,6 +88,7 @@
 		9951AB8B1F40D4950007F2A3 /* CoreMIDI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMIDI.framework; path = System/Library/Frameworks/CoreMIDI.framework; sourceTree = SDKROOT; };
 		9990BA301F70051600C62B7A /* Osc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Osc.cpp; sourceTree = "<group>"; };
 		9990BA311F70051600C62B7A /* Osc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Osc.h; sourceTree = "<group>"; };
+		99BB0FDB1F84598B006FD2C1 /* mLine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = mLine.h; path = ../include/mLine.h; sourceTree = "<group>"; };
 		99BF83481F60C91D00E0B4A8 /* LUA.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = LUA.plist; path = ../resources/LUA.plist; sourceTree = "<group>"; };
 		99C5AC161F6DC2CF009DB2FB /* sol.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = sol.hpp; path = ../include/sol.hpp; sourceTree = "<group>"; };
 		99C5AC181F6DC30A009DB2FB /* file.lua */ = {isa = PBXFileReference; lastKnownFileType = text; name = file.lua; path = ../assets/file.lua; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.lua; };
@@ -210,6 +214,7 @@
 				99EBEB621F3E997200453241 /* AudioDrawUtils.h */,
 				4442529699194DE2A42C0BAF /* Resources.h */,
 				BF3BC0CF9B3544B0B72671CE /* CinderProjectBasic_Prefix.pch */,
+				99190E8B1F82A07E007EC646 /* LuaBindings.h */,
 			);
 			name = Headers;
 			sourceTree = "<group>";
@@ -222,6 +227,7 @@
 				992BDE151F4AF8B5001BDFBC /* MyMainMenu.xib */,
 				99C5AC181F6DC30A009DB2FB /* file.lua */,
 				99E08CB01F79C5C000DE1838 /* startup.lua */,
+				99190E8C1F82A7E6007EC646 /* header.frag */,
 				99F22F381F423DC20091620D /* render.frag */,
 				99F22F391F423DC20091620D /* render.vert */,
 				4A48FE7062534F0192F8A5FB /* CinderApp.icns */,
@@ -328,6 +334,8 @@
 				993638BA1F7D5C0C006117AD /* mImage.h */,
 				99C5AC1A1F6DC337009DB2FB /* mCircle.h */,
 				993638B91F7D35F3006117AD /* mRectangle.h */,
+				99BB0FDB1F84598B006FD2C1 /* mLine.h */,
+				993A68DA1F81A01B007D6DA6 /* mPerlin.hpp */,
 			);
 			name = Drawables;
 			sourceTree = "<group>";

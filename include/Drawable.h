@@ -13,11 +13,10 @@
 class Drawable {
 public:
 
-    float x, y, z;
-    float rX, rY, rZ;
+    ci::vec3 p, r, s;
+    ci::Color c;
     float radians;
-    float sX, sY, sZ;
-    float r, g, b, a;
+//    float r, g, b, a;
     
 
     Drawable(){}
