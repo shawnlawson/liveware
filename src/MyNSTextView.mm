@@ -28,25 +28,24 @@
 
 - (void)setupLineView
 {
-    lineNumberView = [[MyLineNumberView alloc] initWithScrollView:[self enclosingScrollView]
+    lineNumberView = [[MyLineNumberView alloc] initWithScrollView:self.enclosingScrollView
                                                       orientation:NSVerticalRuler];
-    [[self enclosingScrollView] setVerticalRulerView:lineNumberView];
-    [[self enclosingScrollView] setHasHorizontalRuler:NO];
-    [[self enclosingScrollView] setHasVerticalRuler:YES];
-    [[self enclosingScrollView] setRulersVisible:YES];
-    [[self enclosingScrollView] setVerticalRulerView:lineNumberView];
+    [self.enclosingScrollView setVerticalRulerView:lineNumberView];
+    [self.enclosingScrollView setHasHorizontalRuler:NO];
+    [self.enclosingScrollView setHasVerticalRuler:YES];
+    [self.enclosingScrollView setRulersVisible:YES];
+    [self.enclosingScrollView setVerticalRulerView:lineNumberView];
     [lineNumberView setClientView:self];
     [self setUsesFontPanel:YES];
     
-    [[self textStorage] setDelegate:self];
-    NSRange area = NSMakeRange(0, [[self textStorage] length]);
-    [[self textStorage] removeAttribute:NSForegroundColorAttributeName range:area];
+    [self.textStorage setDelegate:self];
+    NSRange area = NSMakeRange(0, [self.textStorage length]);
+    [self.textStorage removeAttribute:NSForegroundColorAttributeName range:area];
     
     NSFontManager *fontManager = [NSFontManager sharedFontManager];
-    NSFont *oldFont = [NSFont fontWithName:@"fira code" size:16];
+    NSFont *oldFont = [NSFont fontWithName:@"fira code light" size:16];
     [self setCurrentFont:[fontManager convertFont:oldFont]];
     [self setTextColor:[NSColor whiteColor]];
-//    [self loadHighliter:"GLSL"];
     
     [self setDrawsBackground:NO];
     [self setBackgroundColor:[NSColor clearColor] ];
@@ -68,13 +67,13 @@
 
 - (void)assignCode:(std::string)code withLanguage:(std::string)lang{
     [self loadHighliter:lang];
-    [[self textStorage] replaceCharactersInRange:NSMakeRange(0, [[self textStorage] length])
+    [self.textStorage replaceCharactersInRange:NSMakeRange(0, [self.textStorage length])
                                       withString:[NSString stringWithUTF8String:code.c_str()]];
-    NSRange area = NSMakeRange(0, [[self textStorage] length]);
-    [[self textStorage] removeAttribute:NSForegroundColorAttributeName range:area];
+    NSRange area = NSMakeRange(0, [self.textStorage length]);
+    [self.textStorage removeAttribute:NSForegroundColorAttributeName range:area];
     
     NSFontManager *fontManager = [NSFontManager sharedFontManager];
-    NSFont *oldFont = [NSFont fontWithName:@"fira code" size:16];
+    NSFont *oldFont = [NSFont fontWithName:@"fira code light" size:16];
     
     [self setCurrentFont:[fontManager convertFont:oldFont]];
     [self setTextColor:[NSColor whiteColor]];
@@ -780,7 +779,7 @@
 
 - (void)sendShaderCode
 {
-    shaderSignal.emit( std::string([[[self textStorage] string] UTF8String]) );
+    shaderSignal.emit( std::string([[self.textStorage string] UTF8String]) );
 }
 
 - (ci::signals::Signal<void(std::string)>*) LuaSignal

@@ -96,7 +96,8 @@ public:
     int pingPong = 0;
     int postPingPong = 0;
     gl::TextureRef audioMidiTex;
-    Surface8u audioSuface;
+    Surface8u audioSurface;
+    
 
 /// editor //////////////////////////////////////////////////
     void shaderListener( std::string code);
@@ -164,12 +165,13 @@ void CinderProjectBasicApp::setup()
     
     loadFiles();
     
-    audioSuface = Surface8u(1024, 1, false);
-    audioMidiTex = gl::Texture::create(audioSuface);
+    audioSurface = Surface8u(1024, 1, false);
+    audioMidiTex = gl::Texture::create(audioSurface);
     audioMidiTex->setMinFilter(GL_LINEAR);
     audioMidiTex->setMagFilter(GL_LINEAR);
     mFont = Font( "Fira Code", 12 );
     mTextureFont = gl::TextureFont::create( mFont );
+    
 
 /////////////////////////////////////////////
 //  MIDI INIT
@@ -209,7 +211,7 @@ void CinderProjectBasicApp::setup()
     mParams->setPosition(ivec2(800, 10));
     mParams->addParam("Toggle GLSL", &renderGLSL);
     mParams->addParam("Toggle LUA", &renderLUA);
-    mParams->addParam("Stereo", &useStereo)
+    mParams->addParam("Stereo In", &useStereo)
     .updateFn( [&](){ monoOrStereo(); } );
     
     mParams->addSeparator();
@@ -231,9 +233,24 @@ void CinderProjectBasicApp::setup()
     mParams->addSeparator();
     mParams->addParam( "OSC In", oscNames, &oscSelection)
     .updateFn( [&](){ openOSC(); } );
+//    mParams->addParam( "Port", &mString );
+    mParams->addParam( "float1", &nnData[0] ).group( "NN Data" );
+    //.label( "Item X" );
+    mParams->addParam( "float2", &nnData[1] ).group( "NN Data" );
+    mParams->addParam( "float3", &nnData[2] ).group( "NN Data" );
+    mParams->addParam( "float4", &nnData[3] ).group( "NN Data" );
+    mParams->addParam( "float5", &nnData[4] ).group( "NN Data" );
+    mParams->addParam( "float6", &nnData[5] ).group( "NN Data" );
+    mParams->addParam( "float7", &nnData[6] ).group( "NN Data" );
+    mParams->addParam( "float8", &nnData[7] ).group( "NN Data" );
+    mParams->addParam( "float9", &nnData[8] ).group( "NN Data" );
+    mParams->addParam( "float10", &nnData[9] ).group( "NN Data" );//.optionsStr(mybar/Properties opened=false);
     
     mParams->addSeparator();
     mParams->addButton("Fix TextView", [&](){ [cvm addSubview:spv]; } );
+    //    mParams->addParam( "Toggle TextView", &mString );
+    //    mParams->addParam( "Toggle FFT", &mString );
+
     
 /////////////////////////////////////////////
 //  Text View INIT
@@ -274,6 +291,8 @@ void CinderProjectBasicApp::setup()
     lua.set("obj", this);
     lua["post"] = &postProcesses;
     lua["PI"] = 3.14159f;
+    lua["2PI"] = 6.28318f;
+    lua["PHI"] = 1.618f;
     lua["epsilon"] = 0.000043f;
 
     luaBinding(&lua);
@@ -287,12 +306,13 @@ void CinderProjectBasicApp::update()
     {//scoped for mutex
         if(mThread.joinable()) {//check for OSC connected
             std::lock_guard<std::mutex> lock( mNNMutex );
-            lua["osc"] = &nnData;
-
-            for (int i = 0; i < 10; ++i) {
-                std::cout << nnData[i] << " ";
-            }
-            std::cout << std::endl;
+            lua["NN"] = &nnData;
+            fboGlsl->uniform( "NN", nnData, 10);
+            
+//            for (int i = 0; i < 10; ++i) {
+//                std::cout << nnData[i] << " ";
+//            }
+//            std::cout << std::endl;
         }
     }
     
@@ -326,13 +346,13 @@ void CinderProjectBasicApp::update()
             else mBandsR.w += b2;
         }
         
-        audioSuface.setPixel(ivec2(i, 0),
+        audioSurface.setPixel(ivec2(i, 0),
                              Color8u(b * 2.55, //scale up to texture depth
                                      b2 * 2.55,
                                      m));
     }
     
-    audioMidiTex->update(audioSuface);
+    audioMidiTex->update(audioSurface);
     
     mBands /= vec4(25600.0); //average across bands and scale down
     if (useStereo && mInputDeviceNode->getNumChannels() > 1)
@@ -385,12 +405,9 @@ void CinderProjectBasicApp::draw()
         fboGlsl->uniform("resolution",
                          vec2(fbos[pingPong]->getWidth(), fbos[pingPong]->getHeight()));
         
-        //TODO::OSC glsl["osc"] =
         //TODO::MIDI glsl["midi"] =
         
-        
         //    if (mInputDeviceNode->getNumChannels() > 1)
-        
         
         gl::drawSolidRect(Rectf(vec2(0), fbos[pingPong]->getSize()));
     }
@@ -398,6 +415,7 @@ void CinderProjectBasicApp::draw()
     
     if (renderLUA)
     {
+        gl::enableAlphaBlending();
         CameraOrtho cam(0, 1280, 0, 720, -10, 10);
         gl::ScopedViewport scpVp( ivec2( 0 ), fbos[pingPong]->getSize() );
         
@@ -410,6 +428,7 @@ void CinderProjectBasicApp::draw()
             gl::clear( Color( 0, 0, 0 ) );
         
         luaListener("draw()");
+        gl::disableAlphaBlending();
     }
     
     
@@ -511,7 +530,7 @@ void CinderProjectBasicApp::mouseDown( MouseEvent event )
 
 void CinderProjectBasicApp::keyDown( KeyEvent event )
 {
-    
+
 }
 
 
@@ -726,7 +745,7 @@ void CinderProjectBasicApp::openOSC()
                               for (int i = 0; i < 10; ++i) {
                                   nnData[i] = msg[i].flt();
                               }
-//                              NSLog(@"data");
+//                             NSLog(@"data");
                           });
 
     try {

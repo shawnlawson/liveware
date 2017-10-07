@@ -16,22 +16,13 @@ private:
 
 public:
     
-    bool outline;
-    float lineWidth;
     float w, h;
     std::vector<ci::gl::Texture2dRef> images;
     
     
     
     mImage() : Drawable() {
-        p.x = ci::app::getWindowCenter().x;
-        p.y = ci::app::getWindowCenter().y;
-        p.z = r.x = r.y = 0.0f;
-        s.x = s.y = s.z = r.z = 1.0f;
-        radians = 0.0f;
         w = h = 100.f;
-        c = ci::Color::white();
-//        r = g = b = a = 1.0f;
     }
     
     
@@ -75,7 +66,7 @@ public:
     
     virtual void draw() override
     {
-        ci::gl::color(c);
+        ci::gl::color(c.r, c.g, c.b, a);
         ci::gl::ScopedModelMatrix modelScope;
         ci::gl::translate(p - ci::vec3(w, h, 0.0f) * 0.5f);
         ci::gl::rotate(radians, r);

@@ -91,19 +91,29 @@ void luaBinding(sol::state *lua)
                       );
     //there's a lot more in cinderMath we're not using yet.
     
-    lua->set_function("length", sol::overload(sol::resolve<float(const ci::vec3 &)>(&glm::length)
+    lua->set_function("length", sol::overload(sol::resolve<float(const ci::vec2 &)>(&glm::length),
+                                              sol::resolve<float(const ci::vec3 &)>(&glm::length),
+                                              sol::resolve<float(const ci::vec4 &)>(&glm::length)
                                               )
                       );
-    lua->set_function("distance", sol::overload(sol::resolve<float(const ci::vec3& l, const ci::vec3& r)>(&glm::distance)
+    lua->set_function("distance", sol::overload(sol::resolve<float(const ci::vec2& l, const ci::vec2& r)>(&glm::distance),
+                                                sol::resolve<float(const ci::vec3& l, const ci::vec3& r)>(&glm::distance),
+                                                sol::resolve<float(const ci::vec4& l, const ci::vec4& r)>(&glm::distance)
                                                 )
                       );
-    lua->set_function("dot", sol::overload(sol::resolve<float(const ci::vec3& l, const ci::vec3& r)>(&glm::dot)
+    lua->set_function("dot", sol::overload(sol::resolve<float(const ci::vec3& l, const ci::vec3& r)>(&glm::dot),
+                                           sol::resolve<float(const ci::vec4& l, const ci::vec4& r)>(&glm::dot)
                                            )
+                      );
+    lua->set_function("normalize", sol::overload(sol::resolve<ci::vec2(const ci::vec2&)>(&glm::normalize),
+                                                 sol::resolve<ci::vec3(const ci::vec3&)>(&glm::normalize),
+                                               sol::resolve<ci::vec4(const ci::vec4& )>(&glm::normalize)
+                                               )
                       );
     lua->set_function("cross", sol::overload(sol::resolve<ci::vec3(const ci::vec3& l, const ci::vec3& r)>(&glm::cross)
                                              )
                       );
-    lua->set_function("faceforward", sol::overload(sol::resolve<ci::vec3(const ci::vec3& N, const ci::vec3& I, const ci::vec3& Nref)>(&glm::faceforward)
+    lua->set_function("faceForward", sol::overload(sol::resolve<ci::vec3(const ci::vec3& N, const ci::vec3& I, const ci::vec3& Nref)>(&glm::faceforward)
                                                    )
                       );
     lua->set_function("refract", sol::overload(sol::resolve<ci::vec3(const ci::vec3& I, const ci::vec3& N, float eta)>(&glm::refract)
@@ -325,6 +335,69 @@ void luaBinding(sol::state *lua)
                     );
     //GLM_FUNC_DECL int floatBitsToInt(float const & v);
     //etc to end of glm::func_common.hpp
+    
+    lua->set_function("hsvToRgb", [](const ci::vec3 &hsv){
+        float hue = hsv.x;
+        float sat = hsv.y;
+        float val = hsv.z;
+        
+        float x = 0.0f, y = 0.0f, z = 0.0f;
+        
+        if( hue == 1 ) hue = 0;
+        else
+            hue *= 6;
+        
+        int i = static_cast<int>( floorf( hue ) );
+        float f = hue - i;
+        float p = val * ( 1 - sat );
+        float q = val* ( 1 - ( sat * f ) );
+        float t = val* ( 1 - ( sat * ( 1 - f ) ) );
+        
+        switch( i ) {
+            case 0: x = val; y = t; z = p; break;
+            case 1: x = q; y = val; z = p; break;
+            case 2: x = p; y = val; z = t; break;
+            case 3: x = p; y = q; z = val; break;
+            case 4: x = t; y = p; z = val; break;
+            case 5: x = val; y = p; z = q; break;
+        }
+        return ci::vec3(x, y, z);
+    });
+    
+    lua->set_function("rgbToHsv", [](const ci::vec3 &c){const float &x = c.r;
+        const float &y = c.g;
+        const float &z = c.b;
+        
+        float max = (x > y) ? ((x > z) ? x : z) : ((y > z) ? y : z);
+        float min = (x < y) ? ((x < z) ? x : z) : ((y < z) ? y : z);
+        float range = max - min;
+        float val = max;
+        float sat = 0;
+        float hue = 0;
+        
+        if( max != 0 )
+            sat = range/max;
+        
+        if( sat != 0 ) {
+            float h;
+            
+            if( x == max )
+                h = (y - z) / range;
+            else if( y == max )
+                h = 2 + ( z - x ) / range;
+            else
+                h = 4 + ( x - y ) / range;
+            
+            hue = h / 6.0f;
+            
+            if( hue < 0.0f )
+                hue += 1.0f;
+        }
+        
+        return ci::vec3( hue, sat, val );
+    });
+                      
+                      
 
     lua->new_usertype<ci::vec2>("vec2",
                                 sol::constructors<ci::vec2(), ci::vec2(float), ci::vec2(float, float)>(),
@@ -373,9 +446,29 @@ void luaBinding(sol::state *lua)
                                                        [](const ci::vec3& l, const ci::vec3& r) { return glm::mod(l, r); }
                                                        ),
                                 //swizzles?
+                                "black", [](){return ci::vec3(0.0f, 0.0f, 0.0f);},
+                                "silver", [](){return ci::vec3(.7529f, .7529f, .7529f);},
+                                "gray", [](){return ci::vec3(.5f, .5f, .5f);},
+                                "white", [](){return ci::vec3(1.0f, 1.0f, 1.0f);},
+                                "maroon", [](){return ci::vec3(.5f, 0.0f, 0.0f);},
+                                "red", [](){return ci::vec3(1.0f, 0.0f, 0.0f);},
+                                "purple", [](){return ci::vec3(0.5f, 0.0f, 0.5f);},
+                                "fuchia", [](){return ci::vec3(1.0f, 0.0f, 1.0f);},
+                                "green", [](){return ci::vec3(0.0f, 0.5f, 0.0f);},
+                                "lime", [](){return ci::vec3(0.0f, 1.0f, 0.0f);},
+                                "olive", [](){return ci::vec3(0.5f, 0.5f, 0.0f);},
+                                "yellow", [](){return ci::vec3(1.0f, 1.0f, 0.0f);},
+                                "navy", [](){return ci::vec3(0.0f, 0.0f, 0.5f);},
+                                "blue", [](){return ci::vec3(0.0f, 0.0f, 1.0f);},
+                                "teal", [](){return ci::vec3(0.0f, 0.5f, 0.5f);},
+                                "aqua", [](){return ci::vec3(0.0f, 1.0f, 1.0f);},
+                                "orange", [](){return ci::vec3(1.0f, .6470f, 0.0f);},
                                 "x", &ci::vec3::x,
                                 "y", &ci::vec3::y,
-                                "z", &ci::vec3::z);
+                                "z", &ci::vec3::z,
+                                "r", &ci::vec3::x,
+                                "g", &ci::vec3::y,
+                                "b", &ci::vec3::z);
     
     lua->new_usertype<ci::vec4>("vec4",
                                 sol::constructors<ci::vec4(), ci::vec4(float), ci::vec4(float, float, float, float)>(),
@@ -387,7 +480,11 @@ void luaBinding(sol::state *lua)
                                "x", &ci::vec4::x,
                                "y", &ci::vec4::y,
                                "z", &ci::vec4::z,
-                               "w", &ci::vec4::w
+                               "w", &ci::vec4::w,
+                                "r", &ci::vec4::x,
+                                "g", &ci::vec4::y,
+                                "b", &ci::vec4::z,
+                                "a", &ci::vec4::w
                                );
     
     lua->new_usertype<ci::Perlin>("perlin",
@@ -418,7 +515,7 @@ void luaBinding(sol::state *lua)
                                   "print", [](sol::this_state ts){
                                                                       lua_State* L = ts;
                                                                       sol::state_view lua(L);
-                                                                      lua.safe_script("print('noise \t fBm \t setSeed(int) \t getOctaves \t setOctaves(int)')");
+                                                                      lua.safe_script("prnt(obj,'noise \t fBm \t setSeed(int) \t getOctaves \t setOctaves(int)')");
                                                                   }
                                   );
     
@@ -428,6 +525,8 @@ void luaBinding(sol::state *lua)
                               "p", &mCircle::p,
                               "r", &mCircle::r,
                               "s", &mCircle::s,
+                               "c", &mCircle::c,
+                               "a", &mCircle::a,
                               "radius", &mCircle::radius,
                               "outline", &mCircle::outline,
                               "lineWidth", &mCircle::lineWidth,
@@ -437,11 +536,13 @@ void luaBinding(sol::state *lua)
     
     
     lua->new_usertype<mRectangle>("rect",
-                                 "p", &mImage::p,
-                                  "r", &mImage::r,
-                                  "s", &mImage::s,
+                                 "p", &mRectangle::p,
+                                  "r", &mRectangle::r,
+                                  "s", &mRectangle::s,
+                                  "c", &mRectangle::c,
                                   "w", &mRectangle::w,
                                  "h", &mRectangle::h,
+                                  "a", &mRectangle::a,
                                  "radians", &mRectangle::radians,
                                  "outline", &mRectangle::outline,
                                  "lineWidth", &mRectangle::lineWidth,
@@ -453,6 +554,8 @@ void luaBinding(sol::state *lua)
                              "p", &mImage::p,
                              "r", &mImage::r,
                              "s", &mImage::s,
+                              "c", &mImage::c,
+                              "a", &mImage::a,
                              "radians", &mImage::radians,
                              "open", &mImage::open,
                              "print", &mImage::print,
@@ -460,10 +563,15 @@ void luaBinding(sol::state *lua)
                              );
     
     lua->new_usertype<mLine>("line",
-                             "p", &mImage::p,
-                             "r", &mImage::r,
-                             "s", &mImage::s,
+                             "p", &mLine::p,
+                             "r", &mLine::r,
+                             "s", &mLine::s,
+                             "c", &mLine::c,
+                             "p1", &mLine::p1,
+                             "p2", &mLine::p2,
+                             "a", &mLine::a,
                              "radians", &mLine::radians,
+                             "lineWidth", &mLine::lineWidth,
                               "print", &mLine::print,
                               "draw", &mLine::draw
                               );

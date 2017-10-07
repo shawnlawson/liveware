@@ -71,7 +71,6 @@
 		992BDE151F4AF8B5001BDFBC /* MyMainMenu.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = MyMainMenu.xib; path = ../resources/MyMainMenu.xib; sourceTree = "<group>"; };
 		993638B91F7D35F3006117AD /* mRectangle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = mRectangle.h; path = ../include/mRectangle.h; sourceTree = "<group>"; };
 		993638BA1F7D5C0C006117AD /* mImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = mImage.h; path = ../include/mImage.h; sourceTree = "<group>"; };
-		993A68DA1F81A01B007D6DA6 /* mPerlin.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = mPerlin.hpp; path = ../include/mPerlin.hpp; sourceTree = "<group>"; };
 		9951A9B31F40D46D0007F2A3 /* MidiConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MidiConstants.h; sourceTree = "<group>"; };
 		9951A9B41F40D46D0007F2A3 /* MidiExceptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MidiExceptions.h; sourceTree = "<group>"; };
 		9951A9B51F40D46D0007F2A3 /* MidiHeaders.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MidiHeaders.h; sourceTree = "<group>"; };
@@ -335,7 +334,6 @@
 				99C5AC1A1F6DC337009DB2FB /* mCircle.h */,
 				993638B91F7D35F3006117AD /* mRectangle.h */,
 				99BB0FDB1F84598B006FD2C1 /* mLine.h */,
-				993A68DA1F81A01B007D6DA6 /* mPerlin.hpp */,
 			);
 			name = Drawables;
 			sourceTree = "<group>";
@@ -448,7 +446,7 @@
 				INSTALL_PATH = "$(HOME)/Applications";
 				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
-				OTHER_CFLAGS = "-llua";
+				OTHER_CFLAGS = "";
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
 					"-std=c++14",
@@ -487,7 +485,7 @@
 				INSTALL_PATH = "$(HOME)/Applications";
 				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
-				OTHER_CFLAGS = "-llua";
+				OTHER_CFLAGS = "";
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
 					"-std=c++14",

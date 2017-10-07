@@ -2,6 +2,12 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>storage</key>
+	<array>
+		<string>vec2</string>
+		<string>vec3</string>
+		<string>vec4</string>
+	</array>
 	<key>comment</key>
 	<string>--</string>
 	<key>functions</key>
@@ -10,7 +16,13 @@
 		<string>rect</string>
 		<string>circle</string>
 		<string>perlin</string>
-		<string></string>
+		<string>invert</string>
+		<string>greyscale</string>
+		<string>vignette</string>
+		<string>aberration</string>
+		<string>scanline</string>
+		<string>edges</string>
+		<string>blur</string>
 	</array>
 	<key>operators</key>
 	<string>+-=&lt;&gt;/*#^%~</string>
@@ -73,28 +85,50 @@
 	<key>math</key>
 	<array>
 		<string>abs</string>
+		<string>lmap</string>
 		<string>acos</string>
 		<string>asin</string>
 		<string>atan2</string>
-		<string>ceil</string>
+		<string>atan</string>
 		<string>cosh</string>
-		<string>deg</string>
+		<string>cos</string>
+		<string>sin</string>
 		<string>exp</string>
+		<string>exp2</string>
+		<string>sinh</string>
 		<string>floor</string>
-		<string>fmod</string>
-		<string>frexp</string>
-		<string>ldexp</string>
 		<string>log</string>
-		<string>log10</string>
+		<string>log2</string>
 		<string>max</string>
 		<string>min</string>
-		<string>modf</string>
 		<string>pow</string>
-		<string>rad</string>
 		<string>randomseed</string>
 		<string>sinh</string>
 		<string>sqrt</string>
+		<string>inversesqrt</string>
 		<string>tanh</string>
+		<string>tan</string>
+		<string>toRadians</string>
+		<string>toDegrees</string>
+		<string>length</string>
+		<string>distance</string>
+		<string>constrain</string>
+		<string>dot</string>
+		<string>normalize</string>
+		<string>cross</string>
+		<string>faceForward</string>
+		<string>refract</string>
+		<string>sign</string>
+		<string>round</string>
+		<string>roundEven</string>
+		<string>trunc</string>
+		<string>ceil</string>
+		<string>fract</string>
+		<string>mod</string>
+		<string>clamp</string>
+		<string>mix</string>
+		<string>smoothstep</string>
+		<string>isnan</string>
 	</array>
 	<key>uniforms</key>
 	<array>

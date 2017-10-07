@@ -11,13 +11,13 @@ uniform sampler2D audiobuffer;
 uniform float time;
 uniform vec4 bands;
 uniform vec4 bandsR;
-uniform vec2      resolution;
+uniform vec2 resolution;
+uniform float NN[10];
 
 out vec4 FragColor;
 
 float PI = 3.14159;
 float PI2 = 6.28318;
-
 vec3 black = vec3(0.0);
 vec3 white = vec3(1.0);
 vec3 red = vec3(0.86,0.22,0.27);   

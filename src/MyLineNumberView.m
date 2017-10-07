@@ -46,11 +46,11 @@ CGFloat lineNumberPadding = 4.0;
     {
         NSLayoutManager			*layoutManager;
         NSTextContainer			*container;
-        NSRect					visibleRect, markerRect;
+        NSRect					visibleRect;//, markerRect;
         NSRange					visibleGlyphRange, nullRange;
-        NSString				*text, *labelText;
+        NSString				*text;//, *labelText;
       //  NSRectArray				rects;
-        CGFloat					ypos, yinset;
+        CGFloat					yinset; //ypos, 
        // NSDictionary			*textAttributes, *currentTextAttributes;
        // NSSize					stringSize, markerSize;
        // NSImage					*markerImage;
@@ -127,7 +127,6 @@ CGFloat lineNumberPadding = 4.0;
             lineNumber++;
         } //end of all visible glyphs, looped by hardbreak line
         
-        
 //        if ([layoutManager extraLineFragmentTextContainer]) {
 //            [self drawLineNumber:lineNumber
 //                      atPosition:NSMinY(layoutManager.extraLineFragmentRect)
@@ -135,15 +134,27 @@ CGFloat lineNumberPadding = 4.0;
 //        }
         
    //     [[NSGraphicsContext currentContext] restoreGraphicsState];
+        
+        NSTextView *tv = (NSTextView*)[self clientView];
+        NSFont *font = tv.font;
+        NSString *numText = [NSString stringWithFormat:@"%jd", (intmax_t)0];
+        NSMutableDictionary *attrs = [NSMutableDictionary dictionary];
+        [attrs setObject:font
+                  forKey:NSFontAttributeName];
+        [attrs setObject:[NSColor colorWithWhite:1.0 alpha:0.5]
+                  forKey:NSForegroundColorAttributeName];
+        NSSize numSize = [numText sizeWithAttributes:attrs];
+        if( lineNumber > 99){
+            minVerticalThickness = numSize.width * 2 + 10;
+        } else {
+            minVerticalThickness = numSize.width * 3 + 10;
+        }
     }
 }
 
 - (BOOL) isOpaque{ return NO; }
 
-- (CGFloat) requiredThickness {
-    return minVerticalThickness;
-  
-}
+- (CGFloat) requiredThickness { return minVerticalThickness; }
 
 - (void) drawLineNumber:(int)num atPosition:(CGFloat)yPos withRect:(NSRect)aRect
 {    
