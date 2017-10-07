@@ -2,6 +2,28 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>definedcolors</key>
+	<array>
+		<string>black</string>
+		<string>silver</string>
+		<string>gray</string>
+		<string>white</string>
+		<string>maroon</string>
+		<string>red</string>
+		<string>purple</string>
+		<string>fuchia</string>
+		<string>green</string>
+		<string>lime</string>
+		<string>olive</string>
+		<string>yellow</string>
+		<string>navy</string>
+		<string>blue</string>
+		<string>teal</string>
+		<string>aqua</string>
+		<string>orange</string>
+		<string></string>
+		<string></string>
+	</array>
 	<key>storage</key>
 	<array>
 		<string>vec2</string>

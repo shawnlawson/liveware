@@ -13,9 +13,9 @@ uniform vec4 bands;
 uniform vec4 bandsR;
 uniform vec2 resolution;
 uniform float NN[10];
-
+uniform uint notes[128];
+uniform uint cc[128];
 out vec4 FragColor;
-
 float PI = 3.14159;
 float PI2 = 6.28318;
 vec3 black = vec3(0.0);

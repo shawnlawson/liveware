@@ -514,6 +514,18 @@
             NSLog(@"no color list");
         }
         
+        if(theDict[@"definedcolors"])
+        {
+            if (definedColors == nil) {
+                definedColors = [[NSMutableArray alloc] init];
+            } else {
+                [definedColors removeAllObjects];
+            }
+            [definedColors addObjectsFromArray:theDict[@"definedcolors"]];
+        } else {
+            NSLog(@"no function list");
+        }
+        
         if(theDict[@"functions"])
         {
             if (functions == nil) {
@@ -663,6 +675,10 @@
                 continue;
             } else if ([keyword containsObject:s]) {
                 [self setTextColor:colors[ colormap[@"keyword"] ]
+                             range:NSMakeRange(preScan, scanner.scanLocation - preScan)];
+                continue;
+            } else if ([definedColors containsObject:s]) {
+                [self setTextColor:colors[ colormap[@"definedcolors"] ]
                              range:NSMakeRange(preScan, scanner.scanLocation - preScan)];
                 continue;
             }

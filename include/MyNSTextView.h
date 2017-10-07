@@ -30,9 +30,11 @@
     NSMutableArray *math;
     NSMutableArray *storage;
     NSMutableArray *keyword;
+    NSMutableArray *definedColors;
     NSMutableString *operators;
     NSMutableString *commentString;
     NSMutableString *whichLanguage;
+
 }
 
 - (IBAction)indent:(id)sender;

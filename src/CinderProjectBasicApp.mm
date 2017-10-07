@@ -324,12 +324,12 @@ void CinderProjectBasicApp::update()
     pingPong = (pingPong+1)%2;
     
     for (int i=0; i< 1024; ++i) {
-        GLubyte m = 0;
-        if (i < 128) { //
-            m = notes[i] * 2;
-        } else if (i < 256) {
-            m = cc[i-128] * 2;
-        }
+//        GLubyte m = 0;
+//        if (i < 128) { //
+//            m = notes[i] * 2;
+//        } else if (i < 256) {
+//            m = cc[i-128] * 2;
+//        }
         
         float b2 = 0, b = audio::linearToDecibel( mMagSpectrum[i] );
         
@@ -349,7 +349,8 @@ void CinderProjectBasicApp::update()
         audioSurface.setPixel(ivec2(i, 0),
                              Color8u(b * 2.55, //scale up to texture depth
                                      b2 * 2.55,
-                                     m));
+                                     0));
+//        m));
     }
     
     audioMidiTex->update(audioSurface);
@@ -405,7 +406,8 @@ void CinderProjectBasicApp::draw()
         fboGlsl->uniform("resolution",
                          vec2(fbos[pingPong]->getWidth(), fbos[pingPong]->getHeight()));
         
-        //TODO::MIDI glsl["midi"] =
+        fboGlsl->uniform("notes", &notes[0], 128);
+        fboGlsl->uniform("cc", &cc[0], 128);
         
         //    if (mInputDeviceNode->getNumChannels() > 1)
         
@@ -415,7 +417,7 @@ void CinderProjectBasicApp::draw()
     
     if (renderLUA)
     {
-        gl::enableAlphaBlending();
+//        gl::enableAlphaBlending();
         CameraOrtho cam(0, 1280, 0, 720, -10, 10);
         gl::ScopedViewport scpVp( ivec2( 0 ), fbos[pingPong]->getSize() );
         
@@ -428,7 +430,7 @@ void CinderProjectBasicApp::draw()
             gl::clear( Color( 0, 0, 0 ) );
         
         luaListener("draw()");
-        gl::disableAlphaBlending();
+//        gl::disableAlphaBlending();
     }
     
     
