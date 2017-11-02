@@ -10,6 +10,11 @@
 #include "cinder/Timeline.h"
 #include "cinder/audio/audio.h"
 #include "cinder/params/Params.h"
+#include "cinder/CinderMath.h"
+#include "cinder/Perlin.h"
+#include "cinder/Easing.h"
+
+
 
 //Blocks
 #include "MidiHeaders.h"
@@ -20,14 +25,24 @@
 #include "FeedbackNSTextView.h"
 #include "AudioDrawUtils.h"
 
-//#define __OBJC__
+#define __OBJC__
 
+#define SOL_CHECK_ARGUMENTS
 #include "sol.hpp"
 
 #include "PostProcess.h"
 #include "BuiltinPostProcesses.h"
+#include "Drawable.hpp"
+#include "mCircle.hpp"
+#include "mRectangle.hpp"
+#include "mImage.hpp"
+#include "mLine.hpp"
+#include "mRand.hpp"
+#include "mCube.hpp"
+#include "mSphere.hpp"
 
-#include "LuaBindings.h"
+#include "LuaBindings.hpp"
+#include "LuaBindings_2.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -48,8 +63,6 @@ public:
     void draw() override;
     void cleanup() override;
     void swapCode();
-    void loadFiles();
-    
     
 /// OSC //////////////////////////////////////////////////
     void openOSC();
@@ -87,12 +100,13 @@ public:
     Font                            mFont;
     
 /// graphics /////////////////////////////////////////////////
+    void loadFiles();
+    void createFBOs(int size);
     gl::FboRef fbos[4];
     gl::GlslProgRef fboGlsl, trialGlsl;
     std::string vertProg, fragProg, headerProg;
     bool renderGLSL = true;
     
-    int	FBO_WIDTH = 1280, FBO_HEIGHT = 720;
     int pingPong = 0;
     int postPingPong = 0;
     gl::TextureRef audioMidiTex;
@@ -119,6 +133,8 @@ public:
     
 /// GUI //////////////////////////////////////////////////
     params::InterfaceGlRef	mParams;
+    vector<string>			resolutionNames;
+    int						resolutionSelection;
     vector<string>			mEnumNames;
     int						mEnumSelection;
     vector<string>          midiNames;
@@ -155,13 +171,7 @@ void CinderProjectBasicApp::setup()
 /////////////////////////////////////////////
 //  OpenGL
 /////////////////////////////////////////////
-    auto format = gl::Fbo::Format()
-    .samples( 4 ) // uncomment this to enable 4x antialiasing
-    .attachment( GL_COLOR_ATTACHMENT0, gl::Texture2d::create( FBO_WIDTH, FBO_HEIGHT ) );
-    fbos[0] = gl::Fbo::create( FBO_WIDTH, FBO_HEIGHT, format);
-    fbos[1] = gl::Fbo::create( FBO_WIDTH, FBO_HEIGHT, format);
-    fbos[2] = gl::Fbo::create( FBO_WIDTH, FBO_HEIGHT, format);
-    fbos[3] = gl::Fbo::create( FBO_WIDTH, FBO_HEIGHT, format);
+    createFBOs(1);
     
     loadFiles();
     
@@ -215,12 +225,15 @@ void CinderProjectBasicApp::setup()
     .updateFn( [&](){ monoOrStereo(); } );
     
     mParams->addSeparator();
+    resolutionSelection = 0;
+    resolutionNames = { "full", "half", "quarter" };
+    mParams->addParam( "Resolution", resolutionNames, &resolutionSelection )
+    .updateFn( [&](){ createFBOs(resolutionSelection + 1); } );
+
+    mParams->addSeparator();
     mEnumSelection = 0;
-    mEnumNames = { "new GLSL", "new Lua", "Bach 1", "Bach 2", "Bach3 ", "Bach 4", "Accordion", "Mashup", "Improv" };
+    mEnumNames = { "new GLSL", "new Lua", "Partita 1", "Partita 2", "Partita 3 ", "Improvisation", "Reich", "Feldman", "Glass", "C major", "Elegy" };
     mParams->addParam( "Code", mEnumNames, &mEnumSelection )
-    //    .keyDecr( "[" )
-    //    .keyIncr( "]" )
-//    .updateFn( [this] { console() << "enum updated: " << mEnumNames[mEnumSelection] << endl; } );
     .updateFn( [&](){ swapCode(); } );
     
     mParams->addSeparator();
@@ -282,10 +295,7 @@ void CinderProjectBasicApp::setup()
 /////////////////////////////////////////////
 //  LUA
 /////////////////////////////////////////////
-    lua.open_libraries(sol::lib::base, sol::lib::math, sol::lib::package);
-    
-    std::string s = loadString(loadAsset("startup.lua"));
-    luaListener(s);
+    lua.open_libraries(sol::lib::base, sol::lib::string, sol::lib::table, sol::lib::math, sol::lib::os, sol::lib::package);
     
     lua.set_function("prnt", &CinderProjectBasicApp::my_print);
     lua.set("obj", this);
@@ -294,8 +304,16 @@ void CinderProjectBasicApp::setup()
     lua["2PI"] = 6.28318f;
     lua["PHI"] = 1.618f;
     lua["epsilon"] = 0.000043f;
-
-    luaBinding(&lua);
+    lua["width"] = getWindowBounds().getWidth();
+    lua["height"] = getWindowBounds().getHeight();
+    
+    luaBindings LB = luaBindings();
+    
+    LB.bind(&lua);
+//    luaBinding2(&lua);
+    
+    std::string s = loadString(loadAsset("startup.lua"));
+    luaListener(s);
 }
 
 
@@ -429,6 +447,7 @@ void CinderProjectBasicApp::draw()
         if (!renderGLSL)
             gl::clear( Color( 0, 0, 0 ) );
         
+        
         luaListener("draw()");
 //        gl::disableAlphaBlending();
     }
@@ -535,6 +554,18 @@ void CinderProjectBasicApp::keyDown( KeyEvent event )
 
 }
 
+void CinderProjectBasicApp::createFBOs(int size)
+{
+    int FBO_WIDTH = getWindowBounds().getWidth()/size;
+    int FBO_HEIGHT = getWindowBounds().getHeight()/size;
+    auto format = gl::Fbo::Format()
+    .samples( 4 ) // uncomment this to enable 4x antialiasing
+    .attachment( GL_COLOR_ATTACHMENT0, gl::Texture2d::create( FBO_WIDTH, FBO_HEIGHT ) );
+    fbos[0] = gl::Fbo::create( FBO_WIDTH, FBO_HEIGHT, format);
+    fbos[1] = gl::Fbo::create( FBO_WIDTH, FBO_HEIGHT, format);
+    fbos[2] = gl::Fbo::create( FBO_WIDTH, FBO_HEIGHT, format);
+    fbos[3] = gl::Fbo::create( FBO_WIDTH, FBO_HEIGHT, format);
+}
 
 /////////////////////////////////////////////
 //  Code Loading
@@ -629,7 +660,6 @@ void CinderProjectBasicApp::loadFiles()
     //    mBatchBloomBlurRect				= gl::Batch::create( rect,		bloomBlur );
     
 }
-
     
 /////////////////////////////////////////////
 //  MIDI

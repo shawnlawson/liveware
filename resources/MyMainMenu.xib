@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="12121" systemVersion="16G29" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
+        <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="12121"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -582,22 +583,23 @@
             </items>
             <point key="canvasLocation" x="33" y="-24"/>
         </menu>
-        <splitView arrangesAllSubviews="NO" dividerStyle="paneSplitter" id="Q7F-SW-0pZ">
+        <splitView wantsLayer="YES" arrangesAllSubviews="NO" dividerStyle="thin" id="Q7F-SW-0pZ">
             <rect key="frame" x="0.0" y="0.0" width="800" height="680"/>
             <autoresizingMask key="autoresizingMask" heightSizable="YES"/>
             <subviews>
-                <scrollView fixedFrame="YES" borderType="none" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" id="hce-0P-StE">
-                    <rect key="frame" x="0.0" y="0.0" width="800" height="580"/>
+                <scrollView wantsLayer="YES" fixedFrame="YES" borderType="none" autohidesScrollers="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" scrollerKnobStyle="dark" id="hce-0P-StE">
+                    <rect key="frame" x="0.0" y="0.0" width="800" height="588"/>
                     <autoresizingMask key="autoresizingMask" heightSizable="YES"/>
-                    <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="0RJ-3z-eLp">
-                        <rect key="frame" x="0.0" y="0.0" width="800" height="580"/>
+                    <clipView key="contentView" wantsLayer="YES" drawsBackground="NO" copiesOnScroll="NO" id="0RJ-3z-eLp">
+                        <rect key="frame" x="0.0" y="0.0" width="800" height="588"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <textView drawsBackground="NO" importsGraphics="NO" usesFontPanel="YES" findStyle="panel" incrementalSearchingEnabled="YES" allowsCharacterPickerTouchBarItem="NO" allowsUndo="YES" usesRuler="YES" textCompletion="NO" id="o6W-rC-yme" customClass="MyNSTextView">
-                                <rect key="frame" x="0.0" y="0.0" width="800" height="580"/>
+                            <textView importsGraphics="NO" usesFontPanel="YES" findStyle="panel" incrementalSearchingEnabled="YES" allowsCharacterPickerTouchBarItem="NO" allowsUndo="YES" usesRuler="YES" textCompletion="NO" id="o6W-rC-yme" customClass="MyNSTextView">
+                                <rect key="frame" x="0.0" y="0.0" width="800" height="588"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
-                                <size key="minSize" width="800" height="580"/>
+                                <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <color key="backgroundColor" red="1" green="1" blue="1" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
+                                <size key="minSize" width="800" height="588"/>
                                 <size key="maxSize" width="1906" height="10000000"/>
                                 <color key="insertionPointColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <allowedInputSourceLocales>
@@ -605,42 +607,42 @@
                                 </allowedInputSourceLocales>
                             </textView>
                         </subviews>
-                        <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
                     </clipView>
                     <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="YES" id="Zho-7d-4Mk">
                         <rect key="frame" x="-100" y="-100" width="87" height="18"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </scroller>
-                    <scroller key="verticalScroller" verticalHuggingPriority="750" horizontal="NO" id="ITA-yE-pbr">
-                        <rect key="frame" x="784" y="0.0" width="16" height="580"/>
+                    <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="NO" id="ITA-yE-pbr" customClass="MyNSScroller">
+                        <rect key="frame" x="785" y="0.0" width="15" height="580"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </scroller>
                 </scrollView>
-                <scrollView fixedFrame="YES" borderType="none" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" id="FZ5-Pj-N3e">
-                    <rect key="frame" x="0.0" y="590" width="800" height="90"/>
+                <scrollView wantsLayer="YES" fixedFrame="YES" borderType="none" autohidesScrollers="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" scrollerKnobStyle="dark" id="FZ5-Pj-N3e">
+                    <rect key="frame" x="0.0" y="589" width="800" height="91"/>
                     <autoresizingMask key="autoresizingMask"/>
-                    <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="Ski-0P-D6v">
-                        <rect key="frame" x="0.0" y="0.0" width="800" height="90"/>
+                    <clipView key="contentView" wantsLayer="YES" drawsBackground="NO" copiesOnScroll="NO" id="Ski-0P-D6v">
+                        <rect key="frame" x="0.0" y="0.0" width="800" height="91"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <textView editable="NO" selectable="NO" drawsBackground="NO" importsGraphics="NO" usesFontPanel="YES" findStyle="panel" allowsCharacterPickerTouchBarItem="NO" usesRuler="YES" textCompletion="NO" id="dWP-IF-DnM" customClass="FeedbackNSTextView">
-                                <rect key="frame" x="0.0" y="0.0" width="800" height="90"/>
+                            <textView editable="NO" selectable="NO" importsGraphics="NO" usesFontPanel="YES" findStyle="panel" allowsCharacterPickerTouchBarItem="NO" usesRuler="YES" textCompletion="NO" id="dWP-IF-DnM" customClass="FeedbackNSTextView">
+                                <rect key="frame" x="0.0" y="0.0" width="800" height="91"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
-                                <size key="minSize" width="800" height="90"/>
+                                <color key="backgroundColor" red="1" green="1" blue="1" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
+                                <size key="minSize" width="800" height="91"/>
                                 <size key="maxSize" width="800" height="10000000"/>
-                                <color key="insertionPointColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                <color key="insertionPointColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                             </textView>
                         </subviews>
-                        <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
                     </clipView>
                     <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="YES" id="ufj-Mw-9va">
                         <rect key="frame" x="-100" y="-100" width="87" height="18"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </scroller>
-                    <scroller key="verticalScroller" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="341-Ff-phf">
-                        <rect key="frame" x="784" y="0.0" width="16" height="90"/>
+                    <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="341-Ff-phf" customClass="MyNSScroller">
+                        <rect key="frame" x="785" y="0.0" width="15" height="90"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </scroller>
                 </scrollView>

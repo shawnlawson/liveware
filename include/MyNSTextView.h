@@ -35,6 +35,8 @@
     NSMutableString *commentString;
     NSMutableString *whichLanguage;
 
+    NSRange currentLine;
+    
 }
 
 - (IBAction)indent:(id)sender;

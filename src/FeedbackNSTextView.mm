@@ -46,10 +46,10 @@
     [self setTextColor:[NSColor whiteColor]];
 
     
-    [self setDrawsBackground:NO];
-    [self setBackgroundColor:[NSColor clearColor] ];
-    [self.enclosingScrollView setDrawsBackground:NO];
-    [self.enclosingScrollView setBackgroundColor:[NSColor clearColor]];
+//    [self setDrawsBackground:NO];
+//    [self setBackgroundColor:[NSColor clearColor] ];
+//    [self.enclosingScrollView setDrawsBackground:NO];
+//    [self.enclosingScrollView setBackgroundColor:[NSColor clearColor]];
     
     self.automaticQuoteSubstitutionEnabled = NO;
     //    self.enabledTextCheckingTypes = NO;
@@ -61,7 +61,7 @@
     [[self textStorage] replaceCharactersInRange:NSMakeRange(0, [[self textStorage] length])
                                       withString:[NSString stringWithUTF8String:code.c_str()]];
     NSRange area = NSMakeRange(0, [[self textStorage] length]);
-    [[self textStorage] removeAttribute:NSForegroundColorAttributeName range:area];
+//    [[self textStorage] removeAttribute:NSForegroundColorAttributeName range:area];
     
     NSFontManager *fontManager = [NSFontManager sharedFontManager];
     NSFont *oldFont = [NSFont fontWithName:@"fira code light" size:16];
@@ -80,13 +80,13 @@
 - (void) textStorageDidProcessEditing:(NSNotification *)aNotification {
     //make more efficient by checking for visible range, and threaded
     
-    NSShadow *shadow = [[NSShadow alloc] init];
-    shadow.shadowColor = [[NSColor blackColor] colorWithAlphaComponent:0.5];
-    shadow.shadowBlurRadius = 1;
-    shadow.shadowOffset = NSMakeSize(1, -1);
-    [self.textStorage addAttribute:NSShadowAttributeName
-                             value:shadow
-                             range:NSMakeRange(0, [self.textStorage length])];
+//    NSShadow *shadow = [[NSShadow alloc] init];
+//    shadow.shadowColor = [[NSColor blackColor] colorWithAlphaComponent:0.5];
+//    shadow.shadowBlurRadius = 1;
+//    shadow.shadowOffset = NSMakeSize(1, -1);
+//    [self.textStorage addAttribute:NSShadowAttributeName
+//                             value:shadow
+//                             range:NSMakeRange(0, [self.textStorage length])];
 }
 
 #pragma mark - Font Window & Manager

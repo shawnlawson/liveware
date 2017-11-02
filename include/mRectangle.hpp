@@ -6,10 +6,11 @@
 //
 //
 
+#include "Drawable.hpp"
+
 #ifndef mRectangle_h
 #define mRectangle_h
 
-#include "Drawable.h"
 
 class mRectangle : public Drawable{
 public:
@@ -17,7 +18,6 @@ public:
     bool outline;
     float lineWidth;
     float w, h;
-    
     
     mRectangle() : Drawable() {
         outline = false;
@@ -47,7 +47,18 @@ public:
 
     }
     
+    void set_outline(bool b){ outline = b; }
+    bool get_outline(){ return outline; }
     
+    void set_lineWidth(float l){ lineWidth = l; }
+    float get_lineWidth(){ return lineWidth; }
+    
+    void set_w(float newW){ w = newW; }
+    float get_w(){ return w; }
+    
+    void set_h(float newH){ h = newH; }
+    float get_h(){ return h; }
+
 };
 
 

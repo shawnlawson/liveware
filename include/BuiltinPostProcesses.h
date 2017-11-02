@@ -123,6 +123,9 @@ public:
         lua.safe_script("prnt(obj, 'amount = 1.0')");
     }
     
+    void set_amount(float newA){ amount = newA; }
+    float get_amount(){ return amount; }
+    
     float amount;
 };
 
@@ -260,6 +263,10 @@ public:
         lua.safe_script("prnt(obj, 'amount = 0.3')");
     }
 
+    void set_amount(float newA){ amount = newA; }
+    float get_amount(){ return amount; }
+    
+    
     float amount;
 };
 
@@ -311,6 +318,10 @@ public:
         sol::state_view lua(L);
         lua.safe_script("prnt(obj, 'amount = 0.003')");
     }
+    
+    void set_amount(float newA){ amount = newA; }
+    float get_amount(){ return amount; }
+    
     
       float amount;
 
@@ -367,6 +378,12 @@ public:
         sol::state_view lua(L);
         lua.safe_script("prnt(obj, 'amount = 300.0 \t speed = 10.0')");
     }
+    
+    void set_amount(float newA){ amount = newA; }
+    float get_amount(){ return amount; }
+    
+    void set_speed(float newS){ speed = newS; }
+    float get_speed(){ return speed; }
     
     float amount;
     float speed;
@@ -525,6 +542,10 @@ public:
         lua.safe_script("prnt(obj, 'amount = 1.0')");
     }
 
+    void set_amount(float newA){ amount = newA; }
+    float get_amount(){ return amount; }
+    
+    
     float amount;
 };
 

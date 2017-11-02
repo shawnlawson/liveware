@@ -6,6 +6,8 @@
 //
 //
 
+#include "Drawable.hpp"
+
 #ifndef mLine_h
 #define mLine_h
 
@@ -28,7 +30,7 @@ public:
     {
         lua_State* L = ts;
         sol::state_view lua(L);
-        lua.safe_script("prnt(obj, 'lineWidth = float \t p1, p2 = vec3')");
+        lua.safe_script("prnt(obj, 'lineWidth = float \t p1 and p2 = vec3')");
     }
     
     virtual void draw() override
@@ -42,7 +44,14 @@ public:
         ci::gl::drawLine(p1, p2);
     }
     
+    void set_lineWidth(float l){ lineWidth = l; }
+    float get_lineWidth(){ return lineWidth; }
     
+    void set_p1(ci::vec3 newP1){ p1 = newP1; }
+    ci::vec3 * get_p1(){ return &p1; }
+    
+    void set_p2(ci::vec3 newP2){ p2 = newP2; }
+    ci::vec3 * get_p2(){ return &p2; }
 };
 
 

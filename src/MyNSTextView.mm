@@ -47,10 +47,10 @@
     [self setCurrentFont:[fontManager convertFont:oldFont]];
     [self setTextColor:[NSColor whiteColor]];
     
-    [self setDrawsBackground:NO];
-    [self setBackgroundColor:[NSColor clearColor] ];
-    [self.enclosingScrollView setDrawsBackground:NO];
-    [self.enclosingScrollView setBackgroundColor:[NSColor clearColor]];
+//    [self setDrawsBackground:NO];
+//    [self setBackgroundColor:[NSColor clearColor] ];
+//    [self.enclosingScrollView setDrawsBackground:NO];
+//    [self.enclosingScrollView setBackgroundColor:[NSColor clearColor]];
     
     self.automaticQuoteSubstitutionEnabled = NO;
 //    self.enabledTextCheckingTypes = NO;
@@ -188,11 +188,13 @@
 - (void) currentLineHighlight
 {
     [self.layoutManager removeTemporaryAttribute:NSBackgroundColorAttributeName
-                               forCharacterRange:[self getVisibleRange]];
+                               forCharacterRange:currentLine];
+    
+    currentLine = [[self.textStorage string] lineRangeForRange:NSMakeRange([self selectedRange].location, 0)];
     
     [self.layoutManager addTemporaryAttribute:NSBackgroundColorAttributeName
                                         value:[NSColor colorWithCalibratedRed:0 green:0 blue:0 alpha:0.3]
-                            forCharacterRange:[[self.textStorage string] lineRangeForRange:NSMakeRange([self selectedRange].location, 0)]];
+                            forCharacterRange:currentLine];
 }
 
 - (void) errorLineHighlight:(std::string)errors
@@ -351,7 +353,7 @@
 -(void) keyDown:(NSEvent *)theEvent
 {
     //    NSLog(@"%d", theEvent.keyCode);
-    if ([theEvent modifierFlags] & NSShiftKeyMask && theEvent.keyCode == 36)
+    if ([theEvent modifierFlags] & NSEventModifierFlagShift && theEvent.keyCode == 36)
     {
         if ([whichLanguage compare:@"LUA"] == NSOrderedSame)
         {
@@ -367,7 +369,7 @@
             [self sendLuaCode:[self.textStorage.string substringWithRange:r] withRange:r];
             
         }
-    } else if ([theEvent modifierFlags] & NSCommandKeyMask && theEvent.keyCode == 36)
+    } else if ([theEvent modifierFlags] & NSEventModifierFlagCommand && theEvent.keyCode == 36)
     {
         if ([whichLanguage compare:@"LUA"] == NSOrderedSame)
         {
@@ -461,6 +463,14 @@
             }
             
         }
+    } else if ([theEvent modifierFlags] & NSEventModifierFlagCommand &&
+               [theEvent modifierFlags] & NSEventModifierFlagShift &&
+               theEvent.keyCode == 2) //d
+    {
+        NSRange r = [self.textStorage.string lineRangeForRange:NSMakeRange([self selectedRange].location, 0)];
+        NSString *duplicate = [self.textStorage.string substringWithRange:r];
+        [self changeTextAt:NSMakeRange(r.location + r.length, 0) withString:duplicate];
+         [self changeTextFormatFinalize:NSMakeRange(r.location,0) andCharLength:0];
     } else {
         [super keyDown:theEvent];
     }
@@ -644,6 +654,14 @@
                          range:NSMakeRange(preScan, scanner.scanLocation - preScan)];
             continue;
         }
+        if ([whichLanguage compare:@"LUA"] == NSOrderedSame)
+        {
+            if([scanner scanString:@".." intoString:&s]) {
+                [self setTextColor:colors[ @"yellow" ]
+                             range:NSMakeRange(preScan, scanner.scanLocation - preScan)];
+                continue;
+            }
+        }
         //numbers
         if([scanner scanDouble:NULL])
         {
@@ -697,11 +715,21 @@
 
         
         //else
-        [scanner scanCharactersFromSet:[NSCharacterSet punctuationCharacterSet]
-                            intoString:NULL];
+        if([scanner scanCharactersFromSet:[NSCharacterSet punctuationCharacterSet]
+                               intoString:&s]){
+            [self setTextColor:colors[ @"white" ]
+                         range:NSMakeRange(preScan, scanner.scanLocation - preScan)];
+            continue;
+        }
+            
         
-        [scanner scanCharactersFromSet:[NSCharacterSet symbolCharacterSet]
-                            intoString:NULL];
+        if([scanner scanCharactersFromSet:[NSCharacterSet symbolCharacterSet]
+                               intoString:&s]){
+            [self setTextColor:colors[ @"white" ]
+                         range:NSMakeRange(preScan, scanner.scanLocation - preScan)];
+            continue;
+        }
+        
         
         [scanner scanCharactersFromSet:[NSCharacterSet newlineCharacterSet]
                             intoString:NULL];
@@ -726,9 +754,13 @@
                     continue;
                 } else break;
             } else break;
+        } else {
+            scanner.scanLocation += 1;
+            [scanner scanCharactersFromSet:[NSCharacterSet newlineCharacterSet]
+                                intoString:NULL];
         }
     }
-    
+
     
     if ([whichLanguage compare:@"LUA"] == NSOrderedSame)
     {
@@ -750,7 +782,12 @@
                         continue;
                     } else break;
                 } else break;
+            } else {
+                scanner.scanLocation += 1;
+                [scanner scanCharactersFromSet:[NSCharacterSet newlineCharacterSet]
+                                    intoString:NULL];
             }
+            
         }
     }
 }
@@ -821,6 +858,8 @@
 }
 
 - (void) clearLuaExecHightlighting {
+    [self.layoutManager removeTemporaryAttribute:NSBackgroundColorAttributeName
+                               forCharacterRange:execRange];
     [self currentLineHighlight];
 }
 

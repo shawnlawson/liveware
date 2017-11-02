@@ -6,10 +6,10 @@
 //
 //
 
+#include "Drawable.hpp"
+
 #ifndef mCircle_h
 #define mCircle_h
-
-#include "Drawable.h"
 
 class mCircle : public Drawable{
 public:
@@ -43,6 +43,14 @@ public:
             ci::gl::drawSolidCircle(ci::vec2(0,0), radius);
     }
 
+    void set_outline(bool b){ outline = b; }
+    bool get_outline(){ return outline; }
+    
+    void set_lineWidth(float l){ lineWidth = l; }
+    float get_lineWidth(){ return lineWidth; }
+    
+    void set_radius(float r){ radius = r; }
+    float get_radius(){ return radius; }
     
 };
 
