@@ -23,6 +23,7 @@ public:
     
     
     
+    
     mImage() : Drawable() {
         w = h = 100.f;
     }

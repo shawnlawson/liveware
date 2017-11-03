@@ -15,7 +15,6 @@
 #include "cinder/Easing.h"
 
 
-
 //Blocks
 #include "MidiHeaders.h"
 #include "cinder/osc/Osc.h"
@@ -218,6 +217,7 @@ void CinderProjectBasicApp::setup()
 //  GUI INIT
 /////////////////////////////////////////////
     mParams = params::InterfaceGl::create( getWindow(), "App parameters", toPixels( ivec2( 200, 400 ) ) );
+    
     mParams->setPosition(ivec2(800, 10));
     mParams->addParam("Toggle GLSL", &renderGLSL);
     mParams->addParam("Toggle LUA", &renderLUA);
@@ -232,7 +232,7 @@ void CinderProjectBasicApp::setup()
 
     mParams->addSeparator();
     mEnumSelection = 0;
-    mEnumNames = { "new GLSL", "new Lua", "Partita 1", "Partita 2", "Partita 3 ", "Improvisation", "Reich", "Feldman", "Glass", "C major", "Elegy" };
+    mEnumNames = { "new GLSL", "new Lua", "Partita 1", "Partita 2", "Partita 3", "Partita 4", "Improvisation", "Reich", "Feldman", "Glass", "C major", "Elegy", "Mashup" };
     mParams->addParam( "Code", mEnumNames, &mEnumSelection )
     .updateFn( [&](){ swapCode(); } );
     
@@ -258,12 +258,15 @@ void CinderProjectBasicApp::setup()
     mParams->addParam( "float8", &nnData[7] ).group( "NN Data" );
     mParams->addParam( "float9", &nnData[8] ).group( "NN Data" );
     mParams->addParam( "float10", &nnData[9] ).group( "NN Data" );//.optionsStr(mybar/Properties opened=false);
+    mParams->setOptions("NN Data", "opened=false");
+    
     
     mParams->addSeparator();
     mParams->addButton("Fix TextView", [&](){ [cvm addSubview:spv]; } );
+    mParams->addButton("Toggle TextView", [&](){ [spv setHidden:![spv isHidden]]; } );
     //    mParams->addParam( "Toggle TextView", &mString );
     //    mParams->addParam( "Toggle FFT", &mString );
-
+//    mParams->setOptions("TW_HELP", "visible=false" ); //inconified
     
 /////////////////////////////////////////////
 //  Text View INIT
@@ -572,29 +575,86 @@ void CinderProjectBasicApp::createFBOs(int size)
 /////////////////////////////////////////////
 void CinderProjectBasicApp::swapCode()
 {
+
     switch (mEnumSelection) {
         case 0: // new GLSL
             [tv assignCode:fragProg withLanguage:"GLSL"];
             break;
         case 1: // new Lua
-            [tv assignCode:"\n\n" withLanguage:"LUA"];
+            [tv assignCode:"\n\nfunction update()\n\nend" withLanguage:"LUA"];
             break;
         
-        case 2: // Bach 1
+        case 2: // Partita 1
         {
-            std::string s = loadString(loadAsset("file.lua"));
-            [tv assignCode:s withLanguage:"LUA"];
+            std::string s = loadString( loadAsset("Partita1.frag"));
+            [tv assignCode:s withLanguage:"GLSL"];
         }
             break;
             
-        case 3: // Bach 1
+        case 3: // Partita 2
+        {
+            std::string s = loadString( loadAsset("Partita1.frag"));
+            [tv assignCode:s withLanguage:"GLSL"];
+        }
+            break;
+            
+        case 4: // Partita 3
+        {
+            std::string s = loadString( loadAsset("Partita1.frag"));
+            [tv assignCode:s withLanguage:"GLSL"];
+        }
+            break;
+            
+        case 5: // Partita 4
+        {
+            std::string s = loadString( loadAsset("Partita1.frag"));
+            [tv assignCode:s withLanguage:"GLSL"];
+        }
+            break;
+            
+        case 6: // Improvisation
+        {
+            std::string s = loadString(loadAsset("Improvisation.frag"));
+            [tv assignCode:s withLanguage:"GLSL"];
+        }
+            break;
+            
+        case 7: // Reich
+        {
+        
+        }
+            break;
+            
+        case 8: // Feldman
+        {
+            
+        }
+            break;
+            
+        case 9: // Glass
+        {
+            
+        }
+            break;
+            
+        case 10: // C Major
+        {
+            
+        }
+            break;
+            
+        case 11: // Elegy for Pauline
+        {
+            std::string s = loadString(loadAsset("PaulineTribute.frag"));
+            [tv assignCode:s withLanguage:"GLSL"];
+        }
+            break;
+            
+        case 12: // mashup
         {
             std::string s = loadString(loadAsset("file.lua"));
             [tv assignCode:s withLanguage:"LUA"];
         }
-            break;
-        
-        case 4: // new GLSL
             break;
             
         default:
