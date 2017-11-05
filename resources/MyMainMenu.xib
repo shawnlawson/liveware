@@ -585,7 +585,7 @@
         </menu>
         <splitView wantsLayer="YES" arrangesAllSubviews="NO" dividerStyle="thin" id="Q7F-SW-0pZ">
             <rect key="frame" x="0.0" y="0.0" width="800" height="680"/>
-            <autoresizingMask key="autoresizingMask" heightSizable="YES"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" heightSizable="YES"/>
             <subviews>
                 <scrollView wantsLayer="YES" fixedFrame="YES" borderType="none" autohidesScrollers="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" scrollerKnobStyle="dark" id="hce-0P-StE">
                     <rect key="frame" x="0.0" y="0.0" width="800" height="588"/>

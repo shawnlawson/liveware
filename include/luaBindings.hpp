@@ -16,6 +16,7 @@
 #include "Drawable.hpp"
 #include "mCircle.hpp"
 #include "mRectangle.hpp"
+#include "mImageSrc.hpp"
 #include "mImage.hpp"
 #include "mLine.hpp"
 #include "mRand.hpp"

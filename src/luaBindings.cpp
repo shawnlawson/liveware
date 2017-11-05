@@ -705,15 +705,23 @@ void luaBindings::bind(sol::state *lua)
                                   sol::base_classes, sol::bases<Drawable>()
                                   );
     
+    lua->new_usertype<mImageSrc>("imageSrc",
+                                 sol::constructors<mImageSrc(), mImageSrc(std::string)>(),
+//                                 "open", sol::as_function(&mImageSrc::open),
+                                 "print", sol::as_function(&mImageSrc::print)
+                                 );
+    
     lua->new_usertype<mImage>("image",
+                               sol::constructors<mImage(), mImage(mImageSrc *), mImage(float, float, mImageSrc *)>(),
                               "p", sol::property(&mImage::set_p, &mImage::get_p),
                               "r", sol::property(&mImage::set_r, &mImage::get_r),
                               "s", sol::property(&mImage::set_s, &mImage::get_s),
                               "c", sol::property(&mImage::set_c, &mImage::get_c),
                               "a", sol::property(&mImage::set_a, &mImage::get_a),
                               "radians", sol::property(&mImage::set_radians, &mImage::get_radians),
-                              "open", sol::as_function(&mImage::open),
+//                              "open", sol::as_function(&mImage::open),
                               "setImage", sol::as_function(&mImage::setImage),
+                              "getImage", sol::as_function(&mImage::getImage),
                               "print", sol::as_function(&mImage::print),
                               "draw", sol::as_function(&mImage::draw),
                               sol::base_classes, sol::bases<Drawable>()

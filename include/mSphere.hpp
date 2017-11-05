@@ -19,7 +19,7 @@ public:
 
     
     mSphere() : Drawable() {
-        radius = 10.f;
+        radius = 50.f;
     }
     
     virtual void print(sol::this_state ts) override

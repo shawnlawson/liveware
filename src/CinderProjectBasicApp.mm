@@ -62,6 +62,7 @@ public:
     void draw() override;
     void cleanup() override;
     void swapCode();
+    void resize();
     
 /// OSC //////////////////////////////////////////////////
     void openOSC();
@@ -568,6 +569,19 @@ void CinderProjectBasicApp::createFBOs(int size)
     fbos[1] = gl::Fbo::create( FBO_WIDTH, FBO_HEIGHT, format);
     fbos[2] = gl::Fbo::create( FBO_WIDTH, FBO_HEIGHT, format);
     fbos[3] = gl::Fbo::create( FBO_WIDTH, FBO_HEIGHT, format);
+}
+
+void CinderProjectBasicApp::resize()
+{
+    NSRect f = spv.frame;
+    
+    if(getWindowBounds().getWidth() < 1600)
+        f.size.width = 800;
+    else
+        f.size.width = getWindowBounds().getWidth()/2;
+    
+    [spv setFrame:f];
+    mParams->setPosition(vec2(f.size.width, 10));
 }
 
 /////////////////////////////////////////////
