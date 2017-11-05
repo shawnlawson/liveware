@@ -31,14 +31,14 @@
 
 #include "PostProcess.h"
 #include "BuiltinPostProcesses.h"
-#include "Drawable.hpp"
-#include "mCircle.hpp"
-#include "mRectangle.hpp"
-#include "mImage.hpp"
-#include "mLine.hpp"
-#include "mRand.hpp"
-#include "mCube.hpp"
-#include "mSphere.hpp"
+//#include "Drawable.hpp"
+//#include "mCircle.hpp"
+//#include "mRectangle.hpp"
+//#include "mImage.hpp"
+//#include "mLine.hpp"
+//#include "mRand.hpp"
+//#include "mCube.hpp"
+//#include "mSphere.hpp"
 
 #include "LuaBindings.hpp"
 #include "LuaBindings_2.h"
@@ -62,7 +62,7 @@ public:
     void draw() override;
     void cleanup() override;
     void swapCode();
-    void resize();
+    void resize() override;
     
 /// OSC //////////////////////////////////////////////////
     void openOSC();
@@ -102,7 +102,7 @@ public:
 /// graphics /////////////////////////////////////////////////
     void loadFiles();
     void createFBOs(int size);
-    gl::FboRef fbos[4];
+    gl::FboRef fbos[2]; //4
     gl::GlslProgRef fboGlsl, trialGlsl;
     std::string vertProg, fragProg, headerProg;
     bool renderGLSL = true;
@@ -440,7 +440,7 @@ void CinderProjectBasicApp::draw()
     if (renderLUA)
     {
 //        gl::enableAlphaBlending();
-        CameraOrtho cam(0, 1280, 0, 720, -10, 10);
+        CameraOrtho cam(0, 1280, 0, 720, -1000, 1000);
         gl::ScopedViewport scpVp( ivec2( 0 ), fbos[pingPong]->getSize() );
         
         gl::ScopedFramebuffer  scpFbo( fbos[pingPong] );
@@ -567,8 +567,8 @@ void CinderProjectBasicApp::createFBOs(int size)
     .attachment( GL_COLOR_ATTACHMENT0, gl::Texture2d::create( FBO_WIDTH, FBO_HEIGHT ) );
     fbos[0] = gl::Fbo::create( FBO_WIDTH, FBO_HEIGHT, format);
     fbos[1] = gl::Fbo::create( FBO_WIDTH, FBO_HEIGHT, format);
-    fbos[2] = gl::Fbo::create( FBO_WIDTH, FBO_HEIGHT, format);
-    fbos[3] = gl::Fbo::create( FBO_WIDTH, FBO_HEIGHT, format);
+//    fbos[2] = gl::Fbo::create( FBO_WIDTH, FBO_HEIGHT, format);
+//    fbos[3] = gl::Fbo::create( FBO_WIDTH, FBO_HEIGHT, format);
 }
 
 void CinderProjectBasicApp::resize()
