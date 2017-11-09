@@ -60,7 +60,7 @@
     
     [[self textStorage] replaceCharactersInRange:NSMakeRange(0, [[self textStorage] length])
                                       withString:[NSString stringWithUTF8String:code.c_str()]];
-    NSRange area = NSMakeRange(0, [[self textStorage] length]);
+//    NSRange area = NSMakeRange(0, [[self textStorage] length]);
 //    [[self textStorage] removeAttribute:NSForegroundColorAttributeName range:area];
     
     NSFontManager *fontManager = [NSFontManager sharedFontManager];

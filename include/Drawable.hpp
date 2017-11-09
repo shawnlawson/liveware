@@ -6,13 +6,6 @@
 //
 //
 
-//#define __OBJC__
-
-#define __OBJC__
-
-#define SOL_CHECK_ARGUMENTS
-#include "sol.hpp"
-
 #ifndef Drawable_h
 #define Drawable_h
 

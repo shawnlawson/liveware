@@ -10,7 +10,7 @@
 
 
 
-void luaBindings::bind(sol::state *lua)
+void LuaBindings::bind(sol::state *lua)
 {
     
     lua->set_function("easeInQuad", &ci::easeInQuad);

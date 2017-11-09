@@ -6,7 +6,11 @@
 //
 //
 
-//#define __OBJC__
+#define __OBJC__
+
+#define SOL_CHECK_ARGUMENTS
+#include "sol.hpp"
+
 
 #include "cinder/CinderMath.h"
 #include "cinder/Perlin.h"
@@ -31,7 +35,7 @@
 #ifndef luaBindings_hpp
 #define luaBindings_hpp
 
-class luaBindings {
+class LuaBindings {
     
     
 public:

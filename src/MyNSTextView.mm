@@ -38,6 +38,12 @@
     [lineNumberView setClientView:self];
     [self setUsesFontPanel:YES];
     
+    shadow = [[NSShadow alloc] init];
+    shadow.shadowColor = [[NSColor blackColor] colorWithAlphaComponent:0.5];
+    shadow.shadowBlurRadius = 1;
+    shadow.shadowOffset = NSMakeSize(1, -1);
+    
+    
     [self.textStorage setDelegate:self];
     NSRange area = NSMakeRange(0, [self.textStorage length]);
     [self.textStorage removeAttribute:NSForegroundColorAttributeName range:area];
@@ -59,10 +65,17 @@
                                              selector:@selector(textViewDidChangeSelection:)
                                                  name:NSTextViewDidChangeSelectionNotification
                                                object:self];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(textDidChange:)
-                                                 name:NSTextDidChangeNotification
-                                               object:self];
+//    [[NSNotificationCenter defaultCenter] addObserver:self
+//                                             selector:@selector(textDidChange:)
+//                                                 name:NSTextDidChangeNotification
+//                                               object:self];
+    
+    shaderTimer = [[NSTimer scheduledTimerWithTimeInterval:0.2
+                                                    target:self
+                                                  selector:@selector(sendShaderCode)
+                                                  userInfo:nil
+                                                   repeats:YES] retain];
+    changed = YES;
 }
 
 - (void)assignCode:(std::string)code withLanguage:(std::string)lang{
@@ -77,7 +90,7 @@
     
     [self setCurrentFont:[fontManager convertFont:oldFont]];
     [self setTextColor:[NSColor whiteColor]];
-    [self textDidChange:nil];
+//    [self textDidChange:nil];
 }
 
 - (void) updateRuler {
@@ -90,32 +103,12 @@
     //make more efficient by checking for visible range, and threaded
     [self highlight];
     
-    NSShadow *shadow = [[NSShadow alloc] init];
-    shadow.shadowColor = [[NSColor blackColor] colorWithAlphaComponent:0.5];
-    shadow.shadowBlurRadius = 1;
-    shadow.shadowOffset = NSMakeSize(1, -1);
     [self.textStorage addAttribute:NSShadowAttributeName
                              value:shadow
                              range:NSMakeRange(0, [self.textStorage length])];
     
     if ([whichLanguage compare:@"GLSL"] == NSOrderedSame) {
-    
-        @try {
-            if([shaderTimer isValid]) {
-                [shaderTimer invalidate];
-                shaderTimer = nil;
-            }
-        } @catch (NSException *exception) {
-            NSLog(@"an Exeption");
-        } @finally {
-            //nada
-        }
-        //memory leak?
-        shaderTimer = [[NSTimer scheduledTimerWithTimeInterval:0.2
-                                                       target:self
-                                                     selector:@selector(sendShaderCode)
-                                                     userInfo:nil
-                                                      repeats:NO] retain];
+        changed = YES;
     }
 }
 
@@ -127,9 +120,9 @@
     [self currentLineHighlight];
 }
 
-- (void)textDidChange:(NSNotification *)notification {
-    
-}
+//- (void)textDidChange:(NSNotification *)notification {
+//    
+//}
 
 - (void) changeTextFormatFinalize:(NSRange)r andCharLength:(int)numChars
 {
@@ -627,7 +620,7 @@
     while (![scanner isAtEnd])
     {
         preScan = scanner.scanLocation;
-        NSMutableString * s = [[NSMutableString alloc] init];
+        NSMutableString * s;// = [[NSMutableString alloc] init];
         
         //comments
         if([scanner scanString:commentString intoString:&s])
@@ -811,7 +804,6 @@
 {
     currentFont = [font copy];
     [self setFont:currentFont];
-    
 }
 
 // called by the shared NSFontManager when user chooses a new font or size in the Font Panel
@@ -832,7 +824,10 @@
 
 - (void)sendShaderCode
 {
-    shaderSignal.emit( std::string([[self.textStorage string] UTF8String]) );
+    if(changed) {
+        changed = NO;
+        shaderSignal.emit( std::string([[self.textStorage string] UTF8String]) );
+    }
 }
 
 - (ci::signals::Signal<void(std::string)>*) LuaSignal

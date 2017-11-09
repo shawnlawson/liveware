@@ -9,10 +9,10 @@ uniform sampler2D backbuffer;
 uniform sampler2D audiobuffer;
 
 uniform float time;
-uniform vec4 bands;
-uniform vec4 bandsR;
+uniform vec4 bands; uniform vec4 bandsR;
 uniform vec2 resolution;
-uniform float NN[10];
+uniform vec3 audioNN; uniform vec2 classNN;
+uniform float streamNN[10]; uniform float classFNN[30];
 uniform uint notes[128];
 uniform uint cc[128];
 out vec4 FragColor;

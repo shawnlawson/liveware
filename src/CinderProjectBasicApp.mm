@@ -11,9 +11,6 @@
 #include "cinder/audio/audio.h"
 #include "cinder/params/Params.h"
 #include "cinder/CinderMath.h"
-#include "cinder/Perlin.h"
-#include "cinder/Easing.h"
-
 
 //Blocks
 #include "MidiHeaders.h"
@@ -23,23 +20,6 @@
 #include "MyNSTextView.h"
 #include "FeedbackNSTextView.h"
 #include "AudioDrawUtils.h"
-
-#define __OBJC__
-
-#define SOL_CHECK_ARGUMENTS
-#include "sol.hpp"
-
-#include "PostProcess.h"
-#include "BuiltinPostProcesses.h"
-//#include "Drawable.hpp"
-//#include "mCircle.hpp"
-//#include "mRectangle.hpp"
-//#include "mImage.hpp"
-//#include "mLine.hpp"
-//#include "mRand.hpp"
-//#include "mCube.hpp"
-//#include "mSphere.hpp"
-
 #include "LuaBindings.hpp"
 #include "LuaBindings_2.h"
 
@@ -72,8 +52,11 @@ public:
     std::thread								mThread;
     std::mutex                              mNNMutex;
     Receiver                                mReceiver;
-    float                                   nnData[10];
-    
+    vec3                                    audioNN;
+    vec2                                    classNN;
+    float                                   streamNN[10];
+    float                                   classFNN[30];
+
     
 /// MIDI //////////////////////////////////////////////////
     void midiListener( midi::Message msg );
@@ -102,7 +85,7 @@ public:
 /// graphics /////////////////////////////////////////////////
     void loadFiles();
     void createFBOs(int size);
-    gl::FboRef fbos[2]; //4
+    gl::FboRef fbos[2];
     gl::GlslProgRef fboGlsl, trialGlsl;
     std::string vertProg, fragProg, headerProg;
     bool renderGLSL = true;
@@ -111,6 +94,7 @@ public:
     int postPingPong = 0;
     gl::TextureRef audioMidiTex;
     Surface8u audioSurface;
+    bool clearBackground = true;
     
 
 /// editor //////////////////////////////////////////////////
@@ -155,6 +139,10 @@ CinderProjectBasicApp::CinderProjectBasicApp()
     mReceiver( 10001, protocol::v4(), *mIoService )
 {}
 
+//CinderProjectBasicApp::CinderProjectBasicApp()
+//:
+//mReceiver( 10001 )
+//{}
 void CinderProjectBasicApp::setup()
 {
 /////////////////////////////////////////////
@@ -248,25 +236,23 @@ void CinderProjectBasicApp::setup()
     mParams->addParam( "OSC In", oscNames, &oscSelection)
     .updateFn( [&](){ openOSC(); } );
 //    mParams->addParam( "Port", &mString );
-    mParams->addParam( "float1", &nnData[0] ).group( "NN Data" );
-    //.label( "Item X" );
-    mParams->addParam( "float2", &nnData[1] ).group( "NN Data" );
-    mParams->addParam( "float3", &nnData[2] ).group( "NN Data" );
-    mParams->addParam( "float4", &nnData[3] ).group( "NN Data" );
-    mParams->addParam( "float5", &nnData[4] ).group( "NN Data" );
-    mParams->addParam( "float6", &nnData[5] ).group( "NN Data" );
-    mParams->addParam( "float7", &nnData[6] ).group( "NN Data" );
-    mParams->addParam( "float8", &nnData[7] ).group( "NN Data" );
-    mParams->addParam( "float9", &nnData[8] ).group( "NN Data" );
-    mParams->addParam( "float10", &nnData[9] ).group( "NN Data" );//.optionsStr(mybar/Properties opened=false);
-    mParams->setOptions("NN Data", "opened=false");
+//    mParams->addParam( "float1", &nnData[0] ).group( "NN Data" );
+//    //.label( "Item X" );
+//    mParams->addParam( "float2", &nnData[1] ).group( "NN Data" );
+//    mParams->addParam( "float3", &nnData[2] ).group( "NN Data" );
+//    mParams->addParam( "float4", &nnData[3] ).group( "NN Data" );
+//    mParams->addParam( "float5", &nnData[4] ).group( "NN Data" );
+//    mParams->addParam( "float6", &nnData[5] ).group( "NN Data" );
+//    mParams->addParam( "float7", &nnData[6] ).group( "NN Data" );
+//    mParams->addParam( "float8", &nnData[7] ).group( "NN Data" );
+//    mParams->addParam( "float9", &nnData[8] ).group( "NN Data" );
+//    mParams->addParam( "float10", &nnData[9] ).group( "NN Data" );//.optionsStr(mybar/Properties opened=false);
+//    mParams->setOptions("NN Data", "opened=false");
     
     
     mParams->addSeparator();
     mParams->addButton("Fix TextView", [&](){ [cvm addSubview:spv]; } );
     mParams->addButton("Toggle TextView", [&](){ [spv setHidden:![spv isHidden]]; } );
-    //    mParams->addParam( "Toggle TextView", &mString );
-    //    mParams->addParam( "Toggle FFT", &mString );
 //    mParams->setOptions("TW_HELP", "visible=false" ); //inconified
     
 /////////////////////////////////////////////
@@ -291,7 +277,6 @@ void CinderProjectBasicApp::setup()
     ftv = (FeedbackNSTextView*)[sv documentView];
     [ftv assignCode:"" withLanguage:"GLSL"];
     
-    
     //attaching to cinder view, attaching to window view doesn't work
      cvm =  (__bridge CinderViewMac *)getWindow()->getNative();
     [cvm addSubview:spv];
@@ -310,8 +295,15 @@ void CinderProjectBasicApp::setup()
     lua["epsilon"] = 0.000043f;
     lua["width"] = getWindowBounds().getWidth();
     lua["height"] = getWindowBounds().getHeight();
+    lua["midiNotes"] = &notes;
+    lua["midiCC"] = &cc;
+    lua["bands"] = &mBands;
+    lua["audioNN"] =  &audioNN;
+    lua["classNN"] = &classNN;
+    lua["streamNN"] = &streamNN;
+    lua["clearBackground"] = true;
     
-    luaBindings LB = luaBindings();
+    LuaBindings LB = LuaBindings();
     
     LB.bind(&lua);
 //    luaBinding2(&lua);
@@ -324,26 +316,16 @@ void CinderProjectBasicApp::setup()
 
 void CinderProjectBasicApp::update()
 {
-    //update OSC
-    {//scoped for mutex
-        if(mThread.joinable()) {//check for OSC connected
-            std::lock_guard<std::mutex> lock( mNNMutex );
-            lua["NN"] = &nnData;
-            fboGlsl->uniform( "NN", nnData, 10);
-            
-//            for (int i = 0; i < 10; ++i) {
-//                std::cout << nnData[i] << " ";
-//            }
-//            std::cout << std::endl;
-        }
-    }
     
     //update Spectrum data
     mMagSpectrum = mMonitorSpectralNode->getMagSpectrum();
     if (useStereo && mInputDeviceNode->getNumChannels() > 1)
         mMagSpectrumRight = mMonitorSpectralNodeRight->getMagSpectrum();
    
-    pingPong = (pingPong+1)%2;
+    if(!clearBackground)
+        pingPong = 0;
+    else
+        pingPong = (pingPong+1)%2;
     
     for (int i=0; i< 1024; ++i) {
 //        GLubyte m = 0;
@@ -385,26 +367,45 @@ void CinderProjectBasicApp::update()
     float currentTime = cinder::app::getElapsedSeconds();
     float deltaTime = currentTime - lastFrameTime;
     lastFrameTime = currentTime;
-    lua["deltaTime"] = deltaTime;
-    lua["time"] = currentTime;
-    lua["width"] = getWindowBounds().getWidth();
-    lua["height"] = getWindowBounds().getHeight();
-    lua["midiNotes"] = &notes;
-    lua["midiCC"] = &cc;
-    lua["bands"] = &mBands;
     
+    if (renderLUA)
+    {
+        lua["deltaTime"] = deltaTime;
+        lua["time"] = currentTime;
+
+        luaListener("update()");
     
-    luaListener("update()");
-    
-    int numEffects = postProcesses.size();
-    for (int i = 0; i < numEffects; ++i)
-    {   //protects against non postprocess objects
-        if(dynamic_cast<PostProcess*>(postProcesses[i]) != NULL){
-            postProcesses[i]->updateUniforms();
-            //send lua a message
+        int numEffects = postProcesses.size();
+        for (int i = 0; i < numEffects; ++i)
+        {   //protects against non postprocess objects
+            if(dynamic_cast<PostProcess*>(postProcesses[i]) != NULL){
+                postProcesses[i]->updateUniforms();
+                //send lua a message
+            }
         }
     }
 
+    if(renderGLSL)
+    {
+        fboGlsl->uniform("backbuffer", 0);
+        fboGlsl->uniform("audiobuffer", 1);
+        fboGlsl->uniform("time", (float)getElapsedSeconds());
+        fboGlsl->uniform("bands", mBands);
+        fboGlsl->uniform("bandsR", mBandsR);
+        fboGlsl->uniform("resolution",
+                         vec2(fbos[pingPong]->getWidth(), fbos[pingPong]->getHeight()));
+        
+        fboGlsl->uniform("notes", &notes[0], 128);
+        fboGlsl->uniform("cc", &cc[0], 128);
+        
+        {if(mThread.joinable()) {//check for OSC connected
+            std::lock_guard<std::mutex> lock( mNNMutex );
+            fboGlsl->uniform( "audioNN", audioNN);
+            fboGlsl->uniform( "classNN", classNN);
+            fboGlsl->uniform( "streamNN", &streamNN[0], 10);
+        }}
+    }
+    
 }
 
 
@@ -420,17 +421,6 @@ void CinderProjectBasicApp::draw()
         ci::gl::ScopedMatrices      matScp;
         ci::gl::setMatricesWindow( fbos[pingPong]->getSize() );
         
-        fboGlsl->uniform("backbuffer", 0);
-        fboGlsl->uniform("audiobuffer", 1);
-        fboGlsl->uniform("time", (float)getElapsedSeconds());
-        fboGlsl->uniform("bands", mBands);
-        fboGlsl->uniform("bandsR", mBandsR);
-        fboGlsl->uniform("resolution",
-                         vec2(fbos[pingPong]->getWidth(), fbos[pingPong]->getHeight()));
-        
-        fboGlsl->uniform("notes", &notes[0], 128);
-        fboGlsl->uniform("cc", &cc[0], 128);
-        
         //    if (mInputDeviceNode->getNumChannels() > 1)
         
         gl::drawSolidRect(Rectf(vec2(0), fbos[pingPong]->getSize()));
@@ -440,7 +430,9 @@ void CinderProjectBasicApp::draw()
     if (renderLUA)
     {
 //        gl::enableAlphaBlending();
-        CameraOrtho cam(0, 1280, 0, 720, -1000, 1000);
+//        gl::enableDepthWrite();
+//        gl::enableDepthRead();
+        CameraOrtho cam(0, getWindowBounds().getWidth(), 0, getWindowBounds().getHeight(), -1000, 1000);
         gl::ScopedViewport scpVp( ivec2( 0 ), fbos[pingPong]->getSize() );
         
         gl::ScopedFramebuffer  scpFbo( fbos[pingPong] );
@@ -448,12 +440,19 @@ void CinderProjectBasicApp::draw()
         gl::ScopedMatrices matScope;
         gl::setMatrices( cam );
         
-        if (!renderGLSL)
+//        if (!renderGLSL)
+        clearBackground = lua["clearBackground"].get_or(true);
+        if(clearBackground)
             gl::clear( Color( 0, 0, 0 ) );
-        
-        
-        luaListener("draw()");
+
+        {
+            std::lock_guard<std::mutex> lock( mNNMutex );
+            luaListener("draw()");
+        }
 //        gl::disableAlphaBlending();
+//        gl::disableDepthWrite();
+//        gl::disableDepthRead();
+        
     }
     
     
@@ -563,12 +562,10 @@ void CinderProjectBasicApp::createFBOs(int size)
     int FBO_WIDTH = getWindowBounds().getWidth()/size;
     int FBO_HEIGHT = getWindowBounds().getHeight()/size;
     auto format = gl::Fbo::Format()
-    .samples( 4 ) // uncomment this to enable 4x antialiasing
+    .samples( 4 )
     .attachment( GL_COLOR_ATTACHMENT0, gl::Texture2d::create( FBO_WIDTH, FBO_HEIGHT ) );
     fbos[0] = gl::Fbo::create( FBO_WIDTH, FBO_HEIGHT, format);
     fbos[1] = gl::Fbo::create( FBO_WIDTH, FBO_HEIGHT, format);
-//    fbos[2] = gl::Fbo::create( FBO_WIDTH, FBO_HEIGHT, format);
-//    fbos[3] = gl::Fbo::create( FBO_WIDTH, FBO_HEIGHT, format);
 }
 
 void CinderProjectBasicApp::resize()
@@ -582,6 +579,11 @@ void CinderProjectBasicApp::resize()
     
     [spv setFrame:f];
     mParams->setPosition(vec2(f.size.width, 10));
+    
+    createFBOs(resolutionSelection + 1);
+    
+    lua["width"] = getWindowBounds().getWidth();
+    lua["height"] = getWindowBounds().getHeight();
 }
 
 /////////////////////////////////////////////
@@ -707,32 +709,6 @@ void CinderProjectBasicApp::loadFiles()
         CI_LOG_E( "Shader load error: " << exc.what() );
     }
     
-    
-    //for post-process shaders...
-    // Shortcut for shader loading and error handling
-    //    auto loadGlslProg = [ & ]( const gl::GlslProg::Format& format ) -> gl::GlslProgRef
-    //    {
-    //        string names = format.getVertexPath().string() + " + " +
-    //        format.getFragmentPath().string();
-    //        gl::GlslProgRef glslProg;
-    //        try {
-    //            glslProg = gl::GlslProg::create( format );
-    //        } catch ( const Exception& ex ) {
-    //            CI_LOG_EXCEPTION( names, ex );
-    //            quit();
-    //        }
-    //        return glslProg;
-    //    };
-    //    gl::VboMeshRef rect			= gl::VboMesh::create( geom::Rect() );
-    //    ci::gl::BatchRef			mBatchBloomBlurRect;
-    //    int32_t version					= 330;
-    //    DataSourceRef fragBloomBlur				= loadAsset( "bloom/blur.frag" );
-    //    DataSourceRef vertPassThrough			= loadAsset( "pass_through.vert" );
-    //    gl::GlslProgRef bloomBlur		= loadGlslProg( gl::GlslProg::Format().version( version )
-    //                                                   .vertex( vertPassThrough ).fragment( fragBloomBlur )
-    //
-    //    mBatchBloomBlurRect				= gl::Batch::create( rect,		bloomBlur );
-    
 }
     
 /////////////////////////////////////////////
@@ -845,15 +821,75 @@ void CinderProjectBasicApp::openOSC()
     if(oscSelection == 1) //none
         return;
     
-    mReceiver.setListener("liveware/nn/",
+    // looks at window of data to determine more bullshit
+    mReceiver.setListener("/LiveWare/output/audio",
                           [&]( const osc::Message &msg ){
                               std::lock_guard<std::mutex> lock( mNNMutex );
-                              for (int i = 0; i < 10; ++i) {
-                                  nnData[i] = msg[i].flt();
-                              }
-//                             NSLog(@"data");
+                              // 1 int 2 float
+                              audioNN.x = (float)(msg[0].int32());
+                              audioNN.y = msg[1].flt();
+                              audioNN.z = msg[2].flt();
+//                             NSLog(@"audio");
+                          });
+    
+    // looks at window of data to determine which piece
+    mReceiver.setListener("/LiveWare/output/midi/classifier",
+                          [&]( const osc::Message &msg ){
+                              std::lock_guard<std::mutex> lock( mNNMutex );
+                              //1 int, range 0-14
+                              classNN.x = (float)msg[0].int32();
+//                              NSLog(@"classifier");
+                          });
+    mReceiver.setListener("/LiveWare/output/midi/classifier/vote",
+                          [&]( const osc::Message &msg ){
+                              std::lock_guard<std::mutex> lock( mNNMutex );
+                              //1 int , range 0-14 smoothed
+                              classNN.y = (float)msg[0].int32();
+//                              NSLog(@"classifier/vote");
                           });
 
+    // looks at window of data to determine which bullshit
+    mReceiver.setListener("/LiveWare/output/midi/stream",
+                          [&]( const osc::Message &msg ){
+                              std::lock_guard<std::mutex> lock( mNNMutex );
+                              for(int i = 0; i < 5; ++i){
+                                  streamNN[i] = msg[i].flt();
+                              }
+                              //5 float
+//                              NSLog(@"stream");
+                          });
+    mReceiver.setListener("/LiveWare/output/midi/stream/smooth",
+                          [&]( const osc::Message &msg ){
+                              std::lock_guard<std::mutex> lock( mNNMutex );
+                              for(int i = 0; i < 5; ++i){
+                                  streamNN[i+5] = msg[i].flt();
+                              }
+                              //5 float //smoothed
+//                              NSLog(@"stream/smooth");
+                          });
+
+    // looks at window of data determine probability of which piece as all 15
+//    mReceiver.setListener("/LiveWare/output/midi/classifierfloat",
+//                          [&]( const osc::Message &msg ){
+////                              std::lock_guard<std::mutex> lock( mNNMutex );
+//                              for(int i = 0; i < 15; ++i){
+//                                  classFNN[i] = msg[i].flt();
+////                                  cFNN[i] = msg[i].flt();
+//                              }
+//                              //15 float
+////                              NSLog(@"classifierfloat");
+//                          });
+//    mReceiver.setListener("/LiveWare/output/midi/classifierfloat/smooth",
+//                          [&]( const osc::Message &msg ){
+////                              std::lock_guard<std::mutex> lock( mNNMutex );
+//                              for(int i = 0; i < 15; ++i){
+//                                  classFNN[i+15] = msg[i].flt();
+////                                   cFNN[i+15] = msg[i].flt();
+//                              }
+//                              //15 float //smoothed
+////                              NSLog(@"classifierfloat/smooth");
+//                          });
+    
     try {
         mReceiver.bind();
         
@@ -884,6 +920,13 @@ void CinderProjectBasicApp::stopOSC()
         mIoService->stop();
         mThread.join();
         mReceiver.removeListener("liveware/nn/");
+        mReceiver.removeListener("/LiveWare/output/audio");
+        mReceiver.removeListener("/LiveWare/output/midi/classifier");
+        mReceiver.removeListener("/LiveWare/output/midi/classifier/vote");
+        mReceiver.removeListener("/LiveWare/output/midi/stream");
+        mReceiver.removeListener("/LiveWare/output/midi/stream/smooth");
+        mReceiver.removeListener("/LiveWare/output/midi/classifierfloat");
+        mReceiver.removeListener("/LiveWare/output/midi/classifierfloat/smooth");
         mReceiver.close();
      }
 }

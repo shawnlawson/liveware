@@ -26,6 +26,12 @@ CGFloat lineNumberPadding = 4.0;
     if ((self = [super initWithScrollView:aScrollView
                               orientation:orientation]) != nil)
     {
+        
+        shadow = [[NSShadow alloc] init];
+        shadow.shadowColor = [[NSColor blackColor] colorWithAlphaComponent:0.5];
+        shadow.shadowBlurRadius = 1;
+        shadow.shadowOffset = NSMakeSize(1, -1);
+        
         [self setClientView:[aScrollView documentView]];
      
         [aScrollView.documentView setUsesRuler:YES];
@@ -167,10 +173,6 @@ CGFloat lineNumberPadding = 4.0;
     [attrs setObject:[NSColor colorWithWhite:1.0 alpha:0.5]
               forKey:NSForegroundColorAttributeName];
     
-    NSShadow *shadow = [[NSShadow alloc] init];
-    shadow.shadowColor = [[NSColor blackColor] colorWithAlphaComponent:0.5];
-    shadow.shadowBlurRadius = 1;
-    shadow.shadowOffset = NSMakeSize(1, -1);
     [attrs setObject:shadow
               forKey:NSShadowAttributeName];
     

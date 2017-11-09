@@ -36,6 +36,8 @@
     NSMutableString *whichLanguage;
 
     NSRange currentLine;
+    NSShadow *shadow;
+    BOOL changed;
     
 }
 

@@ -11,7 +11,7 @@
 
 @interface MyLineNumberView : NSRulerView {
 
-    
+    NSShadow *shadow;
 }
 
 - (id)initWithScrollView:(NSScrollView *)aScrollView
