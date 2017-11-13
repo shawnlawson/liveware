@@ -49,9 +49,12 @@
     [self.textStorage removeAttribute:NSForegroundColorAttributeName range:area];
     
     NSFontManager *fontManager = [NSFontManager sharedFontManager];
-    NSFont *oldFont = [NSFont fontWithName:@"fira code light" size:16];
+    NSFont *oldFont = [NSFont fontWithName:@"fira code" size:16];
     [self setCurrentFont:[fontManager convertFont:oldFont]];
     [self setTextColor:[NSColor whiteColor]];
+    
+    self.selectedTextAttributes = @{NSBackgroundColorAttributeName:
+                                    [NSColor colorWithCalibratedRed:0 green:0 blue:1 alpha:0.3]};
     
 //    [self setDrawsBackground:NO];
 //    [self setBackgroundColor:[NSColor clearColor] ];
@@ -86,7 +89,7 @@
     [self.textStorage removeAttribute:NSForegroundColorAttributeName range:area];
     
     NSFontManager *fontManager = [NSFontManager sharedFontManager];
-    NSFont *oldFont = [NSFont fontWithName:@"fira code light" size:16];
+    NSFont *oldFont = [NSFont fontWithName:@"fira code" size:16];
     
     [self setCurrentFont:[fontManager convertFont:oldFont]];
     [self setTextColor:[NSColor whiteColor]];

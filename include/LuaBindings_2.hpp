@@ -6,8 +6,29 @@
 //
 //
 
+#define __OBJC__
+
+#define SOL_CHECK_ARGUMENTS
+#include "sol.hpp"
+
 #ifndef help_h
 #define help_h
+
+#include "Drawable.hpp"
+#include "mCircle.hpp"
+#include "mRectangle.hpp"
+#include "mImageSrc.hpp"
+#include "mImage.hpp"
+#include "mLine.hpp"
+#include "mRand.hpp"
+#include "mCube.hpp"
+#include "mSphere.hpp"
+
+
+#include "PostProcess.h"
+#include "BuiltinPostProcesses.h"
+
+void luaBinding2(sol::state *lua);
 
 class help {
     
@@ -52,20 +73,6 @@ public:
 };
 
 #endif
-
-void luaBinding2(sol::state *lua)
-{
-
-    lua->new_usertype<help>("help",
-                         "ease", sol::as_function(&help::ease),
-                        "rand", sol::as_function(&help::rand),
-                        "colors", sol::as_function(&help::colors),
-                        "functions", sol::as_function(&help::functions),
-                        "perlin", sol::as_function(&help::perlin),
-                        "shapes" , sol::as_function(&help::shapes)
-                         );
-
-}
 
 
 

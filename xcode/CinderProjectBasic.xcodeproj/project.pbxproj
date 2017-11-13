@@ -19,6 +19,7 @@
 		51CA7AD9B7364030B35A1885 /* CinderApp.icns in Resources */ = {isa = PBXBuildFile; fileRef = 4A48FE7062534F0192F8A5FB /* CinderApp.icns */; };
 		5323E6B20EAFCA74003A9687 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B10EAFCA74003A9687 /* CoreVideo.framework */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
+		99139EB51FBA24DF00F94327 /* LuaBindings_2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 99139EB41FBA24DF00F94327 /* LuaBindings_2.cpp */; };
 		991A61FC1F51BB5A001E44E8 /* GLSL.plist in Resources */ = {isa = PBXBuildFile; fileRef = 991A61FB1F51BB5A001E44E8 /* GLSL.plist */; };
 		992BDE0F1F4AF23D001BDFBC /* MyLineNumberView.m in Sources */ = {isa = PBXBuildFile; fileRef = 992BDE0C1F4AF23D001BDFBC /* MyLineNumberView.m */; };
 		992BDE111F4AF23D001BDFBC /* MyNSTextView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 992BDE0E1F4AF23D001BDFBC /* MyNSTextView.mm */; };
@@ -60,6 +61,7 @@
 		4A48FE7062534F0192F8A5FB /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = CinderApp.icns; path = ../resources/CinderApp.icns; sourceTree = "<group>"; };
 		5323E6B10EAFCA74003A9687 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = /System/Library/Frameworks/CoreVideo.framework; sourceTree = "<absolute>"; };
 		8D1107320486CEB800E47090 /* CinderProjectBasic.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CinderProjectBasic.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		99139EB41FBA24DF00F94327 /* LuaBindings_2.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LuaBindings_2.cpp; path = ../src/LuaBindings_2.cpp; sourceTree = "<group>"; };
 		99190E8C1F82A7E6007EC646 /* header.frag */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = header.frag; path = ../assets/header.frag; sourceTree = "<group>"; };
 		991A61FB1F51BB5A001E44E8 /* GLSL.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = GLSL.plist; path = ../resources/GLSL.plist; sourceTree = "<group>"; };
 		991A81701F74250900D80CA3 /* PostProcess.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PostProcess.h; path = ../include/PostProcess.h; sourceTree = "<group>"; };
@@ -99,7 +101,7 @@
 		99C5AC1C1F6DC75D009DB2FB /* liblua53.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = liblua53.dylib; path = ../../../../../usr/local/lib/liblua53.dylib; sourceTree = "<group>"; };
 		99D456ED1F8C313C00BF4DB3 /* mCube.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = mCube.hpp; path = ../include/mCube.hpp; sourceTree = "<group>"; };
 		99D456EE1F8C33D900BF4DB3 /* mSphere.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = mSphere.hpp; path = ../include/mSphere.hpp; sourceTree = "<group>"; };
-		99D456F01F8C430800BF4DB3 /* LuaBindings_2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LuaBindings_2.h; path = ../include/LuaBindings_2.h; sourceTree = "<group>"; };
+		99D456F01F8C430800BF4DB3 /* LuaBindings_2.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = LuaBindings_2.hpp; path = ../include/LuaBindings_2.hpp; sourceTree = "<group>"; };
 		99D456F11F8C51EE00BF4DB3 /* luaBindings.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = luaBindings.cpp; path = ../src/luaBindings.cpp; sourceTree = "<group>"; };
 		99D456F41F8C669200BF4DB3 /* MyNSScroller.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MyNSScroller.h; path = ../include/MyNSScroller.h; sourceTree = "<group>"; };
 		99D456F51F8C66CE00BF4DB3 /* MyNSScroller.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MyNSScroller.m; path = ../src/MyNSScroller.m; sourceTree = "<group>"; };
@@ -154,6 +156,7 @@
 			isa = PBXGroup;
 			children = (
 				99D456F11F8C51EE00BF4DB3 /* luaBindings.cpp */,
+				99139EB41FBA24DF00F94327 /* LuaBindings_2.cpp */,
 				99EBEB631F3E997200453241 /* AudioDrawUtils.cpp */,
 				99D456F51F8C66CE00BF4DB3 /* MyNSScroller.m */,
 				992BDE0C1F4AF23D001BDFBC /* MyLineNumberView.m */,
@@ -227,7 +230,7 @@
 				4442529699194DE2A42C0BAF /* Resources.h */,
 				BF3BC0CF9B3544B0B72671CE /* CinderProjectBasic_Prefix.pch */,
 				02FAB0FF541A4FECB8818EDB /* LuaBindings.hpp */,
-				99D456F01F8C430800BF4DB3 /* LuaBindings_2.h */,
+				99D456F01F8C430800BF4DB3 /* LuaBindings_2.hpp */,
 			);
 			name = Headers;
 			sourceTree = "<group>";
@@ -426,6 +429,7 @@
 				9951A9FC1F40D46E0007F2A3 /* RtMidi.cpp in Sources */,
 				992BDE0F1F4AF23D001BDFBC /* MyLineNumberView.m in Sources */,
 				99E08CB31F79E16600DE1838 /* FeedbackNSTextView.mm in Sources */,
+				99139EB51FBA24DF00F94327 /* LuaBindings_2.cpp in Sources */,
 				9951AA191F40D46E0007F2A3 /* MidiMessage.cpp in Sources */,
 				99D456F31F8C51EE00BF4DB3 /* luaBindings.cpp in Sources */,
 				99D456F81F8C68EB00BF4DB3 /* CinderProjectBasicApp.mm in Sources */,

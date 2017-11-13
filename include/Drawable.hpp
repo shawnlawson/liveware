@@ -16,6 +16,7 @@ public:
     ci::vec3 c;
     float a;
     float radians;
+    int drawMode = 2;
 
     Drawable(){
         p.x = ci::app::getWindowCenter().x;
@@ -47,6 +48,9 @@ public:
     
     void set_radians(float newRadians){ radians = newRadians; }
     float get_radians(){ return radians; }
+    
+    void set_drawMode(int newDrawMode){ drawMode = newDrawMode; }
+    int get_drawMode(){ return drawMode; }
 };
 
 

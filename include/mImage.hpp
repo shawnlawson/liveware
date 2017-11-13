@@ -34,25 +34,32 @@ public:
         w = 100.f;
         h = 100.f;
         images = imageSrc;
+        setImage(1);
     }
     
     mImage(float width, float height, mImageSrc *imageSrc) : Drawable() {
         w = width;
         h = height;
         images = imageSrc;
+        setImage(1);
     }
     
-    bool setImage(int which){
-        if( images == nil)
+    bool setImage(float which){
+//        return setImage((int)which);
+//    }
+    
+//    bool setImage(int which){
+        int whichOne = (int)which;
+        if( images == NULL)
             return false;
         if (0 == images->numImages)
             return false;
         else if (images->numImages < which)
             return false;
-        else if (which < 1)
+        else if (whichOne < 1)
             return false;
         else
-            image = which - 1;
+            image = whichOne - 1;
         
         return true;
     }
@@ -70,22 +77,29 @@ public:
     
     virtual void draw() override
     {
-        if (image >= 0) {
+        if (image >= 0 && images != NULL) {
             w = images->images[image]->getWidth();
             h = images->images[image]->getHeight();
         }
         ci::gl::color(c.r, c.g, c.b, a);
         ci::gl::ScopedModelMatrix modelScope;
-        ci::gl::translate(p - ci::vec3(w, h, 0.0f) * 0.5f);
-        ci::gl::rotate(radians, r);
-        ci::gl::scale(s);
-      
-        if (image >= 0)
+        if (image >= 0&& images != NULL) {
+            ci::gl::translate(p);
+            ci::gl::pushModelView();
+            ci::gl::rotate(radians, r);
+            ci::gl::scale(s);
+            ci::gl::translate(-w*.5, -h*.5, 0);
             ci::gl::draw(images->images[image]);
-        else {
-            ci::Rectf rect = ci::Rectf(0, 0, w, h);
+            ci::gl::popModelView();
+        }else {
+            ci::gl::translate(p);
+            ci::gl::rotate(radians, r);
+            ci::gl::scale(s);
+              ci::Rectf rect = ci::Rectf(-w*.5, -h*.5, w*.5, h*.5);
             ci::gl::drawSolidRect(rect);
         }
+        
+
     }
     
     

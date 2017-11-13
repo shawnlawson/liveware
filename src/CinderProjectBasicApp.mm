@@ -21,7 +21,7 @@
 #include "FeedbackNSTextView.h"
 #include "AudioDrawUtils.h"
 #include "LuaBindings.hpp"
-#include "LuaBindings_2.h"
+#include "LuaBindings_2.hpp"
 
 using namespace ci;
 using namespace ci::app;
@@ -221,7 +221,7 @@ void CinderProjectBasicApp::setup()
 
     mParams->addSeparator();
     mEnumSelection = 0;
-    mEnumNames = { "new GLSL", "new Lua", "Partita 1", "Partita 2", "Partita 3", "Partita 4", "Improvisation", "Reich", "Feldman", "Glass", "C major", "Elegy", "Mashup" };
+    mEnumNames = { "new GLSL", "new Lua", "Reich", "Intro", "Fugue", "Adagio", "Gigue", "Corrente", "Improvisation",  "Feldman", "Glass", "Elegy", "Mashup" };
     mParams->addParam( "Code", mEnumNames, &mEnumSelection )
     .updateFn( [&](){ swapCode(); } );
     
@@ -253,6 +253,8 @@ void CinderProjectBasicApp::setup()
     mParams->addSeparator();
     mParams->addButton("Fix TextView", [&](){ [cvm addSubview:spv]; } );
     mParams->addButton("Toggle TextView", [&](){ [spv setHidden:![spv isHidden]]; } );
+    mParams->addButton("Reload startup Lua", [&](){ std::string s = loadString(loadAsset("startup.lua"));
+                                                    luaListener(s); } );
 //    mParams->setOptions("TW_HELP", "visible=false" ); //inconified
     
 /////////////////////////////////////////////
@@ -306,7 +308,7 @@ void CinderProjectBasicApp::setup()
     LuaBindings LB = LuaBindings();
     
     LB.bind(&lua);
-//    luaBinding2(&lua);
+    luaBinding2(&lua);
     
     std::string s = loadString(loadAsset("startup.lua"));
     luaListener(s);
@@ -584,6 +586,7 @@ void CinderProjectBasicApp::resize()
     
     lua["width"] = getWindowBounds().getWidth();
     lua["height"] = getWindowBounds().getHeight();
+
 }
 
 /////////////////////////////////////////////

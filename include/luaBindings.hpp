@@ -17,21 +17,6 @@
 #include "cinder/Rand.h"
 #include "cinder/Easing.h"
 
-#include "Drawable.hpp"
-#include "mCircle.hpp"
-#include "mRectangle.hpp"
-#include "mImageSrc.hpp"
-#include "mImage.hpp"
-#include "mLine.hpp"
-#include "mRand.hpp"
-#include "mCube.hpp"
-#include "mSphere.hpp"
-
-
-#include "PostProcess.h"
-#include "BuiltinPostProcesses.h"
-
-
 #ifndef luaBindings_hpp
 #define luaBindings_hpp
 
