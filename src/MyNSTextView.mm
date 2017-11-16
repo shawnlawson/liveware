@@ -382,6 +382,8 @@
                     //did we find "function"?
                     count -= 1;
                     break;
+                } else if ([subString containsString:@"elseif"] && [subString containsString:@"then"]) {
+                    //                        nothing;
                 } else if ([subString containsString:@"if"] && [subString containsString:@"then"]) {
                     count -= 1;
                 } else if ([subString containsString:@"for"] && [subString containsString:@"do"]) {
@@ -426,6 +428,8 @@
                     if ([subString containsString:@"function"]) {
                         //did we find "function"?
                         return;
+                    } else if ([subString containsString:@"elseif"] && [subString containsString:@"then"]) {
+//                        nothing;
                     } else if ([subString containsString:@"if"] && [subString containsString:@"then"]) {
                         count -= 1;
                     } else if ([subString containsString:@"for"] && [subString containsString:@"do"]) {

@@ -1,26 +1,23 @@
 
 void main() {
-vec3 c = black;
-vec3 c2 = black;
+    vec3 c = black;
+    float r = log(length(st()));
+    float p = atan(st().x, st().y);
 
-//start
-    float theta = log(length(st()));
-    float phi = abs(atan(st().x, st().y)) * 2.;
+    r = floor(r * 20 + bands.x * 5.);
+    p = floor(p * 20 + bands.y * 5.);
 
-    vec2 rad = vec2(theta - time * .3, phi - sin(time * .2));    
+    float f = vrmf(vec2(r, p) + vec2(sin(time * 1) - bands.y * .1, 0), int(4 * bands.x + 2.));
+    float f2 = vrmf(vec2(r, p) + vec2(1, time * .1+bands.y * .1), int(4 * bands.y + 2.));
 
-    rad = mix(st(), rad, 1.5);
+    c = f * orange;
+    c += f2 * teal;
 
-    float v = vrmf(rad * .25 + vec2(bands.y, bands.x) * .13, 3);
-    c = v * purple * 2.;
-    float v2 = vrmf(rad * .15 + vec2(bands.x, bands.y) * .13, 3);
-    c += v2 * green * 2.;
-    float v3 = vrmf(rad * .05 + vec2(bands.x, bands.y) * .13, 3);
-    c += v3 * orange * 1.;
+    c = pow(c * 2., 2. * white);
 
-    c = pow(c, white * 1. + bands.x * 2.);
+    vec3 bb = texture(backbuffer, stN()).rgb;
 
-//     vec3 bb = texture(backbuffer, stN()).rgb;
-//     c = mix(c * 2., bb, .7);
+    c = mix(c , bb, .5);
+
     FragColor = vec4(c, 1.0);
 }

@@ -27,20 +27,6 @@ function draw()
 	end
 
     drawKids(scene)
---    if scene then
---        for i, o in pairs(scene) do
---			if o.draw then
---                if o.drawMode == 2 then
---                    o:draw()
---                elseif o.drawMode == 1 then
---                    o:draw()
---                    o.drawMode = 0
---                end
---            else
---            	drawKids(o)
---            end
---        end
---    end
 end
 
 function drawKids(kids)
@@ -91,7 +77,6 @@ function changeList( ... )
                 end
             else
                 if #whatExact > 1 then
-                    --print(o[whatExact[1]][whatExact[2]])
                     o[whatExact[1]][whatExact[2]] = how
                 else
                     o[what] = how
@@ -102,7 +87,6 @@ function changeList( ... )
 end
 
 function makeList( ... )
-    -- local list = list.create()
     local list = {}
     local kind --what time of list: Default=circle.new()   others  circle.new() image.new()
     local num --how many to make: Default=1     others 3,19,100
@@ -123,6 +107,10 @@ function makeList( ... )
 
             if t.kind == "rect" then
                 aSampleObj = rect.new()
+            elseif t.kind == "line" then
+                aSampleObj = line.new()
+            elseif t.kind == "cube" then
+                aSampleObj = cube.new()
             elseif t.kind == "image" then
                 img = assert(t.img or nil)
                 aSampleObj = image.new(t.img)
@@ -131,9 +119,9 @@ function makeList( ... )
             end
 
             if pattern == "rand" then
-                kind.p.x = R.randFloat(min,max)
-                kind.p.y = R.randFloat(min,max)
-                --kind.p.z = math.random(min,max)
+                aSampleObj.p.x = R.randFloat(min,max)
+                aSampleObj.p.y = R.randFloat(min,max)
+                --aSampleObj.p.z = math.random(min,max)
             else
                 local dist = floor((max - min)/(num-1))
                 if pattern == "row" then

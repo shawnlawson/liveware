@@ -1,3 +1,4 @@
+
 #include "cinder/app/App.h"
 #include "cinder/app/cocoa/CinderViewMac.h"
 #include "cinder/app/RendererGl.h"
@@ -104,13 +105,11 @@ public:
     bool loadedShader = false;
     CinderViewMac *cvm;
     MyNSTextView *tv;
-    FeedbackNSTextView *ftv;
+//    FeedbackNSTextView *ftv;
     NSScrollView *sv;
     NSSplitView* spv;
     
 /// lua files /////////////////////////////////////////////
-    void my_print(sol::object a, sol::this_state s);
-    std::string bach1, bach2;
     sol::state lua;
     vector<PostProcess *> postProcesses;
     bool renderLUA = true;
@@ -130,6 +129,38 @@ public:
     double lastFrameTime;
     
 };
+
+FeedbackNSTextView *ftv;
+
+
+int super_print(lua_State* L) {
+    std::string output;
+    int n = lua_gettop(L);  /* number of arguments */
+    int i;
+    lua_getglobal(L, "tostring");
+    for (i=1; i<=n; i++) {
+        const char *s;
+        size_t l;
+        lua_pushvalue(L, -1);  /* function to be called */
+        lua_pushvalue(L, i);   /* value to print */
+        lua_call(L, 1, 1);
+        s = lua_tolstring(L, -1, &l);  /* get result */
+        if (s == NULL)
+            return luaL_error(L, "'tostring' must return a string to 'print'");
+        if (i>1) output.append("\t");
+        output.append(s);
+        lua_pop(L, 1);  /* pop result */
+    }
+    output.append("\n");
+    [ftv assignCode:output withLanguage:"LUA"];
+    return 0;
+}
+
+static const struct luaL_Reg printlib [] = {
+    {"print", super_print},
+    {NULL, NULL} /* end of array */
+};
+
 
 
 //contructor so that we have OSC
@@ -167,7 +198,7 @@ void CinderProjectBasicApp::setup()
     audioMidiTex = gl::Texture::create(audioSurface);
     audioMidiTex->setMinFilter(GL_LINEAR);
     audioMidiTex->setMagFilter(GL_LINEAR);
-    mFont = Font( "Fira Code", 12 );
+    mFont = Font( "Fira Code", 16 );
     mTextureFont = gl::TextureFont::create( mFont );
     
 
@@ -221,7 +252,7 @@ void CinderProjectBasicApp::setup()
 
     mParams->addSeparator();
     mEnumSelection = 0;
-    mEnumNames = { "new GLSL", "new Lua", "Reich", "Intro", "Fugue", "Adagio", "Gigue", "Corrente", "Improvisation",  "Feldman", "Glass", "Elegy", "Mashup" };
+    mEnumNames = { "new GLSL", "new Lua", "Reich", "Intro", "Fugue", "Corrente", "Gigue", "Adagio",  "Improvisation",  "Feldman", "Glass", "Elegy", "Mashup" };
     mParams->addParam( "Code", mEnumNames, &mEnumSelection )
     .updateFn( [&](){ swapCode(); } );
     
@@ -288,7 +319,10 @@ void CinderProjectBasicApp::setup()
 /////////////////////////////////////////////
     lua.open_libraries(sol::lib::base, sol::lib::string, sol::lib::table, sol::lib::math, sol::lib::os, sol::lib::package);
     
-    lua.set_function("prnt", &CinderProjectBasicApp::my_print);
+    lua_getglobal(lua, "_G");
+    luaL_setfuncs(lua, printlib, 0);
+    lua_pop(lua, 1);
+    
     lua.set("obj", this);
     lua["post"] = &postProcesses;
     lua["PI"] = 3.14159f;
@@ -516,7 +550,7 @@ void CinderProjectBasicApp::luaListener( std::string code)
         [ftv assignCode:err.what() withLanguage:"LUA"];
     }else {
         NSString *s = [NSString stringWithUTF8String:code.c_str()];
-        if(![s containsString:@"print()"] &&
+        if(![s containsString:@"print("] &&
            ![s isEqualToString:@"draw()"] &&
            ![s isEqualToString:@"update()"])
             [ftv assignCode:"" withLanguage:"LUA"];
@@ -603,62 +637,66 @@ void CinderProjectBasicApp::swapCode()
             [tv assignCode:"\n\nfunction update()\n\nend" withLanguage:"LUA"];
             break;
         
-        case 2: // Partita 1
+        case 2:
         {
-            std::string s = loadString( loadAsset("Partita1.frag"));
+            std::string s = loadString( loadAsset("Reich.lua"));
+            [tv assignCode:s withLanguage:"LUA"];
+        }
+            break;
+            
+        case 3:
+        {
+            std::string s = loadString( loadAsset("Intro.frag"));
             [tv assignCode:s withLanguage:"GLSL"];
         }
             break;
             
-        case 3: // Partita 2
+        case 4:
         {
-            std::string s = loadString( loadAsset("Partita1.frag"));
+            std::string s = loadString( loadAsset("Fugue.frag"));
             [tv assignCode:s withLanguage:"GLSL"];
         }
             break;
             
-        case 4: // Partita 3
+        case 5:
         {
-            std::string s = loadString( loadAsset("Partita1.frag"));
+            std::string s = loadString( loadAsset("Corrente.frag"));
             [tv assignCode:s withLanguage:"GLSL"];
         }
             break;
             
-        case 5: // Partita 4
+        case 6:
         {
-            std::string s = loadString( loadAsset("Partita1.frag"));
+            std::string s = loadString(loadAsset("Gigue.frag"));
             [tv assignCode:s withLanguage:"GLSL"];
         }
             break;
             
-        case 6: // Improvisation
+        case 7:
+        {
+            std::string s = loadString(loadAsset("Adagio.frag"));
+            [tv assignCode:s withLanguage:"GLSL"];
+        }
+            break;
+            
+        case 8:
         {
             std::string s = loadString(loadAsset("Improvisation.frag"));
             [tv assignCode:s withLanguage:"GLSL"];
         }
             break;
             
-        case 7: // Reich
+        case 9:
         {
-        
-        }
-            break;
-            
-        case 8: // Feldman
-        {
-            
-        }
-            break;
-            
-        case 9: // Glass
-        {
-            
+            std::string s = loadString(loadAsset("Feldman.lua"));
+            [tv assignCode:s withLanguage:"LUA"];
         }
             break;
             
         case 10: // C Major
         {
-            
+            std::string s = loadString(loadAsset("Glass.lua"));
+            [tv assignCode:s withLanguage:"LUA"];
         }
             break;
             
@@ -671,23 +709,13 @@ void CinderProjectBasicApp::swapCode()
             
         case 12: // mashup
         {
-            std::string s = loadString(loadAsset("file.lua"));
-            [tv assignCode:s withLanguage:"LUA"];
+            std::string s = loadString(loadAsset("Mashup.frag"));
+            [tv assignCode:s withLanguage:"GLSL"];
         }
             break;
             
         default:
             break;
-    }
-}
-
-void CinderProjectBasicApp::my_print(sol::object a, sol::this_state s) {
-    sol::state_view lua(s);
-    if (a.is<std::string>()) {
-        std::string tempString = a.as<std::string>();
-        [ftv assignCode:tempString withLanguage:"LUA"];
-    } else {
-        [ftv assignCode:"nada" withLanguage:"LUA"];
     }
 }
 

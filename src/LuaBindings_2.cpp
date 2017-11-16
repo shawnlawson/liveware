@@ -29,6 +29,7 @@ void luaBinding2(sol::state *lua)
                                "radius", sol::property(&mCircle::set_radius, &mCircle::get_radius),
                                "outline", sol::property(&mCircle::set_outline, &mCircle::get_outline),
                                "lineWidth", sol::property(&mCircle::set_lineWidth, &mCircle::get_lineWidth),
+                               "drawMode", sol::property(&mCircle::set_drawMode, &mCircle::get_drawMode),
                                "print", sol::as_function(&mCircle::print),
                                "draw", sol::as_function(&mCircle::draw),
                                sol::base_classes, sol::bases<Drawable>()
@@ -46,6 +47,7 @@ void luaBinding2(sol::state *lua)
                                   "radians", sol::property(&mRectangle::set_radians, &mRectangle::get_radians),
                                   "outline", sol::property(&mRectangle::set_outline, &mRectangle::get_outline),
                                   "lineWidth", sol::property(&mRectangle::set_lineWidth, &mRectangle::get_lineWidth),
+                                  "drawMode", sol::property(&mRectangle::set_drawMode, &mRectangle::get_drawMode),
                                   "print", sol::as_function(&mRectangle::print),
                                   "draw", sol::as_function(&mRectangle::draw),
                                   sol::base_classes, sol::bases<Drawable>()
@@ -82,6 +84,7 @@ void luaBinding2(sol::state *lua)
                              "a", sol::property(&mLine::set_a, &mLine::get_a),
                              "radians", sol::property(&mLine::set_radians, &mLine::get_radians),
                              "lineWidth", sol::property(&mLine::set_lineWidth, &mLine::get_radians),
+                               "drawMode", sol::property(&mLine::set_drawMode, &mLine::get_drawMode),
                              "print", sol::as_function(&mLine::print),
                              "draw", sol::as_function(&mLine::draw),
                              sol::base_classes, sol::bases<Drawable>()
@@ -99,6 +102,7 @@ void luaBinding2(sol::state *lua)
                              "radians", sol::property(&mCube::set_radians, &mCube::get_radians),
                              "lineWidth", sol::property(&mCube::set_lineWidth, &mCube::get_lineWidth),
                              "outline", sol::property(&mCube::set_outline, &mCube::get_outline),
+                               "drawMode", sol::property(&mCube::set_drawMode, &mCube::get_drawMode),
                              "print", sol::as_function(&mCube::print),
                              "draw", sol::as_function(&mCube::draw),
                              sol::base_classes, sol::bases<Drawable>()

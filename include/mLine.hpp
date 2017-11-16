@@ -41,6 +41,7 @@ public:
         ci::gl::rotate(radians, r);
         ci::gl::scale(s);
         
+        ci::gl::ScopedLineWidth scp(lineWidth);
         ci::gl::drawLine(p1, p2);
     }
     

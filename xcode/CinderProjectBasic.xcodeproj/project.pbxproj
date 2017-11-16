@@ -95,7 +95,6 @@
 		99BB0FDB1F84598B006FD2C1 /* mLine.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = mLine.hpp; path = ../include/mLine.hpp; sourceTree = "<group>"; };
 		99BF83481F60C91D00E0B4A8 /* LUA.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = LUA.plist; path = ../resources/LUA.plist; sourceTree = "<group>"; };
 		99C5AC161F6DC2CF009DB2FB /* sol.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = sol.hpp; path = ../include/sol.hpp; sourceTree = "<group>"; };
-		99C5AC181F6DC30A009DB2FB /* file.lua */ = {isa = PBXFileReference; lastKnownFileType = text; name = file.lua; path = ../assets/file.lua; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.lua; };
 		99C5AC1A1F6DC337009DB2FB /* mCircle.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = mCircle.hpp; path = ../include/mCircle.hpp; sourceTree = "<group>"; };
 		99C5AC1B1F6DC75D009DB2FB /* liblua53.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liblua53.a; path = ../../../../../usr/local/lib/liblua53.a; sourceTree = "<group>"; };
 		99C5AC1C1F6DC75D009DB2FB /* liblua53.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = liblua53.dylib; path = ../../../../../usr/local/lib/liblua53.dylib; sourceTree = "<group>"; };
@@ -241,7 +240,6 @@
 				991A61FB1F51BB5A001E44E8 /* GLSL.plist */,
 				99BF83481F60C91D00E0B4A8 /* LUA.plist */,
 				992BDE151F4AF8B5001BDFBC /* MyMainMenu.xib */,
-				99C5AC181F6DC30A009DB2FB /* file.lua */,
 				99E08CB01F79C5C000DE1838 /* startup.lua */,
 				99190E8C1F82A7E6007EC646 /* header.frag */,
 				99F22F381F423DC20091620D /* render.frag */,
