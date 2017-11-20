@@ -4,8 +4,7 @@ scene.r1 = r1
 
 changeList{who=r1, what="c", how=vec3.lightGreen}
 changeList{who=r1, what="a", how=.3}
-changeList{who=r1, what="p.y", how=height/3}
-changeList{who=r1, what="p.y", how=height/3}
+changeList{who=r1, what="p.y", how=height/5}
 
 c1 = function (o)
     if( time % 10 < .5 ) then
@@ -18,6 +17,8 @@ end
 
 function update()
     changeList{who=r1, what="p.x", how=c1}
-    changeList{who=r1, what="s.y", how=bands.x * 100}
+    changeList{who=r1, what="s.y", how=bands.x * 3}
 end
 
+scene= {}
+buildBackground()

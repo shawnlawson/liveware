@@ -196,8 +196,8 @@ void CinderProjectBasicApp::setup()
     
     audioSurface = Surface8u(1024, 1, false);
     audioMidiTex = gl::Texture::create(audioSurface);
-    audioMidiTex->setMinFilter(GL_LINEAR);
-    audioMidiTex->setMagFilter(GL_LINEAR);
+    audioMidiTex->setMinFilter(GL_NEAREST);
+    audioMidiTex->setMagFilter(GL_NEAREST);
     mFont = Font( "Fira Code", 16 );
     mTextureFont = gl::TextureFont::create( mFont );
     
@@ -217,7 +217,7 @@ void CinderProjectBasicApp::setup()
     
     midiNames.push_back("none");
     
-    for( int i = 0; i < 127; i++ )
+    for( int i = 0; i < 128; i++ )
     {
         notes.push_back( 0 );
         cc.push_back( 0 );
@@ -364,12 +364,12 @@ void CinderProjectBasicApp::update()
         pingPong = (pingPong+1)%2;
     
     for (int i=0; i< 1024; ++i) {
-//        GLubyte m = 0;
-//        if (i < 128) { //
-//            m = notes[i] * 2;
-//        } else if (i < 256) {
-//            m = cc[i-128] * 2;
-//        }
+        GLubyte m = 0;
+        if (i < 128) { //
+            m = notes[i] * 2;
+        } else if (i < 256) {
+            m = cc[i-128] * 2;
+        }
         
         float b2 = 0, b = audio::linearToDecibel( mMagSpectrum[i] );
         
@@ -389,8 +389,8 @@ void CinderProjectBasicApp::update()
         audioSurface.setPixel(ivec2(i, 0),
                              Color8u(b * 2.55, //scale up to texture depth
                                      b2 * 2.55,
-                                     0));
-//        m));
+//                                     0));
+        m));
     }
     
     audioMidiTex->update(audioSurface);
@@ -431,8 +431,8 @@ void CinderProjectBasicApp::update()
         fboGlsl->uniform("resolution",
                          vec2(fbos[pingPong]->getWidth(), fbos[pingPong]->getHeight()));
         
-        fboGlsl->uniform("notes", &notes[0], 128);
-        fboGlsl->uniform("cc", &cc[0], 128);
+//        fboGlsl->uniform("notes", &notes[0], 128);
+//        fboGlsl->uniform("cc", &cc[0], 128);
         
         {if(mThread.joinable()) {//check for OSC connected
             std::lock_guard<std::mutex> lock( mNNMutex );
@@ -771,7 +771,7 @@ void CinderProjectBasicApp::midiListener( midi::Message msg )
     {
         case MIDI_NOTE_ON:
             notes[msg.pitch] = msg.velocity;
-            status = "Pitch: " + toString( msg.pitch ) + "\n" + "Velocity: " + toString( msg.velocity );
+//            status = "Pitch: " + toString( msg.pitch ) + "\n" + "Velocity: " + toString( msg.velocity );
             break;
             
         case MIDI_NOTE_OFF:
@@ -780,7 +780,7 @@ void CinderProjectBasicApp::midiListener( midi::Message msg )
             
         case MIDI_CONTROL_CHANGE:
             cc[msg.control] = msg.value;
-            status = "Control: " + toString( msg.control ) + "\n" + "Value: " + toString( msg.value );
+//            status = "Control: " + toString( msg.control ) + "\n" + "Value: " + toString( msg.value );
             break;
             
         default:

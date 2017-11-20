@@ -8,9 +8,11 @@ i.drawMode = 1
 scene.i = i
 
 counter = 0
+whenToChange = 0
 
 background.a = 0
 clearBackground = false
+buildBackground()
 
 function update()
     if counter > 3 then 
@@ -25,6 +27,7 @@ function update()
         else
             i.radians = 0
         end
+        whenToChange = R.randInt(8)
         counter = 0
     end
      
