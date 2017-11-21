@@ -189,8 +189,9 @@
     currentLine = [[self.textStorage string] lineRangeForRange:NSMakeRange([self selectedRange].location, 0)];
     
     [self.layoutManager addTemporaryAttribute:NSBackgroundColorAttributeName
-                                        value:[NSColor colorWithCalibratedRed:0 green:0 blue:0 alpha:0.3]
-                            forCharacterRange:currentLine];
+                                        value:[NSColor colorWithCalibratedRed:0 green:0 blue:0 alpha:0.4]
+                            forCharacterRange:NSMakeRange(currentLine.location, currentLine.length-1)];
+//                            forCharacterRange:currentLine];
 }
 
 - (void) errorLineHighlight:(std::string)errors

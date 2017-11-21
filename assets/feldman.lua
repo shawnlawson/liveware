@@ -34,3 +34,9 @@ function update()
     counter = counter + deltaTime
 end
 
+function update()
+
+end
+
+i = nil
+background.a = .001

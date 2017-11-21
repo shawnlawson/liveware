@@ -1,9 +1,9 @@
-l = makeList{kind="line", min=10, max=300, num=100, pattern="rand"}
+l = makeList{kind="line", min=10, max=300, num=120, pattern="rand"}
 
 fym = function(o) return R.randFloat(height) end
 changeList{who=l, what="p.y", how=fym}
 
-fyl = function(o) return o.p.x + width/2 - 150 end
+fyl = function(o) return o.p.x + R.randFloat(500) end
 changeList{who=l, what="p.x", how=fyl}
 
 scene.l = l

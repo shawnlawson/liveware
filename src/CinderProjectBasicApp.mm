@@ -21,6 +21,7 @@
 #include "MyNSTextView.h"
 #include "FeedbackNSTextView.h"
 #include "AudioDrawUtils.h"
+#include "MyNSSplitView.h"
 #include "LuaBindings.hpp"
 #include "LuaBindings_2.hpp"
 
@@ -107,7 +108,8 @@ public:
     MyNSTextView *tv;
 //    FeedbackNSTextView *ftv;
     NSScrollView *sv;
-    NSSplitView* spv;
+//    NSSplitView* spv;
+    MyNSSplitView* spv;
     
 /// lua files /////////////////////////////////////////////
     sol::state lua;

@@ -30,6 +30,7 @@
 		9951AA191F40D46E0007F2A3 /* MidiMessage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9951A9EF1F40D46E0007F2A3 /* MidiMessage.cpp */; };
 		9951AA1A1F40D46E0007F2A3 /* MidiOut.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9951A9F01F40D46E0007F2A3 /* MidiOut.cpp */; };
 		9951AB8C1F40D4950007F2A3 /* CoreMIDI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9951AB8B1F40D4950007F2A3 /* CoreMIDI.framework */; };
+		9986C37D1FC3474B00198ED6 /* MyNSSplitView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 9986C37C1FC3474B00198ED6 /* MyNSSplitView.mm */; };
 		9990BAA51F70051600C62B7A /* Osc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9990BA301F70051600C62B7A /* Osc.cpp */; };
 		99BF83491F60C91D00E0B4A8 /* LUA.plist in Resources */ = {isa = PBXBuildFile; fileRef = 99BF83481F60C91D00E0B4A8 /* LUA.plist */; };
 		99C5AC1D1F6DC75D009DB2FB /* liblua53.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 99C5AC1B1F6DC75D009DB2FB /* liblua53.a */; };
@@ -89,6 +90,8 @@
 		9951A9EF1F40D46E0007F2A3 /* MidiMessage.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MidiMessage.cpp; sourceTree = "<group>"; };
 		9951A9F01F40D46E0007F2A3 /* MidiOut.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MidiOut.cpp; sourceTree = "<group>"; };
 		9951AB8B1F40D4950007F2A3 /* CoreMIDI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMIDI.framework; path = System/Library/Frameworks/CoreMIDI.framework; sourceTree = SDKROOT; };
+		9986C37C1FC3474B00198ED6 /* MyNSSplitView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = MyNSSplitView.mm; path = ../src/MyNSSplitView.mm; sourceTree = "<group>"; };
+		9986C37E1FC3478E00198ED6 /* MyNSSplitView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MyNSSplitView.h; path = ../include/MyNSSplitView.h; sourceTree = "<group>"; };
 		9990BA301F70051600C62B7A /* Osc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Osc.cpp; sourceTree = "<group>"; };
 		9990BA311F70051600C62B7A /* Osc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Osc.h; sourceTree = "<group>"; };
 		999EA3C51F89B0720069CABF /* mRand.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = mRand.hpp; path = ../include/mRand.hpp; sourceTree = "<group>"; };
@@ -154,6 +157,7 @@
 		080E96DDFE201D6D7F000001 /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				9986C37C1FC3474B00198ED6 /* MyNSSplitView.mm */,
 				99D456F11F8C51EE00BF4DB3 /* luaBindings.cpp */,
 				99139EB41FBA24DF00F94327 /* LuaBindings_2.cpp */,
 				99EBEB631F3E997200453241 /* AudioDrawUtils.cpp */,
@@ -220,6 +224,7 @@
 		29B97315FDCFA39411CA2CEA /* Headers */ = {
 			isa = PBXGroup;
 			children = (
+				9986C37E1FC3478E00198ED6 /* MyNSSplitView.h */,
 				99C5AC161F6DC2CF009DB2FB /* sol.hpp */,
 				99D456F41F8C669200BF4DB3 /* MyNSScroller.h */,
 				992BDE121F4AF24C001BDFBC /* MyLineNumberView.h */,
@@ -426,6 +431,7 @@
 			files = (
 				9951A9FC1F40D46E0007F2A3 /* RtMidi.cpp in Sources */,
 				992BDE0F1F4AF23D001BDFBC /* MyLineNumberView.m in Sources */,
+				9986C37D1FC3474B00198ED6 /* MyNSSplitView.mm in Sources */,
 				99E08CB31F79E16600DE1838 /* FeedbackNSTextView.mm in Sources */,
 				99139EB51FBA24DF00F94327 /* LuaBindings_2.cpp in Sources */,
 				9951AA191F40D46E0007F2A3 /* MidiMessage.cpp in Sources */,

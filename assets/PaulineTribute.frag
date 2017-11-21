@@ -4,8 +4,8 @@ void main() {
     float theta = log(length(st()));
     float phi = atan(st().x, st().y);
 
-        float v = vrmf(vec2( .0 * theta  + phi * .0 + stN().x + time * .0141 + bands.x * .05, st().y ) , 1);
-    float v2 = vrmf(vec2( .0 * -theta + phi * .0 + stN().x  - time * .141 + bandsR.x * .05, st().y), 1 );
+      float v = vrmf(vec2( .0 * theta  + phi * .0 + stN().x + time * .0141 + bands.x * .05, st().y ) , 1);
+    float v2 = vrmf(vec2( .0 * -theta + phi * .0 + stN().x  - time * .0141 + bandsR.x * .05, st().y), 1 );
 
     vec3 c = black;
     c =  v * (0. + stN().x)  * white;

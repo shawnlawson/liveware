@@ -583,11 +583,11 @@
             </items>
             <point key="canvasLocation" x="33" y="-24"/>
         </menu>
-        <splitView wantsLayer="YES" arrangesAllSubviews="NO" dividerStyle="thin" id="Q7F-SW-0pZ">
+        <splitView wantsLayer="YES" arrangesAllSubviews="NO" dividerStyle="thin" id="Q7F-SW-0pZ" customClass="MyNSSplitView">
             <rect key="frame" x="0.0" y="0.0" width="800" height="680"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" heightSizable="YES"/>
             <subviews>
-                <scrollView wantsLayer="YES" fixedFrame="YES" borderType="none" autohidesScrollers="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" scrollerKnobStyle="dark" id="hce-0P-StE">
+                <scrollView wantsLayer="YES" fixedFrame="YES" borderType="none" autohidesScrollers="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" hasVerticalScroller="NO" usesPredominantAxisScrolling="NO" scrollerKnobStyle="dark" id="hce-0P-StE">
                     <rect key="frame" x="0.0" y="0.0" width="800" height="588"/>
                     <autoresizingMask key="autoresizingMask" heightSizable="YES"/>
                     <clipView key="contentView" wantsLayer="YES" drawsBackground="NO" copiesOnScroll="NO" id="0RJ-3z-eLp">
@@ -614,7 +614,7 @@
                         <autoresizingMask key="autoresizingMask"/>
                     </scroller>
                     <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="NO" id="ITA-yE-pbr" customClass="MyNSScroller">
-                        <rect key="frame" x="785" y="0.0" width="15" height="580"/>
+                        <rect key="frame" x="-100" y="-100" width="15" height="580"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </scroller>
                 </scrollView>
