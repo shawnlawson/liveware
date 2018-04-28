@@ -44,6 +44,7 @@
 - (IBAction)indent:(id)sender;
 - (IBAction)dedent:(id)sender;
 - (IBAction)toggleComments:(id)sender;
+- (IBAction)openDocument:(id)sender;
 
 - (void) assignCode:(std::string)code withLanguage:(std::string)lang;
 - (void) errorLineHighlight:(std::string)errors;

@@ -189,7 +189,7 @@
     currentLine = [[self.textStorage string] lineRangeForRange:NSMakeRange([self selectedRange].location, 0)];
     
     [self.layoutManager addTemporaryAttribute:NSBackgroundColorAttributeName
-                                        value:[NSColor colorWithCalibratedRed:0 green:0 blue:0 alpha:0.4]
+                                        value:[NSColor colorWithCalibratedRed:0 green:0 blue:0 alpha:0.6]
                             forCharacterRange:NSMakeRange(currentLine.location, currentLine.length-1)];
 //                            forCharacterRange:currentLine];
 }
@@ -792,6 +792,39 @@
         }
     }
 }
+
+#pragma mark - Open File
+//////////////////////////////////
+// Open File
+//////////////////////////////////
+
+- (IBAction)openDocument:(id)sender {
+    NSWindow* window = [NSApp mainWindow];
+    NSOpenPanel* panel = [NSOpenPanel openPanel];
+    [panel setMessage:@"Open a file."];
+    
+    // Display the panel attached to the document's window.
+    [panel beginSheetModalForWindow:window completionHandler:^(NSInteger result){
+        if (result == NSFileHandlingPanelOKButton) {
+            NSURL*  theDoc = [[panel URLs] objectAtIndex:0];
+            NSError *error;
+            NSString *stringFromFileAtURL = [[NSString alloc] initWithContentsOfURL:theDoc
+                                                                           encoding:NSUTF8StringEncoding
+                                                                              error:&error];
+            if (stringFromFileAtURL == nil)
+                NSLog(@"Error reading file at %@\n%@",
+                      theDoc, [error localizedFailureReason]);
+            else {
+                [self assignCode:[stringFromFileAtURL cStringUsingEncoding:NSUTF8StringEncoding]
+                    withLanguage:[theDoc.pathExtension.uppercaseString cStringUsingEncoding:NSUTF8StringEncoding]];
+            }
+            
+            // Use the URLs to build a list of items to import.
+        }
+        
+    }];
+}
+
 
 
 #pragma mark - Font Window & Manager

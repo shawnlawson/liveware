@@ -24,11 +24,11 @@ public:
         radius = 10.f;
     }
     
-    virtual void print(sol::this_state ts) override
+     void help(sol::this_state ts)
     {
         lua_State* L = ts;
         sol::state_view lua(L);
-        lua.safe_script("prnt(obj, 'outline = false \t lineWidth = float \t radius = float')");
+        lua.safe_script("print('outline = false \t lineWidth = float \t radius = float')");
     }
     
     virtual void draw() override

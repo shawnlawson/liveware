@@ -108,7 +108,7 @@
 		99D456F41F8C669200BF4DB3 /* MyNSScroller.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MyNSScroller.h; path = ../include/MyNSScroller.h; sourceTree = "<group>"; };
 		99D456F51F8C66CE00BF4DB3 /* MyNSScroller.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MyNSScroller.m; path = ../src/MyNSScroller.m; sourceTree = "<group>"; };
 		99D456F71F8C68EB00BF4DB3 /* CinderProjectBasicApp.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = CinderProjectBasicApp.mm; path = ../src/CinderProjectBasicApp.mm; sourceTree = "<group>"; };
-		99E08CB01F79C5C000DE1838 /* startup.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = startup.lua; path = ../assets/startup.lua; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.lua; };
+		99E08CB01F79C5C000DE1838 /* startup.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = startup.lua; path = ../assets/startup.lua; sourceTree = "<group>"; };
 		99E08CB21F79E16600DE1838 /* FeedbackNSTextView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = FeedbackNSTextView.mm; path = ../src/FeedbackNSTextView.mm; sourceTree = "<group>"; };
 		99E08CB41F79E25C00DE1838 /* FeedbackNSTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FeedbackNSTextView.h; path = ../include/FeedbackNSTextView.h; sourceTree = "<group>"; };
 		99E982041F366B930013A336 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
@@ -116,7 +116,7 @@
 		99EBEB631F3E997200453241 /* AudioDrawUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AudioDrawUtils.cpp; path = ../src/AudioDrawUtils.cpp; sourceTree = "<group>"; };
 		99F22F381F423DC20091620D /* render.frag */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = render.frag; path = ../assets/render.frag; sourceTree = "<group>"; };
 		99F22F391F423DC20091620D /* render.vert */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = render.vert; path = ../assets/render.vert; sourceTree = "<group>"; };
-		BF3BC0CF9B3544B0B72671CE /* CinderProjectBasic_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = CinderProjectBasic_Prefix.pch; sourceTree = "<group>"; };
+		BF3BC0CF9B3544B0B72671CE /* LiveWare_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LiveWare_Prefix.pch; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -232,7 +232,7 @@
 				99E08CB41F79E25C00DE1838 /* FeedbackNSTextView.h */,
 				99EBEB621F3E997200453241 /* AudioDrawUtils.h */,
 				4442529699194DE2A42C0BAF /* Resources.h */,
-				BF3BC0CF9B3544B0B72671CE /* CinderProjectBasic_Prefix.pch */,
+				BF3BC0CF9B3544B0B72671CE /* LiveWare_Prefix.pch */,
 				02FAB0FF541A4FECB8818EDB /* LuaBindings.hpp */,
 				99D456F01F8C430800BF4DB3 /* LuaBindings_2.hpp */,
 			);
@@ -273,7 +273,7 @@
 				9951A9EC1F40D46E0007F2A3 /* src */,
 			);
 			name = MIDI2;
-			path = ../../../Downloads/cinder_0.9.1_mac/blocks/MIDI2;
+			path = ../../cinder_0.9.1_mac/blocks/MIDI2;
 			sourceTree = "<group>";
 		};
 		9951A9B21F40D46D0007F2A3 /* include */ = {
@@ -316,7 +316,7 @@
 				9990BA2D1F70051600C62B7A /* src */,
 			);
 			name = OSC;
-			path = ../../../Downloads/cinder_0.9.1_mac/blocks/OSC;
+			path = ../../cinder_0.9.1_mac/blocks/OSC;
 			sourceTree = "<group>";
 		};
 		9990BA2D1F70051600C62B7A /* src */ = {
@@ -365,9 +365,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		8D1107260486CEB800E47090 /* CinderProjectBasic */ = {
+		8D1107260486CEB800E47090 /* LiveWare */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = C01FCF4A08A954540054247B /* Build configuration list for PBXNativeTarget "CinderProjectBasic" */;
+			buildConfigurationList = C01FCF4A08A954540054247B /* Build configuration list for PBXNativeTarget "LiveWare" */;
 			buildPhases = (
 				8D1107290486CEB800E47090 /* Resources */,
 				8D11072C0486CEB800E47090 /* Sources */,
@@ -377,7 +377,7 @@
 			);
 			dependencies = (
 			);
-			name = CinderProjectBasic;
+			name = LiveWare;
 			productInstallPath = "$(HOME)/Applications";
 			productName = CinderProjectBasic;
 			productReference = 8D1107320486CEB800E47090 /* CinderProjectBasic.app */;
@@ -390,7 +390,7 @@
 			isa = PBXProject;
 			attributes = {
 			};
-			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "CinderProjectBasic" */;
+			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "LiveWare" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 1;
@@ -404,7 +404,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				8D1107260486CEB800E47090 /* CinderProjectBasic */,
+				8D1107260486CEB800E47090 /* LiveWare */,
 			);
 		};
 /* End PBXProject section */
@@ -453,6 +453,7 @@
 		C01FCF4B08A954540054247B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CINDER_PATH = /Users/lawsos2/LiveCoding/Liveware/cinder_0.9.1_mac;
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				DEAD_CODE_STRIPPING = YES;
@@ -460,7 +461,7 @@
 				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = CinderProjectBasic_Prefix.pch;
+				GCC_PREFIX_HEADER = LiveWare_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
@@ -481,7 +482,7 @@
 				);
 				OTHER_LDFLAGS = "\"$(CINDER_PATH)/lib/macosx/$(CONFIGURATION)/libcinder.a\"";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.libcinder.${PRODUCT_NAME:rfc1034identifier}";
-				PRODUCT_NAME = CinderProjectBasic;
+				PRODUCT_NAME = LiveWare;
 				SYMROOT = ./build;
 				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" ../include $(CINDER_PATH)/blocks/MIDI2/lib $(CINDER_PATH)/blocks/MIDI2/src $(CINDER_PATH)/blocks/MIDI2/include $(CINDER_PATH)/blocks/OSC/src \"$(CINDER_PATH)/blocks/OSC/src\"";
 				WRAPPER_EXTENSION = app;
@@ -491,6 +492,7 @@
 		C01FCF4C08A954540054247B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CINDER_PATH = /Users/lawsos2/LiveCoding/Liveware/cinder_0.9.1_mac;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
@@ -499,7 +501,7 @@
 				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
 				GCC_OPTIMIZATION_LEVEL = 3;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = CinderProjectBasic_Prefix.pch;
+				GCC_PREFIX_HEADER = LiveWare_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"NDEBUG=1",
 					"$(inherited)",
@@ -520,7 +522,7 @@
 				);
 				OTHER_LDFLAGS = "\"$(CINDER_PATH)/lib/macosx/$(CONFIGURATION)/libcinder.a\"";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.libcinder.${PRODUCT_NAME:rfc1034identifier}";
-				PRODUCT_NAME = CinderProjectBasic;
+				PRODUCT_NAME = LiveWare;
 				STRIP_INSTALLED_PRODUCT = YES;
 				SYMROOT = ./build;
 				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" ../include $(CINDER_PATH)/blocks/MIDI2/lib $(CINDER_PATH)/blocks/MIDI2/src $(CINDER_PATH)/blocks/MIDI2/include $(CINDER_PATH)/blocks/OSC/src \"$(CINDER_PATH)/blocks/OSC/src\"";
@@ -565,7 +567,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		C01FCF4A08A954540054247B /* Build configuration list for PBXNativeTarget "CinderProjectBasic" */ = {
+		C01FCF4A08A954540054247B /* Build configuration list for PBXNativeTarget "LiveWare" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				C01FCF4B08A954540054247B /* Debug */,
@@ -574,7 +576,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		C01FCF4E08A954540054247B /* Build configuration list for PBXProject "CinderProjectBasic" */ = {
+		C01FCF4E08A954540054247B /* Build configuration list for PBXProject "LiveWare" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				C01FCF4F08A954540054247B /* Debug */,
