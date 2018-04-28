@@ -99,8 +99,8 @@
 		99BF83481F60C91D00E0B4A8 /* LUA.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = LUA.plist; path = ../resources/LUA.plist; sourceTree = "<group>"; };
 		99C5AC161F6DC2CF009DB2FB /* sol.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = sol.hpp; path = ../include/sol.hpp; sourceTree = "<group>"; };
 		99C5AC1A1F6DC337009DB2FB /* mCircle.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = mCircle.hpp; path = ../include/mCircle.hpp; sourceTree = "<group>"; };
-		99C5AC1B1F6DC75D009DB2FB /* liblua53.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liblua53.a; path = ../../../../../usr/local/lib/liblua53.a; sourceTree = "<group>"; };
-		99C5AC1C1F6DC75D009DB2FB /* liblua53.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = liblua53.dylib; path = ../../../../../usr/local/lib/liblua53.dylib; sourceTree = "<group>"; };
+		99C5AC1B1F6DC75D009DB2FB /* liblua53.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liblua53.a; path = ../../../../../../usr/local/lib/liblua53.a; sourceTree = "<group>"; };
+		99C5AC1C1F6DC75D009DB2FB /* liblua53.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = liblua53.dylib; path = ../../../../../../usr/local/lib/liblua53.dylib; sourceTree = "<group>"; };
 		99D456ED1F8C313C00BF4DB3 /* mCube.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = mCube.hpp; path = ../include/mCube.hpp; sourceTree = "<group>"; };
 		99D456EE1F8C33D900BF4DB3 /* mSphere.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = mSphere.hpp; path = ../include/mSphere.hpp; sourceTree = "<group>"; };
 		99D456F01F8C430800BF4DB3 /* LuaBindings_2.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = LuaBindings_2.hpp; path = ../include/LuaBindings_2.hpp; sourceTree = "<group>"; };
@@ -481,7 +481,7 @@
 					"-std=c++14",
 				);
 				OTHER_LDFLAGS = "\"$(CINDER_PATH)/lib/macosx/$(CONFIGURATION)/libcinder.a\"";
-				PRODUCT_BUNDLE_IDENTIFIER = "org.libcinder.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_BUNDLE_IDENTIFIER = com.shawnlawson.liveware;
 				PRODUCT_NAME = LiveWare;
 				SYMROOT = ./build;
 				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" ../include $(CINDER_PATH)/blocks/MIDI2/lib $(CINDER_PATH)/blocks/MIDI2/src $(CINDER_PATH)/blocks/MIDI2/include $(CINDER_PATH)/blocks/OSC/src \"$(CINDER_PATH)/blocks/OSC/src\"";
@@ -521,7 +521,7 @@
 					"-std=c++14",
 				);
 				OTHER_LDFLAGS = "\"$(CINDER_PATH)/lib/macosx/$(CONFIGURATION)/libcinder.a\"";
-				PRODUCT_BUNDLE_IDENTIFIER = "org.libcinder.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_BUNDLE_IDENTIFIER = com.shawnlawson.liveware;
 				PRODUCT_NAME = LiveWare;
 				STRIP_INSTALLED_PRODUCT = YES;
 				SYMROOT = ./build;
