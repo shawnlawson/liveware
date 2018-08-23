@@ -123,7 +123,7 @@ function makeList( ... )
                 aSampleObj.p.y = R.randFloat(min,max)
                 --aSampleObj.p.z = math.random(min,max)
             else
-                local dist = floor((max - min)/(num-1))
+                local dist = ((max - min)/(num-1))
                 if pattern == "row" then
                     aSampleObj.p.x = (i-1)*dist + min
                 elseif pattern == "col" then

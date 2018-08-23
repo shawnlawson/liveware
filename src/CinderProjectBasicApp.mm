@@ -818,6 +818,8 @@ void CinderProjectBasicApp::monoOrStereo()
             auto monitorFormat = audio::MonitorSpectralNode::Format().fftSize( 2048 ).windowSize( 1024 );
             mMonitorSpectralNode = ctx->makeNode( new audio::MonitorSpectralNode( monitorFormat ) );
             mMonitorSpectralNodeRight = ctx->makeNode( new audio::MonitorSpectralNode( monitorFormat ) );
+            mMonitorSpectralNode->setSmoothingFactor(0.7);
+            mMonitorSpectralNodeRight->setSmoothingFactor(0.7);
             mInputDeviceNode >> channelRouterLeft->route(0, 0) >> mMonitorSpectralNode;
             mInputDeviceNode >> channelRouterRight->route(1, 0) >> mMonitorSpectralNodeRight;
         } else {
@@ -835,6 +837,7 @@ void CinderProjectBasicApp::monoOrStereo()
         
         auto monitorFormat = audio::MonitorSpectralNode::Format().fftSize( 2048 ).windowSize( 1024 );
         mMonitorSpectralNode = ctx->makeNode( new audio::MonitorSpectralNode( monitorFormat ) );
+        mMonitorSpectralNode->setSmoothingFactor(0.7);
         mInputDeviceNode >> mMonitorSpectralNode;
     }
     
